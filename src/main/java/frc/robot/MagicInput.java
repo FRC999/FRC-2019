@@ -26,7 +26,7 @@ public class MagicInput {
         System.out.println("joystick port number passed to getJoystick() is not 0, 1, or 2!");
         return null;
       }
-    }
+  }
   Joystick getJoystick(String type){
       switch (type){
         case "left":
