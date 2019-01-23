@@ -41,7 +41,4 @@ public class MagicJoystick extends Joystick {
     return this.getRawButton(x.getNum());    
   }
     
-  public boolean toggle(int port) {
-    
-  }
 }
