@@ -39,7 +39,6 @@ public class MagicInput {
           System.out.println("Name of joystick given to getJoystick is invalid");
           return null;
       }
-          
   }
 
 }
