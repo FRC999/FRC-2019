@@ -19,24 +19,23 @@ public class MagicJoystick extends Joystick {
   private joystickID kJoystickID;
    
     public MagicJoystick(int port) {        
-        super(port); 
-        switch (port) {
-        case (0) :
-          kJoystickID = joystickID.left;
-          break;
-        case (1):
-          kJoystickID = joystickID.right;
-          break;
-        case (2) :
-          kJoystickID = joystickID.copilot;
-          break;
-        default :
-          kJoystickID = joystickID.broken;
-          System.out.println("Error identifying joystick, try another port or try other hardware. /n Joystick is not in ports 1 - 3");
-
-          break;
-        }
+      super(port); 
+      switch (port) {
+      case (0) :
+        kJoystickID = joystickID.left;
+        break;
+      case (1):
+        kJoystickID = joystickID.right;
+        break;
+      case (2) :
+        kJoystickID = joystickID.copilot;
+        break;
+      default :
+        kJoystickID = joystickID.broken;
+        System.out.println("Error identifying joystick, try another port or try other hardware. /n Joystick is not in ports 1 - 3");
+        break;
       }
+    }
   public boolean buttonInUse(buttonTypeEnum x) {
     return this.getRawButton(x.getNum());    
   }

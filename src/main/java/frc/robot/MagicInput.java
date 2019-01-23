@@ -26,20 +26,18 @@ public class MagicInput {
         System.out.println("joystick port number passed to getJoystick() is not 0, 1, or 2!");
         return null;
       }
-    }
-  Joystick getJoystick(String type){
-      switch (type){
-        case "left":
-          return leftStick;
-        case "right":
-          return rightStick;
-        case "copilot":
-          return copilotStick;
-        default:
-          System.out.println("Name of joystick given to getJoystick is invalid");
-          return null;
-      }
-          
   }
-
+  Joystick getJoystick(String type){
+    switch (type){
+      case "left":
+        return leftStick;
+      case "right":
+        return rightStick;
+      case "copilot":
+        return copilotStick;
+      default:
+        System.out.println("Name of joystick given to getJoystick is invalid");
+        return null;
+    }          
+  }
 }
