@@ -29,7 +29,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -75,11 +74,7 @@ public class Robot extends IterativeRobot {
   Compressor testCompressor = new Compressor(compressorPort);
   Solenoid solenoid1 = new Solenoid(0);
   Solenoid solenoid2 = new Solenoid(1);
-  
-  MagicInput m = new MagicInput();
-
-  ButtonEnum bEnum = ButtonEnum.IntakeIn;
- 
+   
 
   /**
    * This function is run when the robot is first started up and should be
@@ -155,8 +150,8 @@ public class Robot extends IterativeRobot {
     chassisDrive.arcadeDrive(forward, turn);
     
     
-    if (m.isButtonOn(bEnum) == true) {
-      System.out.println(bEnum +" is pressed");
+    if (MagicInput.isButtonOn(ButtonEnum.IntakeIn) == true) {
+      System.out.println(ButtonEnum.IntakeIn +" is pressed");
     }
     
     
