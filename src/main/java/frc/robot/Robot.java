@@ -75,6 +75,10 @@ public class Robot extends IterativeRobot {
   Compressor testCompressor = new Compressor(compressorPort);
   Solenoid solenoid1 = new Solenoid(0);
   Solenoid solenoid2 = new Solenoid(1);
+  
+  MagicInput m = new MagicInput();
+
+  ButtonEnum bEnum = ButtonEnum.IntakeIn;
  
 
   /**
@@ -139,6 +143,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopInit() {
     testCompressor.setClosedLoopControl(true);
+     
   }
   /**
    * This function is called periodically during operator control.
@@ -148,6 +153,12 @@ public class Robot extends IterativeRobot {
     forward = leftStick.getRawAxis(1);
     turn = rightStick.getRawAxis(0);
     chassisDrive.arcadeDrive(forward, turn);
+    
+    
+    if (m.isButtonOn(bEnum) == true) {
+      System.out.println(bEnum +" is pressed");
+    }
+    
     
     //INTAKE
     if (leftStick.getRawButton(intakeIn) == true && rightStick.getRawButton(intakeOut) == false) {
