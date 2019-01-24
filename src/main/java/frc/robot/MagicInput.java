@@ -8,11 +8,11 @@ public class MagicInput {
   Joystick copilotStick = new Joystick(2);
   
   /**
-   * Doesnt yet account for toggleing buttons: Maybe handle that in MagicJoystick?
+   * Doesnt yet account for toggleing buttons: Maybe handle that in Joystick?
    * Anyway, this is a snarky one-liner which gets the joystick from type, then gets the right button
    * I think it works.  If it doesnt, I had nothing to do with it.
    */
-  boolean isButtonOn(ButtonEnum type) {return getJoystick(type.joystickNum).getRawButton(type.buttonNum);}
+  boolean isButtonOn(ButtonEnum type) {return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());}
 
   Joystick getJoystick(int  port)  {
     switch (port){

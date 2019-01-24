@@ -182,14 +182,6 @@ public class Robot extends IterativeRobot {
     boolean leftSolenoidInBoolean = leftStick.getRawButton(pneumaticInButton);
     solenoid1.set(leftSolenoidInBoolean);
     solenoid2.set(leftStick.getRawButton(2));
-   /* if (solenoid1.get() == true) {
-      solenoid1.set(true);
-      solenoid2.set(false);
-    } else {
-      solenoid1.set(false);
-      solenoid2.set(true);
-    }
-    */
   }
   /**
    * This function is called periodically during test mode.
