@@ -3,8 +3,8 @@ import edu.wpi.first.wpilibj.Joystick;
 
 
  public class MagicInput {
-  static Joystick leftStick = new Joystick(0);
-  static Joystick rightStick = new Joystick(1);
+  static Joystick driveStick = new Joystick(0);
+  static Joystick turnStick = new Joystick(1);
   static Joystick copilotStick = new Joystick(2);
   
   /**
@@ -19,9 +19,9 @@ import edu.wpi.first.wpilibj.Joystick;
   static Joystick getJoystick(int  port)  {
     switch (port){
       case 0:
-        return leftStick;
+        return driveStick;
       case 1:
-        return rightStick;
+        return turnStick;
       case 2:
         return copilotStick; 
       default:
@@ -32,9 +32,9 @@ import edu.wpi.first.wpilibj.Joystick;
   static Joystick getJoystick(String type){
       switch (type){
         case "left":
-          return leftStick;
+          return driveStick;
         case "right":
-          return rightStick;
+          return turnStick;
         case "copilot":
           return copilotStick;
         default:

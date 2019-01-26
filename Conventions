@@ -1,0 +1,15 @@
+Measurments:
+  Use metric
+  Use degrees
+  Left right front back, not port or anything bizzare like that
+
+Nameing Conventions
+  UpperCamelCase for class names
+  lowerCamelCase for local variables and methods
+  Instance (method) Variables are prefixed with an M (MName)
+  Constants: All UPPER_CASE
+  When naming, put system first (drive motor), then location (DriveMotorLeft1)
+  Put verb first (runMotor)
+  Interfaces are prefaced with an I (IBob)
+Numbering Conventions
+  Talon numbers start at 1, and the first six are for drive motors
