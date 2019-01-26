@@ -25,8 +25,9 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 
 import edu.wpi.first.wpilibj.Compressor;
 //this is a comment to test synchronisation
@@ -73,6 +74,7 @@ public class Robot extends IterativeRobot {
   Compressor testCompressor = new Compressor(compressorPort);
   Solenoid solenoid1 = new Solenoid(0);
   Solenoid solenoid2 = new Solenoid(1);
+  double lastForward;
    
 
   /**
@@ -84,6 +86,8 @@ public class Robot extends IterativeRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    CameraServer.getInstance().startAutomaticCapture(0);
+    CameraServer.getInstance().startAutomaticCapture(1);
   }
 
   /**
@@ -143,7 +147,11 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
+    forward = MagicInput.getDrive();
+    if(lastForward == forward){
+      System.out.print(forward);
+    }
+    lastForward = forward;
   }
   /**
    * This function is called periodically during test mode.

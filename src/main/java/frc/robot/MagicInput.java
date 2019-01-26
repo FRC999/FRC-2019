@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.Joystick;
   static boolean isButtonOn(ButtonEnum type) {
     return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());
   }
+  static double getDrive(){
+    return driveStick.getRawAxis(1);
+  }
 
   static Joystick getJoystick(int port)  {
     switch (port){
