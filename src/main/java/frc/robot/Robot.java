@@ -42,7 +42,7 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
-  Joystick leftStick = new Joystick(0);
+  Joystick leftStick = MagicInput.getJoystick(0);
   Joystick rightStick = new Joystick(1);
   double forward;
   double turn;
@@ -54,7 +54,7 @@ public class Robot extends IterativeRobot {
   static final double elevatorVal = .25;  //rate at which the eleator will spin
   static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
 
-
+ 
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor

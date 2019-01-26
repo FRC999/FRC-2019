@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
     return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());
   }
 
-  static Joystick getJoystick(int  port)  {
+  static Joystick getJoystick(int port)  {
     switch (port){
       case 0:
         return driveStick;
