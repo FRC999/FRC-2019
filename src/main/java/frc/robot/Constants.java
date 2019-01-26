@@ -1,7 +1,7 @@
 package frc.robot;
 
 public class Constants {
-  static int pneumaticInButton = 1;//BUTTON
+  static final int pneumaticInButton = 1;//BUTTON
   static final int intakeIn = 5;//BUTTON Id
   static final int intakeOut = 5;//BUTTON
   static final int elevatorUp = 6; //BUTTON
