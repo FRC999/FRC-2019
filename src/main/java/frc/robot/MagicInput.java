@@ -3,8 +3,8 @@ import edu.wpi.first.wpilibj.Joystick;
 
 
  public class MagicInput {
-  static Joystick leftStick = new Joystick(0);
-  static Joystick rightStick = new Joystick(1);
+  static Joystick driveStick = new Joystick(0);
+  static Joystick turnStick = new Joystick(1);
   static Joystick copilotStick = new Joystick(2);
   
   /**
@@ -16,12 +16,12 @@ import edu.wpi.first.wpilibj.Joystick;
     return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());
   }
 
-  static Joystick getJoystick(int  port)  {
+  static Joystick getJoystick(int port)  {
     switch (port){
       case 0:
-        return leftStick;
+        return driveStick;
       case 1:
-        return rightStick;
+        return turnStick;
       case 2:
         return copilotStick; 
       default:
@@ -31,11 +31,14 @@ import edu.wpi.first.wpilibj.Joystick;
   }
   static Joystick getJoystick(String type){
       switch (type){
-        case "left":
-          return leftStick;
-        case "right":
-          return rightStick;
+        case "turn":
+        case "turnStick":
+          return driveStick;
+        case "drive":
+        case "driveStick":
+          return turnStick;
         case "copilot":
+        case "copilotStick":
           return copilotStick;
         default:
           System.out.println("Name of joystick given to getJoystick is invalid");
