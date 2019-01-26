@@ -31,11 +31,14 @@ import edu.wpi.first.wpilibj.Joystick;
   }
   static Joystick getJoystick(String type){
       switch (type){
-        case "left":
+        case "turn":
+        case "turnStick":
           return driveStick;
-        case "right":
+        case "drive":
+        case "driveStick":
           return turnStick;
         case "copilot":
+        case "copilotStick":
           return copilotStick;
         default:
           System.out.println("Name of joystick given to getJoystick is invalid");

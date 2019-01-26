@@ -42,8 +42,6 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   
-  Joystick leftStick = new Joystick(0);
-  Joystick rightStick = new Joystick(1);
   double forward;
   double turn;
   static final int intakeIn = 5;//BUTTON Id
@@ -137,7 +135,6 @@ public class Robot extends IterativeRobot {
  
   @Override
   public void teleopInit() {
-    testCompressor.setClosedLoopControl(true);
      
   }
   /**
@@ -145,49 +142,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    forward = leftStick.getRawAxis(1);
-    turn = rightStick.getRawAxis(0);
-    chassisDrive.arcadeDrive(forward, turn);
     
-    
-    if (MagicInput.isButtonOn(ButtonEnum.IntakeIn) == true) {
-      System.out.println(ButtonEnum.IntakeIn +" is pressed");
-    }
-    
-    
-    //INTAKE
-    if (leftStick.getRawButton(intakeIn) == true && rightStick.getRawButton(intakeOut) == false) {
-      testLeft.set(intakeVal);
-      testRight.set(-intakeVal);
-    } else if (rightStick.getRawButton(intakeOut) == true && leftStick.getRawButton(intakeIn) == false) {
-      testLeft.set(-intakeVal);
-      testRight.set(intakeVal);
-    } else {
-      testLeft.set(0);
-      testRight.set(0);
-    }
-    
-    //ELEVATOR
-    boolean elevatorUpButtonPressed = leftStick.getRawButton(elevatorUp);
-    boolean elevatorDownButtonPressed = leftStick.getRawButton(elevatorDown);
-
-    if (elevatorUpButtonPressed == true && elevatorDownButtonPressed == false) {
-      testElevator.set(elevatorVal);
-      
-    } else if (elevatorUpButtonPressed == false && elevatorDownButtonPressed == true) {
-      testElevator.set(-elevatorVal);
-      
-    } else if (elevatorUpButtonPressed == true && elevatorDownButtonPressed == true) {
-      testElevator.set(elevatorNeutral);
-      
-    } else {
-     testElevator.set(0); 
-    }
-
-    //PNEUMATICS
-    boolean leftSolenoidInBoolean = leftStick.getRawButton(pneumaticInButton);
-    solenoid1.set(leftSolenoidInBoolean);
-    solenoid2.set(leftStick.getRawButton(2));
   }
   /**
    * This function is called periodically during test mode.
