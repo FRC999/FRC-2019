@@ -13,6 +13,6 @@ hs_err_pid*
 /.vs
 /.vscode
 
-.lock
-.bin
+*.lock
+*.bin
 /bin
