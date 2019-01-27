@@ -43,6 +43,8 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private MagicInput INPUT;  
+
   
   double forward;
   double turn;
@@ -88,6 +90,8 @@ public class Robot extends IterativeRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     CameraServer.getInstance().startAutomaticCapture(0);
     CameraServer.getInstance().startAutomaticCapture(1);
+
+    INPUT = new MagicInput();
   }
 
   /**
@@ -100,6 +104,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
+    INPUT.updates(); //Update the toggling booleen
 
   }
 

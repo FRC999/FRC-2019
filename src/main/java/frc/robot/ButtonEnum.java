@@ -16,8 +16,8 @@ public enum ButtonEnum {
     toggledButton = new TogglingButton(toggledButtonState);
   }
   
-
   public int getButtonNum() {return buttonNum;}   
   public int getJoystickNum() {return joystickNum;}   
+  public TogglingButton getToggledButton(){return toggledButton;}
 
 }

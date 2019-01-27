@@ -28,6 +28,16 @@ import edu.wpi.first.wpilibj.Joystick;
     return turnStick.getRawAxis(0);
   }
   /**
+   * Uppdates TogglingButtons in ButtonEnum
+   */
+  static void updates(){
+    for (ButtonEnum bob : ButtonEnum.values()){
+      if (null != bob.getToggledButton()) {//We dont want to call a null variables methods
+        bob.getToggledButton().update(isButtonOn(bob));
+      }
+    }
+  }
+  /**
    * Returns the joystick at the given port, or the joystick with a given name.
    */
   static Joystick getJoystick(int port)  {
