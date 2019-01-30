@@ -25,8 +25,9 @@ import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 
 import edu.wpi.first.wpilibj.Compressor;
 //this is a comment to test synchronisation
@@ -42,6 +43,8 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private MagicInput INPUT;  
+
   
   double forward;
   double turn;
@@ -53,7 +56,7 @@ public class Robot extends IterativeRobot {
   static final double elevatorVal = .25;  //rate at which the eleator will spin
   static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
 
- 
+/*
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -67,12 +70,13 @@ public class Robot extends IterativeRobot {
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  
+  */
   int pneumaticInButton = 1;//BUTTON
   int compressorPort = 0;
   Compressor testCompressor = new Compressor(compressorPort);
   Solenoid solenoid1 = new Solenoid(0);
   Solenoid solenoid2 = new Solenoid(1);
+  double lastForward;
    
 
   /**
@@ -84,6 +88,10 @@ public class Robot extends IterativeRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    CameraServer.getInstance().startAutomaticCapture(0);
+    CameraServer.getInstance().startAutomaticCapture(1);
+
+    INPUT = new MagicInput();
   }
 
   /**
@@ -96,6 +104,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
+    INPUT.updates(); //Update the toggling booleen
 
   }
 
@@ -143,7 +152,11 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
+    forward = MagicInput.getDrive();
+    if(lastForward == forward){
+      System.out.print(forward);
+    }
+    lastForward = forward;
   }
   /**
    * This function is called periodically during test mode.

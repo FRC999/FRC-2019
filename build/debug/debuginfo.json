@@ -3,7 +3,7 @@
     "artifact": "frcJava",
     "target": "roborio",
     "debugfile": "frcJava_roborio.debugconfig",
-    "project": "TestBot",
+    "project": "FRC-2019",
     "language": "java"
   }
 ]
