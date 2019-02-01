@@ -1,3 +1,2 @@
 **Write todo list
-**Implement toggle behavior in MagicJoystick
-**Make it work: Add all missing files from TestBot
+  Figure out how to trigger an update of TogglingButton each and every cycle
