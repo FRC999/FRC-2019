@@ -45,7 +45,7 @@ public class Robot extends IterativeRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private MagicInput INPUT;  
 
-  
+  int cycles = 0;
   double forward;
   double turn;
   static final int intakeIn = 5;//BUTTON Id
@@ -73,9 +73,9 @@ public class Robot extends IterativeRobot {
   */
   int pneumaticInButton = 1;//BUTTON
   int compressorPort = 0;
-  Compressor testCompressor = new Compressor(compressorPort);
-  Solenoid solenoid1 = new Solenoid(0);
-  Solenoid solenoid2 = new Solenoid(1);
+  //Compressor testCompressor = new Compressor(compressorPort);
+  //Solenoid solenoid1 = new Solenoid(0);
+  //Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
    
 
@@ -152,11 +152,17 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    forward = MagicInput.getDrive();
-    if(lastForward == forward){
-      System.out.print(forward);
+    forward = INPUT.getDrive();
+    if(lastForward != forward){
+      //System.out.println(forward);
     }
-    lastForward = forward;
+    //lastForward = forward;
+    if(cycles == 10){
+      System.out.println(INPUT.isButtonOn(ButtonEnum.testBool));
+      cycles = 0;
+    }
+    cycles++;
+
   }
   /**
    * This function is called periodically during test mode.
