@@ -18,6 +18,9 @@ Intake
 
 package frc.robot;
 
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Solenoid;
@@ -26,8 +29,13 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import edu.wpi.first.cameraserver.CameraServerSharedStore;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
 
 import edu.wpi.first.wpilibj.Compressor;
 //this is a comment to test synchronisation
@@ -44,6 +52,8 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private MagicInput INPUT;  
+  UsbCamera backCam;
+  UsbCamera frontCam;
 
   int cycles = 0;
   double forward;
@@ -77,6 +87,8 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid1 = new Solenoid(0);
   //Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
+  boolean lastCamPress;
+  VideoSink camServer;
    
 
   /**
@@ -88,8 +100,10 @@ public class Robot extends IterativeRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    CameraServer.getInstance().startAutomaticCapture(0);
-    CameraServer.getInstance().startAutomaticCapture(1);
+
+    backCam = CameraServer.getInstance().startAutomaticCapture(0);
+    frontCam = CameraServer.getInstance().startAutomaticCapture(1);
+    camServer = CameraServer.getInstance().getServer();
 
     INPUT = new MagicInput();
   }
@@ -152,17 +166,16 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    forward = INPUT.getDrive();
-    if(lastForward != forward){
-      //System.out.println(forward);
+    
+    if (INPUT.isButtonOn(ButtonEnum.cameraChange) && !lastCamPress){
+      System.out.println("Swapping Cams");
+      camServer.setSource(frontCam);
     }
-    //lastForward = forward;
-    if(cycles == 10){
-      System.out.println(INPUT.isButtonOn(ButtonEnum.testBool));
-      cycles = 0;
+    if (!INPUT.isButtonOn(ButtonEnum.cameraChange) && lastCamPress){
+      System.out.println("Swapping Cams");
+      camServer.setSource(backCam);
     }
-    cycles++;
-
+    lastCamPress = INPUT.isButtonOn(ButtonEnum.cameraChange);
   }
   /**
    * This function is called periodically during test mode.
