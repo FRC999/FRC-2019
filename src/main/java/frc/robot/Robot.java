@@ -2,35 +2,19 @@
 /* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
+/* the project.                                                                */
 /*----------------------------------------------------------------------------*/
-
-/*
-Drive Front Left Talon
-Drive Back Left Talon
-Drive Front Right Talon
-Drive Back Right Talon
-
-Intake
-
-*/
-
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.SerialPort;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
-
-import edu.wpi.first.wpilibj.Compressor;
-//this is a comment to test synchronisation
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+//import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.Timer;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -43,42 +27,26 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private MagicInput INPUT;  
-
-  int cycles = 0;
+  private SerialPort arduino;
+  private Timer timer;
+  int bRate = 115200;
+  String targetPosition;
+  int xVal;
+  int yVal;
+  int wVal;
+  int hVal;
+  int distVal;
+  int confVal;
+  int arduinoCounter; // loop counter passed from arduino for timing checks
+  WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(1);
+  WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(2);
+  WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(3);
+  WPI_TalonSRX driveBackRight = new WPI_TalonSRX(4);
+  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveBackLeft);
+  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveBackRight);
+  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
   double forward;
   double turn;
-  static final int intakeIn = 5;//BUTTON Id
-  static final int intakeOut = 5;//BUTTON
-  static final double intakeVal = .5;  //rate at which the intake will spin
-  static final int elevatorUp = 6; //BUTTON
-  static final int elevatorDown = 6;//BUTTON
-  static final double elevatorVal = .25;  //rate at which the eleator will spin
-  static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
-
-/*
-  WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
-  WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
-  WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
-  WPI_TalonSRX driveRR = new WPI_TalonSRX(4); //Rear Right left tank drive motor
-  
-  WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
-  WPI_TalonSRX testRight = new WPI_TalonSRX(11);
-
-  WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
-
-  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
-  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
-  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  */
-  int pneumaticInButton = 1;//BUTTON
-  int compressorPort = 0;
-  //Compressor testCompressor = new Compressor(compressorPort);
-  //Solenoid solenoid1 = new Solenoid(0);
-  //Solenoid solenoid2 = new Solenoid(1);
-  double lastForward;
-   
-
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -88,11 +56,45 @@ public class Robot extends IterativeRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    CameraServer.getInstance().startAutomaticCapture(0);
-    CameraServer.getInstance().startAutomaticCapture(1);
+    System.out.println("Reached try-catch statement (OF DOOM - Calum)");
 
-    INPUT = new MagicInput();
-  }
+    try {
+      arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
+      System.out.println("Connected to kUSB");
+    } 
+    catch (Exception e) {
+	  System.out.println("Couldn't connect to kUSB, trying kUSB1");
+      try {
+        arduino = new SerialPort(bRate, SerialPort.Port.kUSB1);
+        System.out.println("Connected to kUSB1");
+      }
+      catch (Exception e1){
+        System.out.println("Couldn't Connect to kUSB1, trying kUSB2");
+        try {
+          arduino = new SerialPort(bRate, SerialPort.Port.kUSB2);
+          System.out.println("Connected to kUSB2");
+        }
+        catch (Exception e2) {
+          System.out.println("Not connected to any of the USB ports, trying MXP spot");
+          try {
+            arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
+            System.out.println("Connected to MXP port");
+          }
+          catch (Exception eMXP) {
+            System.out.println("Not Connected to MXP port, trying Onboard");
+            try {
+              arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
+              System.out.println("Connected to Onboard");  
+            }
+            catch (Exception eOnboard){
+              System.out.println("Not connected to any ports on the RoboRIO");
+  
+            }  //catch (Exception eOnboard)
+          } // catch (Exception eMXP)
+        }  //catch (Exception e2)
+      }  //catch (Exception e1)
+    }  //catch (Exception e)
+  } //robotInit()
 
   /**
    * This function is called every robot packet, no matter the mode. Use
@@ -104,9 +106,19 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
-    INPUT.updates(); //Update the toggling booleen
-
-  }
+        
+      } 
+      //aint findX = targetPosition.indexOf("x:");
+      //int findY = targetPosition.indexOf("y");
+      //try {
+      //String xCoord = targetPosition.substring(findX, findY);
+      //System.out.println(xCoord);
+      //} catch (Exception badCoords) {
+       // System.out.println("Bad Coordinate Indexes");
+     // }
+    // System.out.print(targetPosition);
+    // SmartDashboard.putString(nameName, arduino.readString());
+   //robotPeriodic()
 
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -121,6 +133,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void autonomousInit() {
+    chassisDrive.arcadeDrive(forward, turn); 
     m_autoSelected = m_chooser.getSelected();
     // autoSelected = SmartDashboard.getString("Auto Selector",
     // defaultAuto);
@@ -133,41 +146,96 @@ public class Robot extends IterativeRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    case kCustomAuto:
+      // Put custom auto code here
+      System.out.println("Custom auto reached.");
+      break;
+    case kDefaultAuto:
+    default:
+      // Put default auto code here
+      System.out.println("Default auto reached.");
+      break;
+    } // switch (m_autoSelected)
+
+    System.out.println("Starting auto periodic");
+    targetPosition = arduino.readString();
+    if (targetPosition != null && !targetPosition.isEmpty()) {
+      System.out.println("2 String TargetPosition = " + targetPosition);
+      var positions = targetPosition.split(";");
+      //String[] positions = targetPosition.split(";");
+      for (int i = 0; i < positions.length; i++) {
+        var positionNums = positions[i].split(":");
+        //String[] positionNums = positions[i].split(":");
+        System.out.println("positionNums Values " + positionNums[0] + " and " + positionNums[1]);
+        System.out.println("positionNums Types " + positionNums[0].getClass().getTypeName() + " and " + positionNums[1].getClass().getTypeName());
+        if (positionNums[0] == "x") {
+          xVal = Integer.parseInt(positionNums[1]);
+          System.out.println("xval = " + xVal);
+        } else if (positionNums[0] == "y") {
+          yVal = Integer.parseInt(positionNums[1]);
+          System.out.println("yval = " + yVal);
+        } else if (positionNums[0] == "h") {
+          hVal = Integer.parseInt(positionNums[1]);
+          System.out.println("hval = " + hVal);
+        } else if (positionNums[0] == "w") {
+          wVal = Integer.parseInt(positionNums[1]);
+          System.out.println("wval = " + wVal);
+        } else if (positionNums[0] == "dist") {
+          distVal = Integer.parseInt(positionNums[1]);
+          System.out.println("distval = " + distVal);
+        } else if (positionNums[0] == "conf") {
+          confVal = Integer.parseInt(positionNums[1]);
+          System.out.println("confval = " + confVal);
+        } else if (positionNums[0] == "count") {
+          arduinoCounter = Integer.parseInt(positionNums[1]);
+          System.out.println("arduinoCounter = " + arduinoCounter);
+        }
+      }
     }
-  }
- 
-  @Override
-  public void teleopInit() {
-     
-  }
+
+    if (confVal <= 300) {
+      distVal = 301;
+    }
+
+    if (targetPosition == null) {
+      leftSide.set(0);
+      rightSide.set(0);
+      System.out.println("targetPosition = null");
+    } else if (xVal < 158 && distVal > 300) {
+      leftSide.set(0);
+      rightSide.set(.2);
+      System.out.println("xVal < 158 && distVal > 300");
+      //System.out.println(targetPosition);
+    } else if (xVal == 158 && distVal > 300) {
+      leftSide.set(.2);
+      rightSide.set(.2);
+      System.out.println("xVal == 158 && distVal > 300");
+    } else if (xVal > 158 && distVal > 300) {
+      leftSide.set(.2);
+      rightSide.set(0);
+      System.out.println("xVal > 158 && distVal > 300");
+    } else {
+      System.out.println("none of the if statements in auto periodic applied, distval probably <300");
+      leftSide.set(0);
+      rightSide.set(0);
+    }
+
+  } // autonomousPeriodic()
+
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
-    forward = INPUT.getDrive();
-    if(lastForward != forward){
-      //System.out.println(forward);
-    }
-    //lastForward = forward;
-    if(cycles == 10){
-      System.out.println(INPUT.isButtonOn(ButtonEnum.testBool));
-      cycles = 0;
-    }
-    cycles++;
-
   }
+
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
+    leftSide.set(.2);
+    rightSide.set(.2);
+ 
   }
 }
