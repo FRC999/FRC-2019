@@ -37,7 +37,9 @@ public class Robot extends IterativeRobot {
   int hVal;
   int distVal;
   int confVal;
+  int counting = 0;
   int arduinoCounter; // loop counter passed from arduino for timing checks
+  int blocksSeen;
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(1);
   WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(2);
   WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(3);
@@ -47,6 +49,7 @@ public class Robot extends IterativeRobot {
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
   double forward;
   double turn;
+  int cycles;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -106,6 +109,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
+    cycles++;
         
       } 
       //aint findX = targetPosition.indexOf("x:");
@@ -158,64 +162,78 @@ public class Robot extends IterativeRobot {
     } // switch (m_autoSelected)
 
     System.out.println("Starting auto periodic");
-    targetPosition = arduino.readString();
-    if (targetPosition != null && !targetPosition.isEmpty()) {
-      System.out.println("2 String TargetPosition = " + targetPosition);
-      var positions = targetPosition.split(";");
-      //String[] positions = targetPosition.split(";");
+    System.out.println("counting : "+counting);
+    counting = (counting+1);
+    if (counting == 10) {
+      counting = 0;
+      //System.out.println("parsing...");
+      targetPosition = arduino.readString().trim();
+    if (targetPosition != null && !targetPosition.trim().isEmpty()) {
+      //System.out.println("2 String TargetPosition = " + targetPosition);
+      //var positions = targetPosition.split(";");
+      String[] positions = targetPosition.split(";");
+      if (targetPosition.startsWith("Block")) {
       for (int i = 0; i < positions.length; i++) {
-        var positionNums = positions[i].split(":");
-        //String[] positionNums = positions[i].split(":");
-        System.out.println("positionNums Values " + positionNums[0] + " and " + positionNums[1]);
-        System.out.println("positionNums Types " + positionNums[0].getClass().getTypeName() + " and " + positionNums[1].getClass().getTypeName());
-        if (positionNums[0] == "x") {
+      //var positionNums = positions[i].split(":");
+        String[] positionNums = positions[i].split(":");
+       // System.out.println("positionNums Values " + positionNums[0] + " and " + positionNums[1]);
+        //System.out.println("positionNums Types " + positionNums[0].getClass().getTypeName() + " and " + positionNums[1].getClass().getTypeName());
+        if (positionNums[0].equals("x")) {
           xVal = Integer.parseInt(positionNums[1]);
           System.out.println("xval = " + xVal);
-        } else if (positionNums[0] == "y") {
+        } else if (positionNums[0].equals("y")) {
           yVal = Integer.parseInt(positionNums[1]);
-          System.out.println("yval = " + yVal);
-        } else if (positionNums[0] == "h") {
+          //System.out.println("yval = " + yVal);
+        } else if (positionNums[0].equals("h")) {
           hVal = Integer.parseInt(positionNums[1]);
-          System.out.println("hval = " + hVal);
-        } else if (positionNums[0] == "w") {
+        //  System.out.println("hval = " + hVal);
+        } else if (positionNums[0].equals("w")) {
           wVal = Integer.parseInt(positionNums[1]);
-          System.out.println("wval = " + wVal);
-        } else if (positionNums[0] == "dist") {
+        //  System.out.println("wval = " + wVal);
+        } else if (positionNums[0].equals("dist")) {
           distVal = Integer.parseInt(positionNums[1]);
-          System.out.println("distval = " + distVal);
-        } else if (positionNums[0] == "conf") {
+        //  System.out.println("distval = " + distVal);
+        } else if (positionNums[0].equals("conf")) {
           confVal = Integer.parseInt(positionNums[1]);
-          System.out.println("confval = " + confVal);
-        } else if (positionNums[0] == "count") {
+        //  System.out.println("confval = " + confVal);
+        } else if (positionNums[0].equals("count")) {
+        //  System.out.println(positionNums[1]);
           arduinoCounter = Integer.parseInt(positionNums[1]);
-          System.out.println("arduinoCounter = " + arduinoCounter);
+       //   System.out.println("arduinoCounter = " + arduinoCounter);
+        } else if (positionNums[0].equals("Block ID")) { 
+       //   System.out.println("blockids = " + arduinoCounter);
+          blocksSeen = Integer.parseInt(positionNums[1]);
         }
+        else {
+          System.out.println("He's dead, Jim");
+         }
       }
     }
-
+  }
+}
     if (confVal <= 300) {
       distVal = 301;
     }
 
-    if (targetPosition == null) {
+    if (targetPosition == "") {
       leftSide.set(0);
       rightSide.set(0);
-      System.out.println("targetPosition = null");
-    } else if (xVal < 158 && distVal > 300) {
+      System.out.println("targetPosition is EMPTY! plz fill.");
+    } else if (xVal < 158 && distVal > 300 && xVal > 0) {
       leftSide.set(0);
       rightSide.set(.2);
       System.out.println("xVal < 158 && distVal > 300");
       //System.out.println(targetPosition);
     } else if (xVal == 158 && distVal > 300) {
-      leftSide.set(.2);
+      leftSide.set(-.2);
       rightSide.set(.2);
       System.out.println("xVal == 158 && distVal > 300");
     } else if (xVal > 158 && distVal > 300) {
-      leftSide.set(.2);
+      leftSide.set(-.2);
       rightSide.set(0);
       System.out.println("xVal > 158 && distVal > 300");
     } else {
-      System.out.println("none of the if statements in auto periodic applied, distval probably <300");
+      System.out.println("SAW NOTHIN'");
       leftSide.set(0);
       rightSide.set(0);
     }
@@ -234,7 +252,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void testPeriodic() {
-    leftSide.set(.2);
+    leftSide.set(-.2);
     rightSide.set(.2);
  
   }
