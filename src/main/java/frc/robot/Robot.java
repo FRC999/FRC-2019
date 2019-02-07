@@ -40,7 +40,8 @@ public class Robot extends IterativeRobot {
   int stopDistance = 200;
   int confidenceThreshold = 300;
   int counting = 0;
-  int delayCount = 10;
+  int delayCount = 1;
+  String targetPos;
   int arduinoCounter; // loop counter passed from arduino for timing checks
   int blocksSeen;
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(1);
@@ -170,12 +171,14 @@ public class Robot extends IterativeRobot {
     if (counting == delayCount) {
       counting = 0;
       // System.out.println("parsing...");
-      targetPosition = arduino.readString().trim();
+      targetPos = "begin" + arduino.readString().trim();
+      targetPosition = targetPos.substring(targetPos.indexOf("Block")+5);
+      System.out.println(targetPos);
       if (targetPosition != null && !targetPosition.trim().isEmpty()) {
         // System.out.println("String TargetPosition = " + targetPosition);
         // var positions = targetPosition.split(";");
         String[] positions = targetPosition.split(";");
-        if (targetPosition.startsWith("Block")) {
+        if (targetPosition.startsWith("ID")) {
           for (int i = 0; i < positions.length; i++) {
             // var positionNums = positions[i].split(":");
             String[] positionNums = positions[i].split(":");
@@ -202,7 +205,7 @@ public class Robot extends IterativeRobot {
             } else if (positionNums[0].equals("count")) {
               arduinoCounter = Integer.parseInt(positionNums[1]);
               // System.out.println("arduinoCounter = " + arduinoCounter);
-            } else if (positionNums[0].equals("Block ID")) {
+            } else if (positionNums[0].equals("BlockID")) {
               blocksSeen = Integer.parseInt(positionNums[1]);
               // System.out.println("blockids = " + blocksSeen);
             } else {
@@ -224,7 +227,7 @@ public class Robot extends IterativeRobot {
     } else if (xVal < 158 && xVal > 0 && distVal > stopDistance) {
       leftSide.set(0);
       rightSide.set(.2);
-      System.out.println("Turning left xVal = "+ xVal+ " arduinoCounter = " + arduinoCounter);
+      //System.out.println("Turning left xVal = "+ xVal+ " arduinoCounter = " + arduinoCounter);
       //System.out.println(targetPosition);
     } else if (xVal == 158 && distVal > stopDistance) {
       leftSide.set(-.2);
@@ -233,11 +236,11 @@ public class Robot extends IterativeRobot {
     } else if (xVal > 158 && distVal > stopDistance) {
       leftSide.set(-.2);
       rightSide.set(0);
-      System.out.println("Turning right xVal = "+ xVal + " arduinoCounter = " + arduinoCounter);
+      ///System.out.println("Turning right xVal = "+ xVal + " arduinoCounter = " + arduinoCounter);
     } else {
       leftSide.set(0);
       rightSide.set(0);
-      System.out.println("Not moving xVal = "+ xVal +"distVal = "+ distVal + " arduinoCounter = " + arduinoCounter);
+      //System.out.println("Not moving xVal = "+ xVal +"distVal = "+ distVal + " arduinoCounter = " + arduinoCounter);
     }
   } // autonomousPeriodic()
 
