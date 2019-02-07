@@ -14,7 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 //import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
+//import edu.wpi.first.wpilibj.Timer;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -28,7 +28,7 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   private SerialPort arduino;
-  private Timer timer;
+  //private Timer timer;
   int bRate = 115200;
   String targetPosition;
   int xVal;
@@ -37,7 +37,10 @@ public class Robot extends IterativeRobot {
   int hVal;
   int distVal;
   int confVal;
+  int stopDistance = 200;
+  int confidenceThreshold = 300;
   int counting = 0;
+  int delayCount = 10;
   int arduinoCounter; // loop counter passed from arduino for timing checks
   int blocksSeen;
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(1);
@@ -109,6 +112,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
+    // increment loop counter for syncronization timing with arduino
     cycles++;
         
       } 
@@ -137,11 +141,11 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void autonomousInit() {
+    System.out.println("Starting autonomousInit - " + m_autoSelected);
     chassisDrive.arcadeDrive(forward, turn); 
     m_autoSelected = m_chooser.getSelected();
     // autoSelected = SmartDashboard.getString("Auto Selector",
     // defaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
   }
 
   /**
@@ -152,92 +156,89 @@ public class Robot extends IterativeRobot {
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
-      System.out.println("Custom auto reached.");
+      //System.out.println("Starting autonomousPeriodic - Custom auto.");
       break;
     case kDefaultAuto:
     default:
       // Put default auto code here
-      System.out.println("Default auto reached.");
+      //System.out.println("Starting autonomousPeriodic - Default auto.");
       break;
     } // switch (m_autoSelected)
 
-    System.out.println("Starting auto periodic");
-    System.out.println("counting : "+counting);
-    counting = (counting+1);
-    if (counting == 10) {
+    //System.out.println("auto periodic loop counter: " + counting);
+    counting = (counting + 1);
+    if (counting == delayCount) {
       counting = 0;
-      //System.out.println("parsing...");
+      // System.out.println("parsing...");
       targetPosition = arduino.readString().trim();
-    if (targetPosition != null && !targetPosition.trim().isEmpty()) {
-      //System.out.println("2 String TargetPosition = " + targetPosition);
-      //var positions = targetPosition.split(";");
-      String[] positions = targetPosition.split(";");
-      if (targetPosition.startsWith("Block")) {
-      for (int i = 0; i < positions.length; i++) {
-      //var positionNums = positions[i].split(":");
-        String[] positionNums = positions[i].split(":");
-       // System.out.println("positionNums Values " + positionNums[0] + " and " + positionNums[1]);
-        //System.out.println("positionNums Types " + positionNums[0].getClass().getTypeName() + " and " + positionNums[1].getClass().getTypeName());
-        if (positionNums[0].equals("x")) {
-          xVal = Integer.parseInt(positionNums[1]);
-          System.out.println("xval = " + xVal);
-        } else if (positionNums[0].equals("y")) {
-          yVal = Integer.parseInt(positionNums[1]);
-          //System.out.println("yval = " + yVal);
-        } else if (positionNums[0].equals("h")) {
-          hVal = Integer.parseInt(positionNums[1]);
-        //  System.out.println("hval = " + hVal);
-        } else if (positionNums[0].equals("w")) {
-          wVal = Integer.parseInt(positionNums[1]);
-        //  System.out.println("wval = " + wVal);
-        } else if (positionNums[0].equals("dist")) {
-          distVal = Integer.parseInt(positionNums[1]);
-        //  System.out.println("distval = " + distVal);
-        } else if (positionNums[0].equals("conf")) {
-          confVal = Integer.parseInt(positionNums[1]);
-        //  System.out.println("confval = " + confVal);
-        } else if (positionNums[0].equals("count")) {
-        //  System.out.println(positionNums[1]);
-          arduinoCounter = Integer.parseInt(positionNums[1]);
-       //   System.out.println("arduinoCounter = " + arduinoCounter);
-        } else if (positionNums[0].equals("Block ID")) { 
-       //   System.out.println("blockids = " + arduinoCounter);
-          blocksSeen = Integer.parseInt(positionNums[1]);
-        }
-        else {
-          System.out.println("He's dead, Jim");
-         }
+      if (targetPosition != null && !targetPosition.trim().isEmpty()) {
+        // System.out.println("String TargetPosition = " + targetPosition);
+        // var positions = targetPosition.split(";");
+        String[] positions = targetPosition.split(";");
+        if (targetPosition.startsWith("Block")) {
+          for (int i = 0; i < positions.length; i++) {
+            // var positionNums = positions[i].split(":");
+            String[] positionNums = positions[i].split(":");
+            // System.out.println("positionNums Values " + positionNums[0] + " and " +
+            // positionNums[1]);
+            if (positionNums[0].equals("x")) {
+              xVal = Integer.parseInt(positionNums[1]);
+              //System.out.println("xval = " + xVal);
+            } else if (positionNums[0].equals("y")) {
+              yVal = Integer.parseInt(positionNums[1]);
+              // System.out.println("yval = " + yVal);
+            } else if (positionNums[0].equals("h")) {
+              hVal = Integer.parseInt(positionNums[1]);
+              // System.out.println("hval = " + hVal);
+            } else if (positionNums[0].equals("w")) {
+              wVal = Integer.parseInt(positionNums[1]);
+              // System.out.println("wval = " + wVal);
+            } else if (positionNums[0].equals("dist")) {
+              distVal = Integer.parseInt(positionNums[1]);
+              // System.out.println("distval = " + distVal);
+            } else if (positionNums[0].equals("conf")) {
+              confVal = Integer.parseInt(positionNums[1]);
+              // System.out.println("confval = " + confVal);
+            } else if (positionNums[0].equals("count")) {
+              arduinoCounter = Integer.parseInt(positionNums[1]);
+              // System.out.println("arduinoCounter = " + arduinoCounter);
+            } else if (positionNums[0].equals("Block ID")) {
+              blocksSeen = Integer.parseInt(positionNums[1]);
+              // System.out.println("blockids = " + blocksSeen);
+            } else {
+              System.out.println("He's dead, Jim ("+ positionNums[0]+ ") Killed the parser");
+            }
+          }
+        } else {System.out.println("Bad String from Arduino: ");}
       }
     }
-  }
-}
-    if (confVal <= 300) {
-      distVal = 301;
+    // checks confidence value of distance sensor and ignores low confidence readings
+    if (confVal <= confidenceThreshold) {
+      distVal = stopDistance + 1;
     }
-
+    //System.out.println("xval = " + xVal + "arduinoCounter = " + arduinoCounter);
     if (targetPosition == "") {
       leftSide.set(0);
       rightSide.set(0);
       System.out.println("targetPosition is EMPTY! plz fill.");
-    } else if (xVal < 158 && distVal > 300 && xVal > 0) {
+    } else if (xVal < 158 && xVal > 0 && distVal > stopDistance) {
       leftSide.set(0);
       rightSide.set(.2);
-      System.out.println("xVal < 158 && distVal > 300");
+      System.out.println("Turning left xVal = "+ xVal+ " arduinoCounter = " + arduinoCounter);
       //System.out.println(targetPosition);
-    } else if (xVal == 158 && distVal > 300) {
+    } else if (xVal == 158 && distVal > stopDistance) {
       leftSide.set(-.2);
       rightSide.set(.2);
-      System.out.println("xVal == 158 && distVal > 300");
-    } else if (xVal > 158 && distVal > 300) {
+      System.out.println("Straight ahead xVal = "+ xVal + " arduinoCounter = " + arduinoCounter);
+    } else if (xVal > 158 && distVal > stopDistance) {
       leftSide.set(-.2);
       rightSide.set(0);
-      System.out.println("xVal > 158 && distVal > 300");
+      System.out.println("Turning right xVal = "+ xVal + " arduinoCounter = " + arduinoCounter);
     } else {
-      System.out.println("SAW NOTHIN'");
       leftSide.set(0);
       rightSide.set(0);
+      System.out.println("Not moving xVal = "+ xVal +"distVal = "+ distVal + " arduinoCounter = " + arduinoCounter);
     }
-
   } // autonomousPeriodic()
 
   /**
@@ -254,6 +255,5 @@ public class Robot extends IterativeRobot {
   public void testPeriodic() {
     leftSide.set(-.2);
     rightSide.set(.2);
- 
   }
 }
