@@ -1,7 +1,7 @@
 package frc.robot;
 
 public enum ButtonEnum {
-  IntakeIn(1, 1), IntakeOut(1, 2), Three(1, 3), Cog(1,4,false), testBool(0,5,false);
+  IntakeIn(0, 1), IntakeOut(0, 2), Three(0, 3), Cog(0,4,false), testBool(0,5,false), cameraChange(0,6,false);
   final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;
