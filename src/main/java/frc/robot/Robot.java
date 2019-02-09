@@ -29,6 +29,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.Compressor;
+
+import edu.wpi.first.cameraserver.*;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.cscore.*;
+import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
 //this is a comment to test synchronisation
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -73,6 +78,14 @@ public class Robot extends IterativeRobot {
   Compressor testCompressor = new Compressor(compressorPort);
   Solenoid solenoid1 = new Solenoid(0);
   Solenoid solenoid2 = new Solenoid(1);
+  Joystick driveStick = new Joystick(1);
+  UsbCamera camera1;
+  UsbCamera camera2;
+  String key = "DB/String 1";//must be the name of a NetworkTableEntry
+  SendableCameraWrapper sendableCameraWrapper;
+  SendableCameraWrapper sendableCameraWrapper1;
+  SendableCameraWrapper sendableCameraWrapper2;
+  boolean cameraSwitchButtonPressedPrevious;
    
 
   /**
@@ -110,6 +123,7 @@ public class Robot extends IterativeRobot {
    * the switch structure below with additional strings. If using the
    * SendableChooser make sure to add them to the chooser code above as well.
    */
+
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
@@ -137,13 +151,33 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopInit() {
      
+    camera1 = CameraServer.getInstance().startAutomaticCapture(0);
+    camera2 = CameraServer.getInstance().startAutomaticCapture(1);
+    sendableCameraWrapper1 = SendableCameraWrapper.wrap(camera1);
+    sendableCameraWrapper2 = SendableCameraWrapper.wrap(camera2);
   }
+
   /**
    * This function is called periodically during operator control.
    */
   @Override
   public void teleopPeriodic() {
+  
     
+    if (driveStick.getRawButton(2) && !cameraSwitchButtonPressedPrevious) {
+  //   NetworkTableInstance.getDefault().getTable("").getEntry(key).forceSetString(camera1.getName()); 
+ // sendableCameraWrapper = sendableCameraWrapper1;
+ // SmartDashboard.putData(sendableCameraWrapper);
+  camera1= CameraServer.getInstance().startAutomaticCapture(0);
+      }
+       else if (!driveStick.getRawButton(2) && cameraSwitchButtonPressedPrevious) {
+    //    NetworkTableInstance.getDefault().getTable("").getEntry(key).forceSetString(camera2.getName()); 
+ //   sendableCameraWrapper = sendableCameraWrapper2;
+  //  SmartDashboard.putData(sendableCameraWrapper);
+     camera1 = CameraServer.getInstance().startAutomaticCapture(1);
+         }
+         cameraSwitchButtonPressedPrevious = driveStick.getRawButton(2);
+//         SmartDashboard.putData(sendableCameraWrapper);
   }
   /**
    * This function is called periodically during test mode.
