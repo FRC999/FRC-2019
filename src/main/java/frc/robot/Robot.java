@@ -38,10 +38,10 @@ public class Robot extends IterativeRobot {
   int hVal;
   int distVal;
   int confVal;
-  int stopDistance = 200;
+  int stopDistance = 500;
   int confidenceThreshold = 300;
   int counting = 0;
-  int delayCount = 1;
+  int delayCount = 4;
   int arduinoCounter; // loop counter passed from arduino for timing checks
   int startOfDataStream;
   int endOfDataStream;
@@ -203,7 +203,7 @@ public class Robot extends IterativeRobot {
             } else if (positionNums[0].equals("count")) {
               arduinoCounter = Integer.parseInt(positionNums[1]);
               // System.out.println("arduinoCounter = " + arduinoCounter);
-            } else if (positionNums[0].equals("Block ID")) {
+            } else if (positionNums[0].equals("BlockID")) {
               blocksSeen = Integer.parseInt(positionNums[1]);
               // System.out.println("blockids = " + blocksSeen);
             } else {
@@ -224,22 +224,23 @@ public class Robot extends IterativeRobot {
       distVal = stopDistance + 1;
     }
     // System.out.println("xval = " + xVal + "arduinoCounter = " + arduinoCounter);
-    if (targetPosition == "") {
+    if (blocksSeen == -1) {
       leftSide.set(0);
       rightSide.set(0);
       // System.out.println("targetPosition is EMPTY! plz fill.");
-    } else if (xVal < 158 && xVal > 0 && distVal > stopDistance) {
-      leftSide.set(0);
-      rightSide.set(.2);
+    } else if (xVal >= 0 && xVal < 130 && distVal > stopDistance) {
+      leftSide.set(-.2);
+      rightSide.set(0);
       // System.out.println("Turning left xVal = "+ xVal+ " arduinoCounter = " +
       // arduinoCounter);
-    } else if (xVal == 158 && distVal > stopDistance) {
+    } else if (xVal >= 130 && xVal <= 176 && distVal > stopDistance) {
       leftSide.set(-.2);
       rightSide.set(.2);
       System.out.println("Straight ahead xVal = " + xVal + " arduinoCounter = " + arduinoCounter);
-    } else if (xVal > 158 && distVal > stopDistance) {
-      leftSide.set(-.2);
-      rightSide.set(0);
+    } else if (xVal > 176 && xVal <= 316 && distVal > stopDistance) {
+
+      leftSide.set(0);
+      rightSide.set(.2);
       // System.out.println("Turning right xVal = "+ xVal + " arduinoCounter = " +
       // arduinoCounter);
     } else {
