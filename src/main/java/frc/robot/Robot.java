@@ -28,7 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.cameraserver.CameraServer;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-
+import edu.wpi.first.hal.sim.mockdata.PDPDataJNI;
 
 import edu.wpi.first.wpilibj.Compressor;
 
@@ -36,6 +36,7 @@ import edu.wpi.first.cameraserver.*;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.cscore.*;
 import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 //this is a comment to test synchronisation
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -84,6 +85,7 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
    
+  PowerDistributionPanel pdp = new PowerDistributionPanel(1); // the "1" is for the CAN ID of the PDP on the tower of power 2/9/2019
 
   /**
    * This function is run when the robot is first started up and should be
@@ -180,5 +182,11 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void testPeriodic() {
-  }
+  //test current draw
+  System.out.println("Input voltage = " + pdp.getVoltage());
+  System.out.println("total current of all monitored PDP channels = " + pdp.getTotalCurrent());
+  System.out.println("total energy in J of monitored channels = " + pdp.getTotalEnergy());
+  System.out.println("current of: \nch.1 = " + pdp.getCurrent(1) + ",\n ch. 2 = " +pdp.getCurrent(2) + ",\n ch. 3 = " + pdp.getCurrent(3) + ", \n ch.4 = " + pdp.getCurrent(4) + ", \nch.5 = " + pdp.getCurrent(5) + ", \n ch.6 = " + pdp.getCurrent(6));
+System.out.println("total power(W):" + pdp.getTotalPower());
+}
 }
