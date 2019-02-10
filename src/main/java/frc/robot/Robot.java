@@ -31,7 +31,7 @@ public class Robot extends IterativeRobot {
   MagicInput INPUT;  
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
-  int cycles = 0;
+  long cycles = 0;
   double forward;
   double turn;
   static final int intakeIn = 5;//BUTTON Id
@@ -97,6 +97,7 @@ public class Robot extends IterativeRobot {
   public void robotPeriodic() {
     INPUT.updates(); //Update the toggling booleen
     OUTPUT.checkCamSwap();
+    cycles++;
 
   }
 
@@ -133,16 +134,14 @@ public class Robot extends IterativeRobot {
         // Put default auto code here
         break;
     }
-    x = VISION.parseX(1,VISION.getArduino());
-    dist = VISION.parseDist(1,VISION.getArduino());
-    conf = VISION.parseConf(1,VISION.getArduino());
-    if (x > zero && x < leftMid && dist > 500) {
+    if ((cycles % 1) == 0){VISION.parseJunk();}
+    if (VISION.isOnLeft()) {
       leftSide.set(.2);
       rightSide.set(0);
-    } else if (x >= leftMid && x <= rightMid && dist > 500) {
+    } else if (VISION.isOnRight()) {
       leftSide.set(0);
       rightSide.set(-.2);
-    } else if(x > rightMid && x < 316 && dist > 500) {
+    } else if(VISION.isInMiddle()) {
       leftSide.set(.2);
       rightSide.set(-.2);
     } else {

@@ -19,6 +19,9 @@ public class MagicVision {
   private int endOfDataStream;
   private int blocksSeen;
   private SerialPort arduino;
+  final int leftMid = 136;
+  final int rightMid = 176;
+  final int min = 0;
 
   public MagicVision(int baud, int stop) {
     counting = 0;
@@ -146,12 +149,17 @@ public class MagicVision {
   public int getH(){return hVal;}
   public int getDist(){return distVal;}
   public int getConf(){return confVal;}
-  public int getBlocksSeen(){return blocksSeen}
-  public int getArduinoCounter(){return arduinioCounter}
+  public int getBlocksSeen(){return blocksSeen;}
+  public int getArduinoCounter(){return arduinoCounter;}
+
+  //Better getters
+  public boolean isOnLeft(){return (xVal > min && xVal < leftMid && distVal > 500);}
+  public boolean isOnRight(){return (xVal >= leftMid && xVal <= rightMid && distVal > 500);}
+  public boolean isInMiddle(){return(xVal > rightMid && xVal < 316 && distVal > 500);}
 
 
   /**
-   * Legacy parsers, kept in case we want to update one value without messing wiht the others
+   * Legacy parsers, kept in case we want to update one value without messing with the others
    */
   public int parseX(int delayCount, SerialPort arduino) {
     counting = (counting + 1);
