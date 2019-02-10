@@ -51,10 +51,11 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private MagicInput INPUT;  
+  MagicInput INPUT;  
   UsbCamera backCam;
   UsbCamera frontCam;
-
+  MagicVision VISION = new MagicVision(115200, 200, 1, 300);
+  MagicOutput OUTPUT;
   int cycles = 0;
   double forward;
   double turn;
@@ -65,22 +66,26 @@ public class Robot extends IterativeRobot {
   static final int elevatorDown = 6;//BUTTON
   static final double elevatorVal = .25;  //rate at which the eleator will spin
   static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
-
-/*
+  int x;
+  int dist;
+  int conf;
+  int zero = 0;
+  int leftMid = 136;
+  int rightMid = 176;
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
   WPI_TalonSRX driveRR = new WPI_TalonSRX(4); //Rear Right left tank drive motor
   
-  WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
-  WPI_TalonSRX testRight = new WPI_TalonSRX(11);
+ // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
+ // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
 
-  WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
+ // WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  */
+  
   int pneumaticInButton = 1;//BUTTON
   int compressorPort = 0;
   //Compressor testCompressor = new Compressor(compressorPort);
@@ -155,11 +160,26 @@ public class Robot extends IterativeRobot {
         // Put default auto code here
         break;
     }
+    x = VISION.parseX(1,VISION.getArduino());
+    dist = VISION.parseDist(1,VISION.getArduino());
+    conf = VISION.parseConf(1,VISION.getArduino());
+    if (x > zero && x < leftMid && dist > 500) {
+      leftSide.set(.2);
+      rightSide.set(0);
+    } else if (x >= leftMid && x <= rightMid && dist > 500) {
+      leftSide.set(0);
+      rightSide.set(-.2);
+    } else if(x > rightMid && x < 316 && dist > 500) {
+      leftSide.set(.2);
+      rightSide.set(-.2);
+    } else {
+      leftSide.set(0);
+      rightSide.set(0);
+    }
   }
  
   @Override
   public void teleopInit() {
-     
   }
   /**
    * This function is called periodically during operator control.
@@ -176,6 +196,7 @@ public class Robot extends IterativeRobot {
       camServer.setSource(backCam);
     }
     lastCamPress = INPUT.isButtonOn(ButtonEnum.cameraChange);
+    chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
   }
   /**
    * This function is called periodically during test mode.
