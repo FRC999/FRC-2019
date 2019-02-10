@@ -2,7 +2,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.SerialPort;
 
-public class Vision {
+public class MagicVision {
     private int bRate;
     private int counting;
     private int xVal;
@@ -11,16 +11,16 @@ public class Vision {
     private int hVal;
     private int distVal;
     private int confVal;
-    private int stopDistance = 200;
-    private int confidenceThreshold = 300;
-    private int delayCount = 1;
+    private int stopDistance;
+    private int confidenceThreshold;
+    private int delayCount;
     private int arduinoCounter; // loop counter passed from arduino for timing checks
     private int startOfDataStream;
     private int endOfDataStream;
     private int blocksSeen;
     
-    public Vision(int baud, int count, int stop, int conf, int delay) {
-    counting = count;
+    public MagicVision(int baud, int stop) {
+    counting = 0;
     bRate = baud;
     xVal = 0;
     yVal = 0;
@@ -31,8 +31,38 @@ public class Vision {
     blocksSeen = 0;
     arduinoCounter = 0;
     stopDistance = stop;
-    confidenceThreshold = conf;
-    delayCount = delay;
+    confidenceThreshold = 500;
+    delayCount = 1;
+    }
+    public MagicVision(int baud, int stop, int delay, int conf) {
+      counting = 0;
+      bRate = baud;
+      xVal = 0;
+      yVal = 0;
+      wVal = 0;
+      hVal = 0;
+      distVal = 0;
+      confVal = 0;
+      blocksSeen = 0;
+      arduinoCounter = 0;
+      stopDistance = stop;
+      confidenceThreshold = conf;
+      delayCount = delay;
+      }
+    public MagicVision(int baud) {
+    counting = 0;
+    bRate = baud;
+    xVal = 0;
+    yVal = 0;
+    wVal = 0;
+    hVal = 0;
+    distVal = 0;
+    confVal = 0;
+    blocksSeen = 0;
+    arduinoCounter = 0;
+    stopDistance = 200;
+    confidenceThreshold = 500;
+    delayCount = 1;
     }
     public SerialPort getArduino() {
     try {
