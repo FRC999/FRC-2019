@@ -15,6 +15,8 @@ public class MagicOutput{
   MagicInput INPUT;  
   boolean lastCamPress;
   VideoSink camServer;
+  final int CAMPORT1 = 0;
+  final int CAMPORT2 = 1;
 
   MagicOutput(MagicInput inputToUse){
     INPUT=inputToUse;

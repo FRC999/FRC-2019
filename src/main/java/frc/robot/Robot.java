@@ -5,40 +5,17 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-/*
-Drive Front Left Talon
-Drive Back Left Talon
-Drive Front Right Talon
-Drive Back Right Talon
-
-Intake
-
-*/
-
-
 package frc.robot;
 
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSink;
+
 import edu.wpi.first.networktables.NetworkTableInstance;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.cameraserver.CameraServerSharedStore;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
 
-import edu.wpi.first.wpilibj.Compressor;
-//this is a comment to test synchronisation
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -52,8 +29,6 @@ public class Robot extends IterativeRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
   MagicInput INPUT;  
-  UsbCamera backCam;
-  UsbCamera frontCam;
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
   int cycles = 0;
@@ -93,7 +68,7 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
   boolean lastCamPress;
-  VideoSink camServer;
+
    
 
   /**
@@ -106,11 +81,8 @@ public class Robot extends IterativeRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    backCam = CameraServer.getInstance().startAutomaticCapture(0);
-    frontCam = CameraServer.getInstance().startAutomaticCapture(1);
-    camServer = CameraServer.getInstance().getServer();
-
     INPUT = new MagicInput();
+    OUTPUT = new MagicOutput(INPUT);
   }
 
   /**
@@ -124,6 +96,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void robotPeriodic() {
     INPUT.updates(); //Update the toggling booleen
+    OUTPUT.checkCamSwap();
 
   }
 
@@ -186,16 +159,6 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
-    if (INPUT.isButtonOn(ButtonEnum.cameraChange) && !lastCamPress){
-      System.out.println("Swapping Cams");
-      camServer.setSource(frontCam);
-    }
-    if (!INPUT.isButtonOn(ButtonEnum.cameraChange) && lastCamPress){
-      System.out.println("Swapping Cams");
-      camServer.setSource(backCam);
-    }
-    lastCamPress = INPUT.isButtonOn(ButtonEnum.cameraChange);
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
   }
   /**
