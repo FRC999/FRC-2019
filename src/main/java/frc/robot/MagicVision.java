@@ -159,7 +159,7 @@ public class MagicVision {
 
 
   /**
-   * Legacy parsers, kept in case we want to update one value without messing wiht the others
+   * Legacy parsers, kept in case we want to update one value without messing with the others
    */
   public int parseX(int delayCount, SerialPort arduino) {
     counting = (counting + 1);
