@@ -19,8 +19,8 @@ public class MagicVision {
   private int endOfDataStream;
   private int blocksSeen;
   private SerialPort arduino;
-  final int leftMid = 136;
-  final int rightMid = 176;
+  final int leftMax = 154;
+  final int rightMax = 162;
   final int min = 0;
 
   public MagicVision(int baud, int stop) {
@@ -133,11 +133,11 @@ public class MagicVision {
         blocksSeen = Integer.parseInt(positionNums[1]);
         arduinoCounter = Integer.parseInt(positionNums[8]);
       } else {
-        System.out.println("Bad String from Arduino: Doesn't start with Block");
+        //System.out.println("Bad String from Arduino: Doesn't start with Block");
         return false;
       }
     } else {
-      System.out.println("Bad String from Arduino: no carriage return character or too short");
+      //System.out.println("Bad String from Arduino: no carriage return character or too short");
       return false;
     }
     return true;
@@ -153,10 +153,9 @@ public class MagicVision {
   public int getArduinoCounter(){return arduinoCounter;}
 
   //Better getters
-  public boolean isOnLeft(){return (xVal > min && xVal < leftMid && distVal > 500);}
-  public boolean isOnRight(){return (xVal >= leftMid && xVal <= rightMid && distVal > 500);}
-  public boolean isInMiddle(){return(xVal > rightMid && xVal < 316 && distVal > 500);}
-
+  public boolean isOnLeft(){return (xVal > min && xVal < leftMax && distVal > 500);}
+  public boolean isInMiddle(){return (xVal >= leftMax && xVal <= rightMax && distVal > 500);}
+  public boolean isOnRight(){return(xVal > rightMax && xVal < 316 && distVal > 500);}
 
   /**
    * Legacy parsers, kept in case we want to update one value without messing with the others

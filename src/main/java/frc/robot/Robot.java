@@ -136,17 +136,21 @@ public class Robot extends IterativeRobot {
     }
     if ((cycles % 1) == 0){VISION.parseJunk();}
     if (VISION.isOnLeft()) {
-      leftSide.set(.2);
-      rightSide.set(0);
+      leftSide.set(-.3);
+      rightSide.set(.10);
+      System.out.println("Left");
     } else if (VISION.isOnRight()) {
-      leftSide.set(0);
-      rightSide.set(-.2);
+      leftSide.set(-.10);
+      rightSide.set(.3);
+      System.out.println("Right");
     } else if(VISION.isInMiddle()) {
-      leftSide.set(.2);
-      rightSide.set(-.2);
+      leftSide.set(-.3);
+      rightSide.set(.3);
+      System.out.println("Middle");
     } else {
       leftSide.set(0);
       rightSide.set(0);
+      System.out.println("Nope");
     }
   }
  
@@ -165,5 +169,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void testPeriodic() {
+    leftSide.set(-.1);
+    rightSide.set(.1);
   }
 }
