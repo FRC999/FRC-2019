@@ -8,13 +8,16 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import edu.wpi.first.networktables.NetworkTableInstance;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.Compressor;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,12 +44,6 @@ public class Robot extends IterativeRobot {
   static final int elevatorDown = 6;//BUTTON
   static final double elevatorVal = .25;  //rate at which the eleator will spin
   static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
-  int x;
-  int dist;
-  int conf;
-  int zero = 0;
-  int leftMid = 136;
-  int rightMid = 176;
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -100,7 +97,6 @@ public class Robot extends IterativeRobot {
     cycles++;
 
   }
-
   /**
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable
@@ -162,7 +158,10 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
+    //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
+
+    
   }
   /**
    * This function is called periodically during test mode.
