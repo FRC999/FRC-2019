@@ -68,7 +68,7 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
   boolean lastCamPress;
-
+  
    
 
   /**
