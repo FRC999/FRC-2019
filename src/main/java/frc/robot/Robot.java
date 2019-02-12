@@ -37,6 +37,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.cscore.*;
 import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.hal.PDPJNI;
 //this is a comment to test synchronisation
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -50,7 +51,9 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private MagicInput INPUT;  
+  private MagicInput INPUT;  //put back in!
+
+
 
   int cycles = 0;
   double forward;
@@ -68,25 +71,26 @@ public class Robot extends IterativeRobot {
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
   WPI_TalonSRX driveRR = new WPI_TalonSRX(4); //Rear Right left tank drive motor
+/*
   
   WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
   WPI_TalonSRX testRight = new WPI_TalonSRX(11);
 
   WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
-
+*/
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  
+  /*
   int pneumaticInButton = 1;//BUTTON
   int compressorPort = 0;
-  //Compressor testCompressor = new Compressor(compressorPort);
-  //Solenoid solenoid1 = new Solenoid(0);
-  //Solenoid solenoid2 = new Solenoid(1);
+  Compressor testCompressor = new Compressor(compressorPort);
+  Solenoid solenoid1 = new Solenoid(0);
+  Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
-   
-  PowerDistributionPanel pdp = new PowerDistributionPanel(1); // the "1" is for the CAN ID of the PDP on the tower of power 2/9/2019
-
+   */
+  PowerDistributionPanel pdp = new PowerDistributionPanel(0); // the "1" is for the CAN ID of the PDP on the tower of power 2/9/2019
+int m_handle;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -96,12 +100,14 @@ public class Robot extends IterativeRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    CameraServer.getInstance().startAutomaticCapture(0);
-    CameraServer.getInstance().startAutomaticCapture(1);
+   // CameraServer.getInstance().startAutomaticCapture(0); //put back on actual robot
+   // CameraServer.getInstance().startAutomaticCapture(1);  //put back on actual robot
 
-    INPUT = new MagicInput();
+  // INPUT = new MagicInput(); //put back on actual robot
 
-    chassisDrive.setSafetyEnabled(false);
+    chassisDrive.setSafetyEnabled(false); //put back in!
+
+     m_handle = PDPJNI.initializePDP(0);
   }
 
   /**
@@ -114,7 +120,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
-    INPUT.updates(); //Update the toggling booleen
+   // INPUT.updates(); //Update the toggling booleen //put back on actual robot
 
   }
 
@@ -133,8 +139,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    // autoSelected = SmartDashboard.getString("Auto Selector",
-    // defaultAuto);
+     //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
   }
 
@@ -165,7 +170,8 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
-    forward = INPUT.getDrive();
+   
+   /* forward = INPUT.getDrive();
     if(lastForward != forward){
       //System.out.println(forward);
     }
@@ -175,18 +181,46 @@ public class Robot extends IterativeRobot {
       cycles = 0;
     }
     cycles++;
-
+    */
+ // put back on actual robot
   }
+
+
+  int testItCh1;
+  int testItCh2;
+  int testItCh0;
+  int testItCh3;
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
-  //test current draw
-  System.out.println("Input voltage = " + pdp.getVoltage());
-  System.out.println("total current of all monitored PDP channels = " + pdp.getTotalCurrent());
-  System.out.println("total energy in J of monitored channels = " + pdp.getTotalEnergy());
-  System.out.println("current of: \nch.1 = " + pdp.getCurrent(1) + ",\n ch. 2 = " +pdp.getCurrent(2) + ",\n ch. 3 = " + pdp.getCurrent(3) + ", \n ch.4 = " + pdp.getCurrent(4) + ", \nch.5 = " + pdp.getCurrent(5) + ", \n ch.6 = " + pdp.getCurrent(6));
-System.out.println("total power(W):" + pdp.getTotalPower());
+//chassisDrive.arcadeDrive(0.4, 0, false);
+leftSide.set(.4);
+rightSide.set(-.4);
+    //test current draw
+ // System.out.println("Input voltage = " + PDPJNI.getPDPVoltage(m_handle));
+  System.out.println("total current of all monitored PDP channels = " + PDPJNI.getPDPTotalCurrent(m_handle));
+  //System.out.println("total energy in J of monitored channels = " + PDPJNI.getPDPTotalEnergy(m_handle));
+  System.out.println(
+    "current of: \nch.0 = " + PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle)
+   //+ ",\nch. 1 = " +PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle)
+   // + ",\nch. 2 = " + PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) + 
+  +  ", \nch. 3 = " + PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) );
+//System.out.println("total power(W):" + pdp.getTotalPower());
+if (PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle) != 0.0) {testItCh0++;}
+if (PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle) != 0.0) {testItCh1++;}
+if (PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) != 0.0) {testItCh2++;}
+if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
+System.out.println("channel 3 has run for " + testItCh3 + " iterations");}
+}
+@Override
+public void disabledInit()
+  {System.out.println(
+"Pdp channel 0 ran " + testItCh0 + "iterations before zeroing\n" +
+"Pdp channel 1 ran " + testItCh1 + "iterations before zeroing\n" +
+"Pdp channel 2 ran " + testItCh2 + "iterations before zeroing\n" +
+"Pdp channel 3 ran " + testItCh3 + "iterations before zeroing\n"
+);
 }
 }
