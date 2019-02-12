@@ -9,6 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -18,6 +19,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Compressor;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -48,9 +50,8 @@ public class Robot extends IterativeRobot {
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
   WPI_TalonSRX driveRR = new WPI_TalonSRX(4); //Rear Right left tank drive motor
-  
- // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
- // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
+  // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
+  // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
 
  // WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
 
@@ -65,7 +66,6 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid2 = new Solenoid(1);
   double lastForward;
   boolean lastCamPress;
-  
    
 
   /**
@@ -80,6 +80,8 @@ public class Robot extends IterativeRobot {
 
     INPUT = new MagicInput();
     OUTPUT = new MagicOutput(INPUT);
+    driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    
   }
 
   /**
@@ -95,7 +97,7 @@ public class Robot extends IterativeRobot {
     INPUT.updates(); //Update the toggling booleen
     OUTPUT.checkCamSwap();
     cycles++;
-
+    System.out.println(driveFL.getSelectedSensorVelocity(0));
   }
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -160,7 +162,6 @@ public class Robot extends IterativeRobot {
   public void teleopPeriodic() {
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
-
     
   }
   /**
