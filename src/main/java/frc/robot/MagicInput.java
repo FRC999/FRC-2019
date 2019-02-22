@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick driveStick;
   Joystick turnStick;
   Joystick copilotStick;
+  int elevatorTarget;
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case 
    */
@@ -14,6 +15,7 @@ import edu.wpi.first.wpilibj.Joystick;
     turnStick = new Joystick(1);
     copilotStick = new Joystick(2);
   }
+  int getElevatorTarget() {return elevatorTarget;}
 
   boolean isButtonOn(ButtonEnum type) {
     if(null != getJoystick(type) && null != type.getToggledButton()){
@@ -51,6 +53,11 @@ import edu.wpi.first.wpilibj.Joystick;
     for (ButtonEnum bob : ButtonEnum.values()){
       if (null != bob.getToggledButton()) {//We dont want to call a null variable's methods
         bob.getToggledButton().update(isButtonPressed(bob));
+      if (bob.getElevatorHeight() != -1){
+        if(isButtonPressed(bob)){ //Elevator Buttons dont toggle
+          elevatorTarget = bob.getElevatorHeight();
+        }
+      }
       }
     }
   }
