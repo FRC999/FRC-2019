@@ -9,7 +9,7 @@ public class MagicPID {
     MagicInput INPUT;
     public MagicPID(WPI_TalonSRX tal, MagicInput in) {
         ElevatorTalon = tal;
-        INPUT = in;
+        INPUT = in; 
 
     }    
 
