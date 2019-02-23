@@ -19,26 +19,17 @@ Intake
 package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.MotorSafety;
-import edu.wpi.first.wpilibj.Solenoid;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.hal.sim.mockdata.PDPDataJNI;
+import edu.wpi.first.networktables.NetworkTableInstance;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Compressor;
 
-import edu.wpi.first.cameraserver.*;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.cscore.*;
-import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.hal.PDPJNI;
-//this is a comment to test synchronisation
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -51,9 +42,8 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private MagicInput INPUT;  //put back in!
-
-
+  MagicInput INPUT;  
+  MagicOutput OUTPUT;
 
   int cycles = 0;
   double forward;
@@ -65,7 +55,6 @@ public class Robot extends IterativeRobot {
   static final int elevatorDown = 6;//BUTTON
   static final double elevatorVal = .25;  //rate at which the eleator will spin
   static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
-
 
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
@@ -81,16 +70,15 @@ public class Robot extends IterativeRobot {
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  /*
+  
   int pneumaticInButton = 1;//BUTTON
   int compressorPort = 0;
-  Compressor testCompressor = new Compressor(compressorPort);
-  Solenoid solenoid1 = new Solenoid(0);
-  Solenoid solenoid2 = new Solenoid(1);
-  double lastForward;
-   */
-  PowerDistributionPanel pdp = new PowerDistributionPanel(0); // the "1" is for the CAN ID of the PDP on the tower of power 2/9/2019
-int m_handle;
+  //Compressor testCompressor = new Compressor(compressorPort);
+  //Solenoid solenoid1 = new Solenoid(0);
+  //Solenoid solenoid2 = new Solenoid(1);
+
+   
+
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -100,14 +88,9 @@ int m_handle;
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-   // CameraServer.getInstance().startAutomaticCapture(0); //put back on actual robot
-   // CameraServer.getInstance().startAutomaticCapture(1);  //put back on actual robot
 
-  // INPUT = new MagicInput(); //put back on actual robot
-
-    chassisDrive.setSafetyEnabled(false); //put back in!
-
-     m_handle = PDPJNI.initializePDP(0);
+    INPUT = new MagicInput();
+    OUTPUT = new MagicOutput(INPUT);
   }
 
   /**
@@ -120,10 +103,10 @@ int m_handle;
    */
   @Override
   public void robotPeriodic() {
-   // INPUT.updates(); //Update the toggling booleen //put back on actual robot
-
+    INPUT.updates(); //Update the toggling 
+    
+    OUTPUT.checkCamSwap();
   }
-
   /**
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable
@@ -170,19 +153,10 @@ int m_handle;
    */
   @Override
   public void teleopPeriodic() {
-   
-   /* forward = INPUT.getDrive();
-    if(lastForward != forward){
-      //System.out.println(forward);
-    }
-    //lastForward = forward;
-    if(cycles == 10){
-      System.out.println(INPUT.isButtonOn(ButtonEnum.testBool));
-      cycles = 0;
-    }
-    cycles++;
-    */
- // put back on actual robot
+    //Drive code: Jack says that's all I need
+    chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
+
+    
   }
 
 
