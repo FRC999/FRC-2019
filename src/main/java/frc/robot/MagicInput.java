@@ -47,6 +47,15 @@ import edu.wpi.first.wpilibj.Joystick;
     return 0;
   }
   /**
+   * Range of outputs is -1 to 1
+   */
+  double getElevatorAdjuster(){
+    if (copilotStick != null){
+      return copilotStick.getRawAxis(0);
+    }
+    return 0;
+  }
+  /**
    * Uppdates TogglingButtons in ButtonEnum
    */
   void updates(){
