@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 
@@ -21,9 +20,16 @@ public class MagicElevator {
     INPUT = in; 
   }
 
+  public int convertToNativeUnits(double centis){
+    final double spoolCircumfrence = 1; //In centimeters
+    final int stepsPerRotation = 4096;
+    int nativity = (int) (stepsPerRotation * (centis/spoolCircumfrence));
+    return nativity;
+  }
+
   //Check if the elevator button is pressed: if yes, do stuff
   public void updateElevatorTarget () {
-    eTarget = INPUT.getElevatorTarget();
+    eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
     if (INPUT.isButtonOn(ButtonEnum.elevatorUp)) {
       if (eMax - eTarget > 20) {
         eTarget +=20;
@@ -32,10 +38,9 @@ public class MagicElevator {
       }
     }
     if (INPUT.isButtonOn(ButtonEnum.elevatorDown)) {
-      eTarget = INPUT.getElevatorTarget();
       if (INPUT.isButtonOn(ButtonEnum.elevatorUp)) {
         if (eMin - eTarget < 20) {
-          eTarget +=20;
+          eTarget -=20;
         } else {
           eTarget = eMin;
         }

@@ -12,7 +12,7 @@ public enum ButtonEnum {
   final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;
-  final private int elevatorHeight;
+  final private double elevatorHeight; //In cm: Converted at MagicElevator
   /**
    * If there is no boolean, it is not a toggling button
    */
@@ -32,9 +32,9 @@ public enum ButtonEnum {
     elevatorHeight = -1; //0 is a valid value: -1 is not
   }
   /**
-   * If its final value is an int, it is an elevator button
+   * If its final value is an double, it is an elevator button
    */
-  private ButtonEnum(int numberOfJoystick, int numberOfButton, int heightOfElevator){
+  private ButtonEnum(int numberOfJoystick, int numberOfButton, double heightOfElevator){
     buttonNum = numberOfButton; 
     joystickNum = numberOfJoystick;
     toggledButton = null;
@@ -45,6 +45,6 @@ public enum ButtonEnum {
   public int getButtonNum() {return buttonNum;}   
   public int getJoystickNum() {return joystickNum;}   
   public TogglingButton getToggledButton(){return toggledButton;}
-  public int getElevatorHeight(){return elevatorHeight;}
+  public double getElevatorHeight(){return elevatorHeight;}
 
 }

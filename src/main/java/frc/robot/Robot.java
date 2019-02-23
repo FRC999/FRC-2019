@@ -9,16 +9,12 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.networktables.NetworkTableInstance;
 
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.Compressor;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 /**
@@ -33,6 +29,7 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
   MagicElevator ELEVATOR;
   MagicInput INPUT;  
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
@@ -40,13 +37,7 @@ public class Robot extends IterativeRobot {
   long cycles = 0;
   double forward;
   double turn;
-  static final int intakeIn = 5;//BUTTON Id
-  static final int intakeOut = 5;//BUTTON
-  static final double intakeVal = .5;  //rate at which the intake will spin
-  static final int elevatorUp = 6; //BUTTON
-  static final int elevatorDown = 6;//BUTTON
-  static final double elevatorVal = .25;  //rate at which the eleator will spin
-  static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
+
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -60,15 +51,6 @@ public class Robot extends IterativeRobot {
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
   
-  int pneumaticInButton = 1;//BUTTON
-  int compressorPort = 0;
-  //Compressor testCompressor = new Compressor(compressorPort);
-  //Solenoid solenoid1 = new Solenoid(0);
-  //Solenoid solenoid2 = new Solenoid(1);
-  double lastForward;
-  boolean lastCamPress;
-   
-
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
