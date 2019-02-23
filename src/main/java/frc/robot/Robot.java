@@ -18,27 +18,18 @@ Intake
 
 package frc.robot;
 
-import org.opencv.core.Mat;
-import org.opencv.imgproc.Imgproc;
-
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.cscore.VideoSink;
 import edu.wpi.first.networktables.NetworkTableInstance;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import edu.wpi.first.cameraserver.CameraServerSharedStore;
-import edu.wpi.cscore.CvSink;
-import edu.wpi.cscore.CvSource;
 
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Compressor;
-//this is a comment to test synchronisation
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -51,9 +42,8 @@ public class Robot extends IterativeRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  private MagicInput INPUT;  
-  UsbCamera backCam;
-  UsbCamera frontCam;
+  MagicInput INPUT;  
+  MagicOutput OUTPUT;
 
   int cycles = 0;
   double forward;
@@ -66,7 +56,6 @@ public class Robot extends IterativeRobot {
   static final double elevatorVal = .25;  //rate at which the eleator will spin
   static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
 
-/*
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -80,15 +69,13 @@ public class Robot extends IterativeRobot {
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  */
+  
   int pneumaticInButton = 1;//BUTTON
   int compressorPort = 0;
   //Compressor testCompressor = new Compressor(compressorPort);
   //Solenoid solenoid1 = new Solenoid(0);
   //Solenoid solenoid2 = new Solenoid(1);
-  double lastForward;
-  boolean lastCamPress;
-  VideoSink camServer;
+
    
 
   /**
@@ -101,11 +88,8 @@ public class Robot extends IterativeRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    backCam = CameraServer.getInstance().startAutomaticCapture(0);
-    frontCam = CameraServer.getInstance().startAutomaticCapture(1);
-    camServer = CameraServer.getInstance().getServer();
-
     INPUT = new MagicInput();
+    OUTPUT = new MagicOutput(INPUT);
   }
 
   /**
@@ -118,10 +102,10 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void robotPeriodic() {
-    INPUT.updates(); //Update the toggling booleen
-
+    INPUT.updates(); //Update the toggling 
+    
+    OUTPUT.checkCamSwap();
   }
-
   /**
    * This autonomous (along with the chooser code above) shows how to select
    * between different autonomous modes using the dashboard. The sendable
@@ -166,16 +150,10 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
+    //Drive code: Jack says that's all I need
+    chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
+
     
-    if (INPUT.isButtonOn(ButtonEnum.cameraChange) && !lastCamPress){
-      System.out.println("Swapping Cams");
-      camServer.setSource(frontCam);
-    }
-    if (!INPUT.isButtonOn(ButtonEnum.cameraChange) && lastCamPress){
-      System.out.println("Swapping Cams");
-      camServer.setSource(backCam);
-    }
-    lastCamPress = INPUT.isButtonOn(ButtonEnum.cameraChange);
   }
   /**
    * This function is called periodically during test mode.
