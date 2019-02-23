@@ -28,6 +28,7 @@ public class MagicOutput{
 /**
  * Check if cameras should be swapped: if so, swap cameras.
  * If not, do nothing
+ * Uses input from INPUT provided at construction
  */
   public void checkCamSwap(){
     if (INPUT.isButtonOn(ButtonEnum.cameraChange) && !lastCamPress){

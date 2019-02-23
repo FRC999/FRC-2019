@@ -1,7 +1,14 @@
 package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
-
+/**
+ * MagicInput is a class designed to handle all input from the drivers station. 
+ * It is primarally focused on the joysticks.  It provides this information to other
+ * classes and methods, free of charge.  MagicInput, unlike other off-the-shelf input
+ * brands, is designed for configuration, first and foremost.  Where is button is, and its
+ * toggling behavior, is specified in ButtonEnum.  Do not use MagicInput
+ * if you like writing long lines of code any time you wish to speak with the manager.
+ */
  public class MagicInput {
   Joystick driveStick;
   Joystick turnStick;
@@ -15,14 +22,40 @@ import edu.wpi.first.wpilibj.Joystick;
     turnStick = new Joystick(1);
     copilotStick = new Joystick(2);
   }
+  /**
+   * Gets elevatorTarget, which is how high up the elevator should be, in Milis
+   */
   double getElevatorTarget() {return elevatorTarget;}
 
+  /**
+   * Changes the elevatorTarget to be equal to whatever it is you want
+   * @param newVal The new value
+   * @return Returns the new value
+   */
+  double setElevatorTarget(double newVal) {
+    elevatorTarget = newVal;
+    return elevatorTarget;
+  }
+
+  /**
+   * Checks whether a button is "on" ie, it is toggled on or pressed.
+   * If it is a toggling button, checks whether it is toggled on, otherwise, checks if it is pressed
+   * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
+   * @return true if on: false if not 
+   */
   boolean isButtonOn(ButtonEnum type) {
     if(null != getJoystick(type) && null != type.getToggledButton()){
       return type.getToggledButton().toggleState;
     }
     return isButtonPressed(type);
   }
+
+  /**
+   * Checks whether the physical button is currently being held down.
+   * Does *not* account for TogglingButtons: only use if you are *certain* it will never be one
+   * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
+   * @return true if on: false if not
+   */
   boolean isButtonPressed(ButtonEnum type) {
     if(getJoystick(type) != null)
       return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());
@@ -30,6 +63,7 @@ import edu.wpi.first.wpilibj.Joystick;
   }
   /**
    * Gets how far forward or back the drive stick is.  Hopefully.
+   * @return a double between -1 and 1, with one being all the way forward
    */
   double getDrive(){
     if (driveStick != null){
@@ -39,6 +73,7 @@ import edu.wpi.first.wpilibj.Joystick;
   }
   /**
    * Gets how far left or right the turn stick is.  "Left is positive"--Jack Wertz 2019
+   * @return a double between -1 and 1, with 1 being all the way left
    */
   double getTurn(){
     if (turnStick != null){
@@ -47,7 +82,9 @@ import edu.wpi.first.wpilibj.Joystick;
     return 0;
   }
   /**
-   * Range of outputs is -1 to 1
+   * Gets the elevator axis: we havent decided how to ultimatly treat this
+   * We should probably annoy the drive team or something
+   * @return a double between -1 and 1, with 1 being at the top.  Maybe?
    */
   double getElevatorAdjuster(){
     if (copilotStick != null){
@@ -56,22 +93,28 @@ import edu.wpi.first.wpilibj.Joystick;
     return 0;
   }
   /**
-   * Uppdates TogglingButtons in ButtonEnum
+   * Updates TogglingButtons in ButtonEnum
+   * This *must* be called every cycle for TogglingButtons to function
+   * It also updates elevatorHeight with the current selection
+   * If more than one elevator height selector button is pressed, 
+   * it should go to the last one on the ButtonEnum list.  Should.
    */
   void updates(){
-    for (ButtonEnum bob : ButtonEnum.values()){
+    for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
       if (null != bob.getToggledButton()) {//We dont want to call a null variable's methods
         bob.getToggledButton().update(isButtonPressed(bob));
+    }
       if (bob.getElevatorHeight() != -1){
-        if(isButtonPressed(bob)){ //Elevator Buttons dont toggle
+        if(isButtonPressed(bob)){ //Elevator Buttons dont toggle: lets avoid that overhead
           elevatorTarget = bob.getElevatorHeight();
         }
-      }
       }
     }
   }
   /**
-   * Returns the joystick at the given port, or the joystick with a given name.
+   * Returns the joystick at the given port: not currently used
+   * @param port must be 0,1, or 2, otherwise it will return a null
+   * @return the selected joystick, or null if invalid input
    */
   Joystick getJoystick(int port)  {
     switch (port){
@@ -86,6 +129,12 @@ import edu.wpi.first.wpilibj.Joystick;
         return null;
       }
   }
+  /**
+   * Returns the joystick with the selected name
+   * Provide name in lower cammel case
+   * @param type string in lower camal case: ie "turn" or "turnStick"
+   * @return the chosen joystick, or null if no valid input
+   */
   Joystick getJoystick(String type){
       switch (type){
         case "turn":
@@ -103,6 +152,11 @@ import edu.wpi.first.wpilibj.Joystick;
       }
   
   }
+  /**
+   * Gets the joystick of the specified button.  Used in MagicInput
+   * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
+   * @return Joystick that holds chosen button
+   */
   Joystick getJoystick(ButtonEnum type){
     return getJoystick(type.getJoystickNum());
   }
