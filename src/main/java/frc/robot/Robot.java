@@ -93,11 +93,11 @@ public class Robot extends IterativeRobot {
    * the switch structure below with additional strings. If using the
    * SendableChooser make sure to add them to the chooser code above as well.
    */
+
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    // autoSelected = SmartDashboard.getString("Auto Selector",
-    // defaultAuto);
+     //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
   }
 
@@ -138,6 +138,7 @@ public class Robot extends IterativeRobot {
   @Override
   public void teleopInit() {
   }
+
   /**
    * This function is called periodically during operator control.
    */
@@ -147,12 +148,43 @@ public class Robot extends IterativeRobot {
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
     
   }
+
+
+  int testItCh1;
+  int testItCh2;
+  int testItCh0;
+  int testItCh3;
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {
-    leftSide.set(-.1);
-    rightSide.set(.1);
-  }
+//chassisDrive.arcadeDrive(0.4, 0, false);
+leftSide.set(.4);
+rightSide.set(-.4);
+    //test current draw
+ // System.out.println("Input voltage = " + PDPJNI.getPDPVoltage(m_handle));
+  System.out.println("total current of all monitored PDP channels = " + PDPJNI.getPDPTotalCurrent(m_handle));
+  //System.out.println("total energy in J of monitored channels = " + PDPJNI.getPDPTotalEnergy(m_handle));
+  System.out.println(
+    "current of: \nch.0 = " + PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle)
+   //+ ",\nch. 1 = " +PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle)
+   // + ",\nch. 2 = " + PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) + 
+  +  ", \nch. 3 = " + PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) );
+//System.out.println("total power(W):" + pdp.getTotalPower());
+if (PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle) != 0.0) {testItCh0++;}
+if (PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle) != 0.0) {testItCh1++;}
+if (PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) != 0.0) {testItCh2++;}
+if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
+System.out.println("channel 3 has run for " + testItCh3 + " iterations");}
+}
+@Override
+public void disabledInit()
+  {System.out.println(
+"Pdp channel 0 ran " + testItCh0 + "iterations before zeroing\n" +
+"Pdp channel 1 ran " + testItCh1 + "iterations before zeroing\n" +
+"Pdp channel 2 ran " + testItCh2 + "iterations before zeroing\n" +
+"Pdp channel 3 ran " + testItCh3 + "iterations before zeroing\n"
+);
+}
 }
