@@ -7,6 +7,8 @@
 package frc.robot;
 
 import edu.wpi.first.hal.PDPJNI;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -34,6 +36,10 @@ public class Robot extends IterativeRobot {
   MagicInput INPUT;  
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
+  MagicPneumatics PNEUMATICS;
+  Compressor compressor = new Compressor(0);
+  DoubleSolenoid leftSolenoid = new DoubleSolenoid(4,5);
+  DoubleSolenoid rightSolenoid = new DoubleSolenoid(6,7);
   long cycles = 0;
   double forward;
   double turn;
@@ -62,6 +68,7 @@ public class Robot extends IterativeRobot {
     INPUT = new MagicInput();
     OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(testElevator, INPUT);
+    PNEUMATICS = new MagicPneumatics(compressor, leftSolenoid, rightSolenoid);
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
   }
@@ -80,7 +87,7 @@ public class Robot extends IterativeRobot {
     INPUT.updates(); //Update the toggling booleen
     OUTPUT.checkCamSwap();
     cycles++;
-    System.out.println(driveFL.getSelectedSensorVelocity(0));
+   // System.out.println(driveFL.getSelectedSensorVelocity(0));
   }
   /**
    * This autonomous (along with the chooser code above) shows how to select
@@ -140,14 +147,21 @@ public class Robot extends IterativeRobot {
   public void teleopPeriodic() {
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
-    
+    if (INPUT.isButtonPressed(ButtonEnum.IntakeIn)) {
+      PNEUMATICS.setCyl(1, 1);
+      PNEUMATICS.setCyl(0, -1);
+    } else if (INPUT.isButtonPressed(ButtonEnum.IntakeOut)) {
+      PNEUMATICS.setCyl(1,-1);
+      PNEUMATICS.setCyl(0, 1);
+    } else {
+      PNEUMATICS.setCyl(1,0);
+      PNEUMATICS.setCyl(0, 0);
+    }
   }
+  
 
 
-  int testItCh1;
-  int testItCh2;
-  int testItCh0;
-  int testItCh3;
+
   /**
    * This function is called periodically during test mode.
    */
@@ -173,12 +187,7 @@ if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
 System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
 }
 @Override
-public void disabledInit()
-  {System.out.println(
-"Pdp channel 0 ran " + testItCh0 + "iterations before zeroing\n" +
-"Pdp channel 1 ran " + testItCh1 + "iterations before zeroing\n" +
-"Pdp channel 2 ran " + testItCh2 + "iterations before zeroing\n" +
-"Pdp channel 3 ran " + testItCh3 + "iterations before zeroing\n"
-);
+public void disabledInit() {
+
 }
 }
