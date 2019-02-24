@@ -143,24 +143,38 @@ public class MagicVision {
     return true;
   }
   //Getters
-  public int getX(){return xVal;}
-  public int getY(){return yVal;}
-  public int getW(){return wVal;}
-  public int getH(){return hVal;}
-  public int getDist(){return distVal;}
-  public int getConf(){return confVal;}
-  public int getBlocksSeen(){return blocksSeen;}
-  public int getArduinoCounter(){return arduinoCounter;}
+  public int getX() {return xVal;}
+  public int getY() {return yVal;}
+  public int getW() {return wVal;}
+  public int getH() {return hVal;}
+  public int getDist() {return distVal;}
+  public int getConf() {return confVal;}
+  public int getBlocksSeen() {return blocksSeen;}
+  public int getArduinoCounter() {return arduinoCounter;}
 
   //Better getters
   public boolean isOnLeft(){return (xVal > min && xVal < leftMax && distVal > 500);}
   public boolean isInMiddle(){return (xVal >= leftMax && xVal <= rightMax && distVal > 500);}
   public boolean isOnRight(){return(xVal > rightMax && xVal < 316 && distVal > 500);}
-
+  public String[] getArray() {
+  String targetPosition = arduino.readString();
+    int startOfDataStream = targetPosition.indexOf("B");
+    int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+    // The indexOf method returns -1 if it can't find the char in the string
+    if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
+      targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
+      System.out.println(targetPosition);
+      if (targetPosition.startsWith("Block")) {
+        String[] positionNums = targetPosition.split(":");
+        return positionNums;
+      }
+    }
+    return null;
+  }
   /**
    * Legacy parsers, kept in case we want to update one value without messing with the others
    */
-  public int parseX(int delayCount, SerialPort arduino) {
+/*  public int parseX(int delayCount, SerialPort arduino) {
     counting = (counting + 1);
     if (counting == delayCount) {
       counting = 0;
@@ -359,6 +373,7 @@ public class MagicVision {
     }
     return arduinoCounter;
   }
+  */
   public int parseVal(int index, int delayCount, SerialPort arduino) {
     counting = (counting + 1);
     if (counting == delayCount) {
@@ -388,6 +403,10 @@ public class MagicVision {
         System.out.println("Bad String from Arduino: no carriage return character or too short");
       }
     }
+    if (index >= 0 && index <= 8) {
+    String [] val = getArray();
+    return Integer.parseInt(val[index]);
+    }
     switch(index) {
       case 2 : {
         return xVal;
@@ -399,18 +418,22 @@ public class MagicVision {
         return wVal;
       }
       case 5 : {
-        return xVal;
+        return hVal;
       }
       case 6 : {
+        return distVal;
       }
       case 7 : {
+        return confVal;
       }
       case 8 : {
+        return arduinoCounter;
       }
       case 1 : {
+        return blocksSeen;
       }
       default : {
-        break;
+        return 3000;
       }
     }
   }
