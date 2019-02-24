@@ -102,6 +102,7 @@ public class Robot extends IterativeRobot {
     m_autoSelected = m_chooser.getSelected();
      //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    VISION.getArduino();
   }
 
   /**
@@ -120,7 +121,12 @@ public class Robot extends IterativeRobot {
       // System.out.println("Starting autonomousPeriodic - Default auto.");
       break;
     } // switch (m_autoSelected)
-
+    if (INPUT.isButtonPressed(ButtonEnum.testBool) == true) {
+      VISION.parseVal(1, 1, VISION.getArduino());
+      VISION.parseVal(2, 1, VISION.getArduino());
+      VISION.parseVal(5, 1, VISION.getArduino());
+      VISION.parseVal(6, 1, VISION.getArduino());
+    }
     // System.out.println("auto periodic loop counter: " + counting);
   } 
   @Override
