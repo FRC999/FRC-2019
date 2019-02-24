@@ -359,4 +359,28 @@ public class MagicVision {
     }
     return arduinoCounter;
   }
+  public int parseX(int delayCount, SerialPort arduino) {
+    counting = (counting + 1);
+    if (counting == delayCount) {
+      counting = 0;
+      String targetPosition = arduino.readString();
+      int startOfDataStream = targetPosition.indexOf("B");
+      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+      // The indexOf method returns -1 if it can't find the char in the string
+      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
+        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
+        System.out.println(targetPosition);
+        if (targetPosition.startsWith("Block")) {
+          String[] positionNums = targetPosition.split(":");
+          // positionNums[0] would be "Block
+          xVal = Integer.parseInt(positionNums[2]);
+        } else {
+          System.out.println("Bad String from Arduino: Doesn't start with Block");
+        }
+      } else {
+        System.out.println("Bad String from Arduino: no carriage return character or too short");
+      }
+    }
+    return xVal;
+  }
 }

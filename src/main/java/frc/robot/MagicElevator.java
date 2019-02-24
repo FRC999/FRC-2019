@@ -24,37 +24,45 @@ public class MagicElevator {
     INPUT = in; 
   }
 
+  /**
+   * Converts centimeters to the native Talon units for elevator PID use
+   * @param centis Centimeter height of the elevator (off the ground? not? more testing!)
+   * @return the desired motor value
+   */
   public int convertToNativeUnits(double centis){
     return (int) (stepsPerRotation * (centis/spoolCircumfrence));
   }
-  public double convertFromNativeUnits(int imput){
-    return (double) ((imput/stepsPerRotation)*spoolCircumfrence);
+  /**
+   * Converts native units to centimeters, for logging and puting back in MagicOutput.
+   * @param imput native talon units for conversion
+   * @return centimer height of elevator (off the ground?), iff I got my math right
+   */
+  public double convertFromNativeUnits(int input){
+    return (double) ((input/stepsPerRotation)*spoolCircumfrence);
   } 
 
   //Check if the elevator button is pressed: if yes, do stuff
   public void updateElevatorTarget () {
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
-    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)) {
-      if (eMax - eTarget > 20) {
-        eTarget +=20;
-      } else {
-        eTarget = eMax;
-      }
-    }
-    if (INPUT.isButtonOn(ButtonEnum.elevatorDown)) {
-      if (INPUT.isButtonOn(ButtonEnum.elevatorUp)) {
-        if (eMin - eTarget < 20) {
-          eTarget -=20;
-        } else {
-          eTarget = eMin;
-        }
-      }
-    }
+    
+    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)) {eTarget += 20;}
+    if (INPUT.isButtonOn(ButtonEnum.elevatorDown)) {eTarget -=20;}
+    //If we also allow them to control the elevator axis via joystick, put code here
+
+    if (eTarget > eMax) {eTarget = eMax;} //No going above the height limit
+    if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
+    INPUT.setElevatorTarget(convertFromNativeUnits(eTarget));
   }
   public void elevatorPeriodic() {
     updateElevatorTarget();
     moveElevator();
+    if (eTarget == eCurrent) {
+      //Put stall mode code here
+    }
   }
+  /**
+   * Moves the elevator to the current target.  Or it should.
+   */
   public void moveElevator() { 
     elevatorTalon.set(ControlMode.MotionMagic, eTarget);
   }

@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.hal.PDPJNI;
 import edu.wpi.first.wpilibj.IterativeRobot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
@@ -38,6 +39,7 @@ public class Robot extends IterativeRobot {
   double forward;
   double turn;
 
+  PDPJNI testPDPJNI = new PDPJNI;
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -158,13 +160,13 @@ public class Robot extends IterativeRobot {
    * This function is called periodically during test mode.
    */
   @Override
-  public void testPeriodic() {
+  public void testPeriodic() {/* 
 //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);
 rightSide.set(-.4);
     //test current draw
  // System.out.println("Input voltage = " + PDPJNI.getPDPVoltage(m_handle));
-  System.out.println("total current of all monitored PDP channels = " + PDPJNI.getPDPTotalCurrent(m_handle));
+  System.out.println("total current of all monitored PDP channels = " + testPDPJNI.getPDPTotalCurrent(m_handle));
   //System.out.println("total energy in J of monitored channels = " + PDPJNI.getPDPTotalEnergy(m_handle));
   System.out.println(
     "current of: \nch.0 = " + PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle)
@@ -176,7 +178,7 @@ if (PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle) != 0.0) {testItCh0++;}
 if (PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle) != 0.0) {testItCh1++;}
 if (PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) != 0.0) {testItCh2++;}
 if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
-System.out.println("channel 3 has run for " + testItCh3 + " iterations");}
+System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
 }
 @Override
 public void disabledInit()
