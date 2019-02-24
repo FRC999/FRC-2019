@@ -16,7 +16,7 @@ public class MagicElevator {
 
   static final int eMin = 200; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 200000; //In NativeUnits: Test value: please let us test!
-  static final double spoolCircumfrence = 1; //In centimeters:  Require a spool to measure
+  static final double spoolCircumfrence = (2*Math.PI); //In centimeters:  Require a spool to measure
   static final int stepsPerRotation = 4096;
   
   public MagicElevator(WPI_TalonSRX tal, MagicInput in) {
