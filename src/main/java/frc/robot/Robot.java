@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid1 = new Solenoid(0);
   //Solenoid solenoid2 = new Solenoid(1);
 
- long counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
+ static int counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
 
   /**
    * This function is run when the robot is first started up and should be
@@ -218,7 +218,7 @@ public void disabledInit()
  * public void teleopPeriodic() {
   * counter += 1; ... }
    */
-public long getCycleCount() {
+public static int getCycleCount() {
 return counter;
   }
 }

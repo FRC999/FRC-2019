@@ -100,7 +100,8 @@ public void setOpposite(DoubleSolenoid ds, DoubleSolenoid ds2) {
 
 public void setForwardWithDelay(DoubleSolenoid ds, DoubleSolenoid ds2, double delay) {
     ds.set(DoubleSolenoid.Value.kForward);
-    }
+    
+}
 
 
     }
