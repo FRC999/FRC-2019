@@ -34,7 +34,7 @@ public class MagicElevator {
   }
   /**
    * Converts native units to centimeters, for logging and puting back in MagicOutput.
-   * @param imput native talon units for conversion
+   * @param input native talon units for conversion
    * @return centimer height of elevator (off the ground?), iff I got my math right
    */
   public double convertFromNativeUnits(int input){
