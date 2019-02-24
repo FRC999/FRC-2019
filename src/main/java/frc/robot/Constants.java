@@ -1,5 +1,9 @@
 package frc.robot;
 
+/**
+ * This class has an unkown purpose: it is intended to hold values to help with configuration,
+ * but most of that seems to happen in the Magic classes.
+ */
 public class Constants {
   static final int pneumaticInButton = 1;//BUTTON
   static final int intakeIn = 5;//BUTTON Id
