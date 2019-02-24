@@ -359,7 +359,7 @@ public class MagicVision {
     }
     return arduinoCounter;
   }
-  public int parseX(int delayCount, SerialPort arduino) {
+  public int parseVal(int index, int delayCount, SerialPort arduino) {
     counting = (counting + 1);
     if (counting == delayCount) {
       counting = 0;
@@ -374,6 +374,13 @@ public class MagicVision {
           String[] positionNums = targetPosition.split(":");
           // positionNums[0] would be "Block
           xVal = Integer.parseInt(positionNums[2]);
+          yVal = Integer.parseInt(positionNums[3]);
+          wVal = Integer.parseInt(positionNums[4]);
+          hVal = Integer.parseInt(positionNums[5]);
+          distVal = Integer.parseInt(positionNums[6]);
+          confVal = Integer.parseInt(positionNums[7]);
+          blocksSeen = Integer.parseInt(positionNums[1]);
+          arduinoCounter = Integer.parseInt(positionNums[8]);
         } else {
           System.out.println("Bad String from Arduino: Doesn't start with Block");
         }
@@ -381,6 +388,30 @@ public class MagicVision {
         System.out.println("Bad String from Arduino: no carriage return character or too short");
       }
     }
-    return xVal;
+    switch(index) {
+      case 2 : {
+        return xVal;
+      }
+      case 3 : {
+        return yVal;
+      }
+      case 4 : {
+        return wVal;
+      }
+      case 5 : {
+        return xVal;
+      }
+      case 6 : {
+      }
+      case 7 : {
+      }
+      case 8 : {
+      }
+      case 1 : {
+      }
+      default : {
+        break;
+      }
+    }
   }
 }

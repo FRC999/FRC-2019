@@ -37,8 +37,6 @@ public class Robot extends IterativeRobot {
   long cycles = 0;
   double forward;
   double turn;
-
-  PDPJNI testPDPJNI = new PDPJNI;
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -124,76 +122,7 @@ public class Robot extends IterativeRobot {
     } // switch (m_autoSelected)
 
     // System.out.println("auto periodic loop counter: " + counting);
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      // System.out.println("parsing...");
-      targetPosition = arduino.readString();
-      startOfDataStream = targetPosition.indexOf("B");
-      endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 40) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println("String TargetPosition = " + targetPosition);
-        String[] positions = targetPosition.split(";");
-        if (targetPosition.startsWith("Block")) {
-          for (int i = 0; i < positions.length; i++) {
-            String[] positionNums = positions[i].split(":");
-            if (positionNums[0].equals("x")) {
-              xVal = Integer.parseInt(positionNums[1]);
-              // System.out.println("xval = " + xVal);
-            } else if (positionNums[0].equals("y")) {
-              yVal = Integer.parseInt(positionNums[1]);
-              // System.out.println("yval = " + yVal);
-            } else if (positionNums[0].equals("h")) {
-              hVal = Integer.parseInt(positionNums[1]);
-              // System.out.println("hval = " + hVal);
-            } else if (positionNums[0].equals("w")) {
-              wVal = Integer.parseInt(positionNums[1]);
-              // System.out.println("wval = " + wVal);
-            } else if (positionNums[0].equals("dist")) {
-              distVal = Integer.parseInt(positionNums[1]);
-              // System.out.println("distval = " + distVal);
-            } else if (positionNums[0].equals("conf")) {
-              confVal = Integer.parseInt(positionNums[1]);
-              // System.out.println("confval = " + confVal);
-            } else if (positionNums[0].equals("count")) {
-              arduinoCounter = Integer.parseInt(positionNums[1]);
-              // System.out.println("arduinoCounter = " + arduinoCounter);
-            } else if (positionNums[0].equals("BlockID")) {
-              blocksSeen = Integer.parseInt(positionNums[1]);
-              // System.out.println("blockids = " + blocksSeen);
-            } else {
-              System.out.println("He's dead, Jim (" + positionNums[0] + ") Killed the parser");
-            }
-          }
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    if ((cycles % 1) == 0){VISION.parseJunk();}
-    if (VISION.isOnLeft()) {
-      leftSide.set(-.3);
-      rightSide.set(.10);
-      System.out.println("Left");
-    } else if (VISION.isOnRight()) {
-      leftSide.set(-.10);
-      rightSide.set(.3);
-      System.out.println("Right");
-    } else if(VISION.isInMiddle()) {
-      leftSide.set(-.3);
-      rightSide.set(.3);
-      System.out.println("Middle");
-    } else {
-      leftSide.set(0);
-      rightSide.set(0);
-      System.out.println("Nope");
-    }
-  }
- 
+  } 
   @Override
   public void teleopInit() {
   }
