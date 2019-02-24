@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.networktables.NetworkTableInstance;
-
+import edu.wpi.first.hal.PDPJNI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Compressor;
 
@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
   //Solenoid solenoid1 = new Solenoid(0);
   //Solenoid solenoid2 = new Solenoid(1);
 
-   
+ long counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
 
   /**
    * This function is run when the robot is first started up and should be
@@ -124,6 +124,7 @@ public class Robot extends IterativeRobot {
     m_autoSelected = m_chooser.getSelected();
      //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    counter = 0;
   }
 
   /**
@@ -131,6 +132,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    counter += 1;
     switch (m_autoSelected) {
       case kCustomAuto:
         // Put custom auto code here
@@ -140,11 +142,12 @@ public class Robot extends IterativeRobot {
         // Put default auto code here
         break;
     }
+
   }
  
   @Override
   public void teleopInit() {
-     
+     counter = 0;
 
   }
 
@@ -153,6 +156,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
+   counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
 
@@ -169,7 +173,9 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void testPeriodic() {
-//chassisDrive.arcadeDrive(0.4, 0, false);
+
+/*
+    //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);
 rightSide.set(-.4);
     //test current draw
@@ -187,6 +193,8 @@ if (PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle) != 0.0) {testItCh1++;}
 if (PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) != 0.0) {testItCh2++;}
 if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
 System.out.println("channel 3 has run for " + testItCh3 + " iterations");}
+*/
+
 }
 @Override
 public void disabledInit()
@@ -197,4 +205,20 @@ public void disabledInit()
 "Pdp channel 3 ran " + testItCh3 + "iterations before zeroing\n"
 );
 }
+
+/** this method counts the number of cycles the robot has been enabled in autonomous
+ *  or periodic. It returns a long. To work, it needs a "counter" variable that is initialised to zero every 
+ * Auto- or Teleop - init and increments by one in autonomous or teleop periodic.
+ *
+ * long counter = 0; 
+ *   @Override
+ * public void teleopInit() {
+ *    counter = 0; ...}
+ *  @Override
+ * public void teleopPeriodic() {
+  * counter += 1; ... }
+   */
+public long getCycleCount() {
+return counter;
+  }
 }
