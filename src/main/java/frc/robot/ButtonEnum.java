@@ -1,5 +1,4 @@
 package frc.robot;
-
 public enum ButtonEnum {
     IntakeIn(0, 1), IntakeOut(0, 2), 
     Three(0, 3), Cog(0,4,false), testBool(0,5,false), 
@@ -8,8 +7,7 @@ public enum ButtonEnum {
     elevatorLowHatch(2,7,0), elevatorMidHatch(2,8,0), elevatorHighHatch(2,9,0),
     elevatorLowBall(2,10,0), elevatorMidBall(2,11,0), elevatorHighBall(2,12,0),
     elevatorCargoShip(2,13,0);
-  
-  final private int buttonNum;
+    final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;
   final private double elevatorHeight; //In cm: Converted at MagicElevator
@@ -47,11 +45,9 @@ public enum ButtonEnum {
     joystickNum = numberOfJoystick;
     toggledButton = null;
     elevatorHeight = heightOfElevator;
-
   }
   public int getButtonNum() {return buttonNum;}   
   public int getJoystickNum() {return joystickNum;}   
   public TogglingButton getToggledButton(){return toggledButton;}
   public double getElevatorHeight(){return elevatorHeight;}
-
 }
