@@ -2,9 +2,8 @@
 /* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
+/* the project.                                                                */
 /*----------------------------------------------------------------------------*/
-
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -34,10 +33,14 @@ public class Robot extends TimedRobot {
   MagicInput INPUT;  
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
+  MagicPneumatics PNEUMATICS;
+  Compressor compressor = new Compressor(0);
+  DoubleSolenoid leftSolenoid = new DoubleSolenoid(4,5);
+  DoubleSolenoid rightSolenoid = new DoubleSolenoid(6,7);
   long cycles = 0;
   double forward;
   double turn;
-
+  
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -52,8 +55,8 @@ public class Robot extends TimedRobot {
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
   
   /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
    */
   @Override
   public void robotInit() {
@@ -63,42 +66,48 @@ public class Robot extends TimedRobot {
     INPUT = new MagicInput();
     OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(testElevator, INPUT);
+    PNEUMATICS = new MagicPneumatics(compressor, leftSolenoid, rightSolenoid);
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
   }
 
   /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
+   * This function is called every robot packet, no matter the mode. Use this for
+   * items like diagnostics that you want ran during disabled, autonomous,
+   * teleoperated and test.
    *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
+   * <p>
+   * This runs after the mode specific periodic functions, but before LiveWindow
+   * and SmartDashboard integrated updating.
    */
   @Override
   public void robotPeriodic() {
     INPUT.updates(); //Update the toggling booleen
     OUTPUT.checkCamSwap();
     cycles++;
-    System.out.println(driveFL.getSelectedSensorVelocity(0));
+   // System.out.println(driveFL.getSelectedSensorVelocity(0));
   }
   /**
    * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
+   * between different autonomous modes using the dashboard. The sendable chooser
+   * code works with the Java SmartDashboard. If you prefer the LabVIEW Dashboard,
+   * remove all of the chooser code and uncomment the getString line to get the
+   * auto name from the text box below the Gyro
    *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
+   * <p>
+   * You can add additional auto modes by adding additional comparisons to the
+   * switch structure below with additional strings. If using the SendableChooser
+   * make sure to add them to the chooser code above as well.
    */
 
   @Override
   public void autonomousInit() {
+    System.out.println("Starting autonomousInit - " + m_autoSelected);
+    chassisDrive.arcadeDrive(forward, turn);
     m_autoSelected = m_chooser.getSelected();
      //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    VISION.getArduino();
   }
 
   /**
@@ -107,34 +116,24 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
+    case kCustomAuto:
+      // Put custom auto code here
+      // System.out.println("Starting autonomousPeriodic - Custom auto.");
+      break;
+    case kDefaultAuto:
+    default:
+      // Put default auto code here
+      // System.out.println("Starting autonomousPeriodic - Default auto.");
+      break;
+    } // switch (m_autoSelected)
+    if (INPUT.isButtonPressed(ButtonEnum.testBool) == true) {
+      VISION.parseVal(1, 1, VISION.getArduino());
+      VISION.parseVal(2, 1, VISION.getArduino());
+      VISION.parseVal(5, 1, VISION.getArduino());
+      VISION.parseVal(6, 1, VISION.getArduino());
     }
-    if ((cycles % 1) == 0){VISION.parseJunk();}
-    if (VISION.isOnLeft()) {
-      leftSide.set(-.3);
-      rightSide.set(.10);
-      System.out.println("Left");
-    } else if (VISION.isOnRight()) {
-      leftSide.set(-.10);
-      rightSide.set(.3);
-      System.out.println("Right");
-    } else if(VISION.isInMiddle()) {
-      leftSide.set(-.3);
-      rightSide.set(.3);
-      System.out.println("Middle");
-    } else {
-      leftSide.set(0);
-      rightSide.set(0);
-      System.out.println("Nope");
-    }
-  }
- 
+    // System.out.println("auto periodic loop counter: " + counting);
+  } 
   @Override
   public void teleopInit() {
   }
@@ -146,14 +145,21 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
-    
+    if (INPUT.isButtonPressed(ButtonEnum.IntakeIn)) {
+      PNEUMATICS.setCyl(1, 1);
+      PNEUMATICS.setCyl(0, -1);
+    } else if (INPUT.isButtonPressed(ButtonEnum.IntakeOut)) {
+      PNEUMATICS.setCyl(1,-1);
+      PNEUMATICS.setCyl(0, 1);
+    } else {
+      PNEUMATICS.setCyl(1,0);
+      PNEUMATICS.setCyl(0, 0);
+    }
   }
+  
 
 
-  int testItCh1;
-  int testItCh2;
-  int testItCh0;
-  int testItCh3;
+
   /**
    * This function is called periodically during test mode.
    */
@@ -179,12 +185,7 @@ if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
 System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
 }
 @Override
-public void disabledInit()
-  {System.out.println(
-"Pdp channel 0 ran " + testItCh0 + "iterations before zeroing\n" +
-"Pdp channel 1 ran " + testItCh1 + "iterations before zeroing\n" +
-"Pdp channel 2 ran " + testItCh2 + "iterations before zeroing\n" +
-"Pdp channel 3 ran " + testItCh3 + "iterations before zeroing\n"
-);
+public void disabledInit() {
+
 }
 }

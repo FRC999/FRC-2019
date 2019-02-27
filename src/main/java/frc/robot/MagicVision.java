@@ -143,24 +143,39 @@ public class MagicVision {
     return true;
   }
   //Getters
-  public int getX(){return xVal;}
-  public int getY(){return yVal;}
-  public int getW(){return wVal;}
-  public int getH(){return hVal;}
-  public int getDist(){return distVal;}
-  public int getConf(){return confVal;}
-  public int getBlocksSeen(){return blocksSeen;}
-  public int getArduinoCounter(){return arduinoCounter;}
+  public int getX() {return xVal;}
+  public int getY() {return yVal;}
+  public int getW() {return wVal;}
+  public int getH() {return hVal;}
+  public int getDist() {return distVal;}
+  public int getConf() {return confVal;}
+  public int getBlocksSeen() {return blocksSeen;}
+  public int getArduinoCounter() {return arduinoCounter;}
 
   //Better getters
   public boolean isOnLeft(){return (xVal > min && xVal < leftMax && distVal > 500);}
   public boolean isInMiddle(){return (xVal >= leftMax && xVal <= rightMax && distVal > 500);}
   public boolean isOnRight(){return(xVal > rightMax && xVal < 316 && distVal > 500);}
-
+  public String[] getArray() {
+  String targetPosition = arduino.readString();
+    int startOfDataStream = targetPosition.indexOf("B");
+    int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+    // The indexOf method returns -1 if it can't find the char in the string
+    if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
+      targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
+      System.out.println(targetPosition);
+      if (targetPosition.startsWith("Block")) {
+        String[] positionNums = targetPosition.split(":");
+        return positionNums;
+      }
+    }
+    return null;
+  }
   /**
    * Legacy parsers, kept in case we want to update one value without messing with the others
+   * NVM, killing it with fire because that is the magic of GIT
    */
-  public int parseX(int delayCount, SerialPort arduino) {
+  public int parseVal(int index, int delayCount, SerialPort arduino) {
     counting = (counting + 1);
     if (counting == delayCount) {
       counting = 0;
@@ -175,180 +190,12 @@ public class MagicVision {
           String[] positionNums = targetPosition.split(":");
           // positionNums[0] would be "Block
           xVal = Integer.parseInt(positionNums[2]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return xVal;
-  }
-
-  public int parseY(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           yVal = Integer.parseInt(positionNums[3]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return yVal;
-  }
-
-  public int parseW(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           wVal = Integer.parseInt(positionNums[4]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return wVal;
-  }
-
-  public int parseH(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           hVal = Integer.parseInt(positionNums[5]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return hVal;
-  }
-
-  public int parseDist(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           distVal = Integer.parseInt(positionNums[6]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return distVal;
-  }
-
-  public int parseConf(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           confVal = Integer.parseInt(positionNums[7]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return confVal;
-  }
-
-  public int parseBlocks(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           blocksSeen = Integer.parseInt(positionNums[1]);
-        } else {
-          System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
-    }
-    return blocksSeen;
-  }
-
-  public int parseCounter(int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
-      int startOfDataStream = targetPosition.indexOf("B");
-      int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      // The indexOf method returns -1 if it can't find the char in the string
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
           arduinoCounter = Integer.parseInt(positionNums[8]);
         } else {
           System.out.println("Bad String from Arduino: Doesn't start with Block");
@@ -357,6 +204,38 @@ public class MagicVision {
         System.out.println("Bad String from Arduino: no carriage return character or too short");
       }
     }
-    return arduinoCounter;
+    if (index >= 0 && index <= 8) {
+    String [] val = getArray();
+    return Integer.parseInt(val[index]);
+    }
+    switch(index) {
+      case 2 : {
+        return xVal;
+      }
+      case 3 : {
+        return yVal;
+      }
+      case 4 : {
+        return wVal;
+      }
+      case 5 : {
+        return hVal;
+      }
+      case 6 : {
+        return distVal;
+      }
+      case 7 : {
+        return confVal;
+      }
+      case 8 : {
+        return arduinoCounter;
+      }
+      case 1 : {
+        return blocksSeen;
+      }
+      default : {
+        return 3000;
+      }
+    }
   }
 }

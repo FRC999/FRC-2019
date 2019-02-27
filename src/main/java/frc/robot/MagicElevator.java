@@ -35,7 +35,7 @@ public class MagicElevator {
   }
   /**
    * Converts native units to centimeters, for logging and puting back in MagicOutput.
-   * @param imput native talon units for conversion
+   * @param input native talon units for conversion
    * @return centimer height of elevator (off the ground?), iff I got my math right
    */
   public double convertFromNativeUnits(int input){
@@ -53,6 +53,9 @@ public class MagicElevator {
     if (eTarget > eMax) {eTarget = eMax;} //No going above the height limit
     if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
     INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
+  }
+  public int elevatorPos() {
+    return elevatorTalon.getSelectedSensorPosition(0);
   }
   public void elevatorPeriodic() {
     eCurrent = elevatorTalon.getSelectedSensorPosition();
