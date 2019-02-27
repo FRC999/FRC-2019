@@ -22,7 +22,7 @@ public class MagicVision {
   final int leftMax = 154;
   final int rightMax = 162;
   final int min = 0;
-  public void removeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
+  public void removeFreakingAnnoyingVSCodeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
   public MagicVision(int baud, int stop) {
     counting = 0;
     bRate = baud;

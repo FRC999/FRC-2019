@@ -8,6 +8,9 @@ import edu.wpi.first.wpilibj.Joystick;
  * brands, is designed for configuration, first and foremost.  Where is button is, and its
  * toggling behavior, is specified in ButtonEnum.  Do not use MagicInput
  * if you like writing long lines of code any time you wish to speak with the manager.
+ * 
+ * Use getJoystick() to fetch joysticks if you want to throw together a button without
+ * putting it in ButtonEnum.  Otherwise, keep buttons there.
  */
  public class MagicInput {
   Joystick driveStick;
