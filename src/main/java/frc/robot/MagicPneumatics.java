@@ -97,10 +97,25 @@ public void setOpposite(DoubleSolenoid ds, DoubleSolenoid ds2) {
         ds.set(DoubleSolenoid.Value.kForward);
         ds2.set(DoubleSolenoid.Value.kReverse);
         }
-
-public void setForwardWithDelay(DoubleSolenoid ds, DoubleSolenoid ds2, double delay) {
-    ds.set(DoubleSolenoid.Value.kForward);
+/** Sets one DoubleSolenoid to one state, waits for a certain number of cycles, then sets another DoubleSolenoid to another state.
+ * 
+ * @param ds the DoubleSolenoid to be activated first.
+ * @param stateOfDoubleSolenoid1 the state to set the first DoubleSolenoid.
+ * @param stateOfDoubleSolenoid2 the state to set the second DoubleSolenoid.
+ * @param ds2 the DoubleSolenoid to be activated second.
+ * @param delay the deay between the activations in numbers of cycles of periodic modes
+ * @param ID an arbitrary naming String to set this particular delay operation to distinguish it from any other delays happening at the time.
+ * @return true if the delay is over and the second DoubleSolenoid has been activated, false otherwise.
+*/
+public boolean setWithDelay(DoubleSolenoid ds, DoubleSolenoid.Value stateOfDoubleSolenoid1, DoubleSolenoid.Value stateOfDoubleSolenoid2, DoubleSolenoid ds2, int delay, String ID) {
     
+    ds.set(stateOfDoubleSolenoid1);
+    if (MagicDelay.getInstance().startDelay(delay, ID).test()) {
+        ds2.set(stateOfDoubleSolenoid2);
+        MagicDelay.getInstance().clearMemory();
+        return true;
+    }
+    else return false;
 }
 
 
