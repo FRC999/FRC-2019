@@ -53,7 +53,9 @@ public class Robot extends TimedRobot {
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  
+
+ static int counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -108,6 +110,7 @@ public class Robot extends TimedRobot {
      //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     VISION.getArduino();
+    counter = 0;
   }
 
   /**
@@ -115,6 +118,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    counter += 1;
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
@@ -132,10 +136,13 @@ public class Robot extends TimedRobot {
       VISION.parseVal(5, 1, VISION.getArduino());
       VISION.parseVal(6, 1, VISION.getArduino());
     }
-    // System.out.println("auto periodic loop counter: " + counting);
-  } 
+
+  }
+ 
   @Override
   public void teleopInit() {
+     counter = 0;
+
   }
 
   /**
@@ -143,6 +150,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+   counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
     if (INPUT.isButtonPressed(ButtonEnum.IntakeIn)) {
@@ -164,8 +172,10 @@ public class Robot extends TimedRobot {
    * This function is called periodically during test mode.
    */
   @Override
-  public void testPeriodic() {/* 
-//chassisDrive.arcadeDrive(0.4, 0, false);
+  public void testPeriodic() {
+
+/*
+    //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);
 rightSide.set(-.4);
     //test current draw
@@ -188,4 +198,21 @@ System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
 public void disabledInit() {
 
 }
+}
+
+/** this method counts the number of cycles the robot has been enabled in autonomous
+ *  or periodic. It returns a long. To work, it needs a "counter" variable that is initialised to zero every 
+ * Auto- or Teleop - init and increments by one in autonomous or teleop periodic.
+ *
+ * long counter = 0; 
+ *   @Override
+ * public void teleopInit() {
+ *    counter = 0; ...}
+ *  @Override
+ * public void teleopPeriodic() {
+ * counter += 1; ... }
+ */
+public static int getCycleCount() {
+return counter;
+  }
 }
