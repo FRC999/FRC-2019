@@ -1,6 +1,7 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 
@@ -12,11 +13,11 @@ public class MagicElevator {
   private WPI_TalonSRX elevatorTalon;
   MagicInput INPUT;
   int eTarget;
-  int eCurrent;
+  int eCurrent; //Must be implemented
 
   static final int eMin = 200; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 200000; //In NativeUnits: Test value: please let us test!
-  static final double spoolCircumfrence = (2*Math.PI); //In centimeters:  Require a spool to measure
+  static final double spoolCircumfrence = Math.PI * 2.54 * 2; //In centimeters:  Spool was measured at 1 inch radius
   static final int stepsPerRotation = 4096;
   
   public MagicElevator(WPI_TalonSRX tal, MagicInput in) {
@@ -51,17 +52,16 @@ public class MagicElevator {
 
     if (eTarget > eMax) {eTarget = eMax;} //No going above the height limit
     if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
-    INPUT.setElevatorTarget(convertFromNativeUnits(eTarget));
+    INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
   public int elevatorPos() {
     return elevatorTalon.getSelectedSensorPosition(0);
   }
   public void elevatorPeriodic() {
+    eCurrent = elevatorTalon.getSelectedSensorPosition();
     updateElevatorTarget();
-    moveElevator();
-    if (eTarget == eCurrent) {
-      //Put stall mode code here
-    }
+    if (eTarget == eCurrent) {elevatorTalon.setNeutralMode(NeutralMode.Brake);}
+    else {moveElevator();}
   }
   /**
    * Moves the elevator to the current target.  Or it should.

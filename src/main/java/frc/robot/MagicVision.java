@@ -22,7 +22,7 @@ public class MagicVision {
   final int leftMax = 154;
   final int rightMax = 162;
   final int min = 0;
-
+  public void removeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
   public MagicVision(int baud, int stop) {
     counting = 0;
     bRate = baud;
@@ -173,6 +173,7 @@ public class MagicVision {
   }
   /**
    * Legacy parsers, kept in case we want to update one value without messing with the others
+   * NVM, killing it with fire because that is the magic of GIT
    */
   public int parseVal(int index, int delayCount, SerialPort arduino) {
     counting = (counting + 1);

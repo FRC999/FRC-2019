@@ -6,10 +6,7 @@
 /*----------------------------------------------------------------------------*/
 package frc.robot;
 
-import edu.wpi.first.hal.PDPJNI;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -26,7 +23,7 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends IterativeRobot {
+public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
@@ -37,12 +34,11 @@ public class Robot extends IterativeRobot {
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
   MagicPneumatics PNEUMATICS;
-  Compressor compressor = new Compressor(0);
-  DoubleSolenoid leftSolenoid = new DoubleSolenoid(4,5);
-  DoubleSolenoid rightSolenoid = new DoubleSolenoid(6,7);
+
   long cycles = 0;
   double forward;
   double turn;
+  
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
@@ -55,7 +51,9 @@ public class Robot extends IterativeRobot {
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  
+
+ static int counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
+
   /**
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
@@ -68,7 +66,7 @@ public class Robot extends IterativeRobot {
     INPUT = new MagicInput();
     OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(testElevator, INPUT);
-    PNEUMATICS = new MagicPneumatics(compressor, leftSolenoid, rightSolenoid);
+    PNEUMATICS = new MagicPneumatics();
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
   }
@@ -110,6 +108,7 @@ public class Robot extends IterativeRobot {
      //autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     VISION.getArduino();
+    counter = 0;
   }
 
   /**
@@ -117,6 +116,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void autonomousPeriodic() {
+    counter += 1;
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
@@ -134,10 +134,13 @@ public class Robot extends IterativeRobot {
       VISION.parseVal(5, 1, VISION.getArduino());
       VISION.parseVal(6, 1, VISION.getArduino());
     }
-    // System.out.println("auto periodic loop counter: " + counting);
-  } 
+
+  }
+ 
   @Override
   public void teleopInit() {
+     counter = 0;
+
   }
 
   /**
@@ -145,6 +148,7 @@ public class Robot extends IterativeRobot {
    */
   @Override
   public void teleopPeriodic() {
+   counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
     if (INPUT.isButtonPressed(ButtonEnum.IntakeIn)) {
@@ -166,8 +170,10 @@ public class Robot extends IterativeRobot {
    * This function is called periodically during test mode.
    */
   @Override
-  public void testPeriodic() {/* 
-//chassisDrive.arcadeDrive(0.4, 0, false);
+  public void testPeriodic() {
+
+/*
+    //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);
 rightSide.set(-.4);
     //test current draw
@@ -190,4 +196,20 @@ System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
 public void disabledInit() {
 
 }
+
+/** this method counts the number of cycles the robot has been enabled in autonomous
+ *  or periodic. It returns a long. To work, it needs a "counter" variable that is initialised to zero every 
+ * Auto- or Teleop - init and increments by one in autonomous or teleop periodic.
+ *
+ * long counter = 0; 
+ *   @Override
+ * public void teleopInit() {
+ *    counter = 0; ...}
+ *  @Override
+ * public void teleopPeriodic() {
+ * counter += 1; ... }
+ */
+public static int getCycleCount() {
+return counter;
+  }
 }
