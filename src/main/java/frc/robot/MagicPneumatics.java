@@ -6,19 +6,19 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 /** The purpose of this class is to have methods to do anything we might want to do with pneumatics 
  *  This includes: 
- *      Starting a compressor,
- *      stopping a compressor, even in the middle of a match, 
+ *      Starting a comp,
+ *      stopping a comp, even in the middle of a match, 
  *      switching a double solenoid on and off,
  *      switching two double solenoids on or off in sync,
  *      switching two double solenoids on or off with a delay in between
  *      
 */
 public class MagicPneumatics {
-    private Compressor compressor;
+    private Compressor comp;
     private DoubleSolenoid leftCyl;
     private DoubleSolenoid rightCyl;
-    public MagicPneumatics(Compressor comp, DoubleSolenoid testLeft, DoubleSolenoid testRight) {
-        compressor = comp;
+    public MagicPneumatics(Compressor compressor, DoubleSolenoid testLeft, DoubleSolenoid testRight) {
+        comp = compressor;
         leftCyl = testLeft;
         rightCyl = testRight;
     }
@@ -51,9 +51,9 @@ public class MagicPneumatics {
     }
 }
 
-    /** create a compressor object at a specified port. returns the object and makes it this class's private compressor
+    /** create a comp object at a specified port. returns the object and makes it this class's private comp
      *  @param cLoop specifies whether closed loop control should be set 
-     *  @param port the port number of the compressor
+     *  @param port the port number of the comp
      */
     public Compressor createCompressor(int port, boolean cLoop) {
       
@@ -69,20 +69,20 @@ public class MagicPneumatics {
             return createCompressor(0, true);
     }
 
-    // a series of methods to query this class compressor
-    /** This method checks whether this class's private compressor is on.
-     *  If this method doesn't work, you didn't create a compressor!
+    // a series of methods to query this class comp
+    /** This method checks whether this class's private comp is on.
+     *  If this method doesn't work, you didn't create a comp!
      *  @see createCompressor
      */
         boolean isCompressorOn() {return comp.enabled();} 
-    /** This method checks the state of the pressure switch on this class's private compressor. If this method doesn't work, you didn't create a compressor!
+    /** This method checks the state of the pressure switch on this class's private comp. If this method doesn't work, you didn't create a comp!
      *  @return true if the pressure is too low
      *  @see createCompressor
      */
     boolean getWhetherPressureIsLow() {return comp.getPressureSwitchValue();}
 
-    /** This method checks the current on this class's private compressor. If this method doesn't work, you didn't create a compressor!
-     *  @return current consumed by the compressor in amps
+    /** This method checks the current on this class's private comp. If this method doesn't work, you didn't create a comp!
+     *  @return current consumed by the comp in amps
      *  @see createCompressor
      */
     double getCompressorCurrent() {return comp.getCompressorCurrent();}
