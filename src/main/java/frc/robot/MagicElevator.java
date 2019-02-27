@@ -53,6 +53,9 @@ public class MagicElevator {
     if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
     INPUT.setElevatorTarget(convertFromNativeUnits(eTarget));
   }
+  public int elevatorPos() {
+    return elevatorTalon.getSelectedSensorPosition(0);
+  }
   public void elevatorPeriodic() {
     updateElevatorTarget();
     moveElevator();
