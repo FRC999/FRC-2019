@@ -34,9 +34,7 @@ public class Robot extends TimedRobot {
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
   MagicPneumatics PNEUMATICS;
-  Compressor compressor = new Compressor(0);
-  DoubleSolenoid leftSolenoid = new DoubleSolenoid(4,5);
-  DoubleSolenoid rightSolenoid = new DoubleSolenoid(6,7);
+
   long cycles = 0;
   double forward;
   double turn;
@@ -68,7 +66,7 @@ public class Robot extends TimedRobot {
     INPUT = new MagicInput();
     OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(testElevator, INPUT);
-    PNEUMATICS = new MagicPneumatics(compressor, leftSolenoid, rightSolenoid);
+    PNEUMATICS = new MagicPneumatics();
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
   }
@@ -197,7 +195,6 @@ System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
 @Override
 public void disabledInit() {
 
-}
 }
 
 /** this method counts the number of cycles the robot has been enabled in autonomous

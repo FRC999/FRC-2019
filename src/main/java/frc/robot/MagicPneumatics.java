@@ -17,10 +17,11 @@ public class MagicPneumatics {
     private Compressor comp;
     private DoubleSolenoid leftCyl;
     private DoubleSolenoid rightCyl;
-    public MagicPneumatics(Compressor compressor, DoubleSolenoid testLeft, DoubleSolenoid testRight) {
-        comp = compressor;
-        leftCyl = testLeft;
-        rightCyl = testRight;
+    public MagicPneumatics() {
+        comp = createCompressor();
+        leftCyl = SolenoidEnum.leftThing.getSolenoid();
+        rightCyl = SolenoidEnum.rightThing.getSolenoid();
+
     }
     public void setCyl(int ID, int state) { // -1 for back, 0 for off, 1 for forward
     switch (state) {
@@ -93,7 +94,6 @@ public class MagicPneumatics {
     public void setForward(DoubleSolenoid ds) {
         ds.set(DoubleSolenoid.Value.kForward);
     }
-
     /**set two given double solenoids to go forward. */
     public void setForward(DoubleSolenoid ds, DoubleSolenoid ds2) {
         ds.set(DoubleSolenoid.Value.kForward);
