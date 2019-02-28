@@ -4,8 +4,8 @@ public enum ButtonEnum {
     Three(0, 3), Cog(0,4,false), testBool(0,5,false), 
     cameraChange(0,6,false), 
     elevatorUp(0,7), elevatorDown(0,8),
-    elevatorLowHatch(2,7,0), elevatorMidHatch(2,8,0), elevatorHighHatch(2,9,0),
-    elevatorLowBall(2,10,0), elevatorMidBall(2,11,0), elevatorHighBall(2,12,0),
+    elevatorLowHatch(2,7,10), elevatorMidHatch(2,8,20), elevatorHighHatch(2,9,30),
+    elevatorLowBall(2,10,40), elevatorMidBall(2,11,50), elevatorHighBall(2,12,60),
     elevatorCargoShip(2,13,0);
     final private int buttonNum;
   final private int joystickNum;

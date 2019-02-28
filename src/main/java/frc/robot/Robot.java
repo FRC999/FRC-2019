@@ -65,8 +65,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     INPUT = new MagicInput();
     OUTPUT = new MagicOutput(INPUT);
-    ELEVATOR = new MagicElevator(testElevator, INPUT);
-    PNEUMATICS = new MagicPneumatics();
+    ELEVATOR = new MagicElevator(testElevator, INPUT, (Math.PI * 2 * 2.54));
+    PNEUMATICS = new MagicPneumatics(SolenoidEnum.leftThing.getSolenoid(), SolenoidEnum.rightThing.getSolenoid());
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
   }
@@ -171,7 +171,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-
+    
 /*
     //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);

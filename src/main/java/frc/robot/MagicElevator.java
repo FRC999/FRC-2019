@@ -8,38 +8,31 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 /**
  * This class is to enable PID control of the elevator.  
  * It is untested, because *someone* needs to give us a working elevator.
+ * WARNING: GEARBOX ON COMP-BOT IS DIFFERENT THAN SISTER-BOT
  */
-public class MagicElevator {
-  private WPI_TalonSRX elevatorTalon;
-  MagicInput INPUT;
+public class MagicElevator extends MagicPID{
   int eTarget;
   int eCurrent; //Must be implemented
 
   static final int eMin = 200; //In NativeUnits: Test value: Annoy build team to get real value
-  static final int eMax = 200000; //In NativeUnits: Test value: please let us test!
-  static final double spoolCircumfrence = Math.PI * 2.54 * 2; //In centimeters:  Spool was measured at 1 inch radius
-  static final int stepsPerRotation = 4096;
-  
-  public MagicElevator(WPI_TalonSRX tal, MagicInput in) {
-    elevatorTalon = tal;
-    INPUT = in; 
+  static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
+  //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
+  /**
+   * @param tal The elevator talon
+   * @param in The MagicInput instance (till we make it a singleton)
+   * @param circ The circumference of the thing (2.54*Math.PI*2 for the elevator)
+   */
+  public MagicElevator(WPI_TalonSRX tal, MagicInput in, double circ) {
+    super(tal, in, circ);
   }
 
-  /**
-   * Converts centimeters to the native Talon units for elevator PID use
-   * @param centis Centimeter height of the elevator (off the ground? not? more testing!)
-   * @return the desired motor value
-   */
-  public int convertToNativeUnits(double centis){
-    return (int) (stepsPerRotation * (centis/spoolCircumfrence));
-  }
   /**
    * Converts native units to centimeters, for logging and puting back in MagicOutput.
    * @param input native talon units for conversion
    * @return centimer height of elevator (off the ground?), iff I got my math right
    */
   public double convertFromNativeUnits(int input){
-    return (double) ((input/stepsPerRotation)*spoolCircumfrence);
+    return (double) ((input/stepsPerRotation)*circumference);
   } 
 
   //Check if the elevator button is pressed: if yes, do stuff
@@ -54,19 +47,25 @@ public class MagicElevator {
     if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
     INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
-  public int elevatorPos() {
-    return elevatorTalon.getSelectedSensorPosition(0);
+
+  /**
+   * Gets the elevator position, you numbskull
+   * @return elevator position (In native units)
+   */
+  public int getElevatorPos() {
+    return talon.getSelectedSensorPosition(0);
   }
+
   public void elevatorPeriodic() {
-    eCurrent = elevatorTalon.getSelectedSensorPosition();
+    eCurrent = getElevatorPos();
     updateElevatorTarget();
-    if (eTarget == eCurrent) {elevatorTalon.setNeutralMode(NeutralMode.Brake);}
+    if (eCurrent == eTarget) {talon.setNeutralMode(NeutralMode.Brake);}
     else {moveElevator();}
   }
   /**
    * Moves the elevator to the current target.  Or it should.
    */
   public void moveElevator() { 
-    elevatorTalon.set(ControlMode.MotionMagic, eTarget);
+    talon.set(ControlMode.MotionMagic, eTarget);
   }
 }

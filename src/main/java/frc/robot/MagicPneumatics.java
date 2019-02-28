@@ -17,10 +17,14 @@ public class MagicPneumatics {
     private Compressor comp;
     private DoubleSolenoid leftCyl;
     private DoubleSolenoid rightCyl;
-    public MagicPneumatics() {
+    /**
+     * @param left the left double solenoid, or the main one
+     * @param right the right double solenoid, or null
+     */
+    public MagicPneumatics(DoubleSolenoid left, DoubleSolenoid right) {
         comp = createCompressor();
-        leftCyl = SolenoidEnum.leftThing.getSolenoid();
-        rightCyl = SolenoidEnum.rightThing.getSolenoid();
+        leftCyl = left;
+        rightCyl = right;
 
     }
     /**
@@ -99,6 +103,9 @@ public class MagicPneumatics {
     public void setForward(DoubleSolenoid ds) {
         ds.set(DoubleSolenoid.Value.kForward);
     }
+    public void setForward(){setForward(leftCyl);}
+    public void setRightForward(){setForward(rightCyl);}
+
     /**set two given double solenoids to go forward. */
     public void setForward(DoubleSolenoid ds, DoubleSolenoid ds2) {
         ds.set(DoubleSolenoid.Value.kForward);
@@ -109,6 +116,8 @@ public class MagicPneumatics {
     public  void setReverse(DoubleSolenoid ds) {
         ds.set(DoubleSolenoid.Value.kReverse);
     }
+    public void setReverse(){setReverse(leftCyl);}
+    public void setRightReverse(){setReverse(rightCyl);}
 
     /**set two given double solenoids to go reverse. */
     public void setReverse(DoubleSolenoid ds, DoubleSolenoid ds2) {
@@ -120,6 +129,8 @@ public class MagicPneumatics {
     public void setOff(DoubleSolenoid ds) {
         ds.set(DoubleSolenoid.Value.kOff);
     }
+    public void setOff() {setOff(leftCyl);}
+    public void setRightOff() {setOff(rightCyl);}
 
     /**set two given double solenoids to turn off. */
     public void setOff(DoubleSolenoid ds, DoubleSolenoid ds2) {
