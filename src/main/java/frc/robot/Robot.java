@@ -46,7 +46,7 @@ public class Robot extends TimedRobot {
   // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
   // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
 
-  WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
+  WPI_TalonSRX testElevator = new WPI_TalonSRX(9);
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
@@ -151,10 +151,10 @@ public class Robot extends TimedRobot {
    counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
-    if (INPUT.isButtonPressed(ButtonEnum.IntakeIn)) {
+    if (INPUT.isButtonPressed(ButtonEnum.intakeIn)) {
       PNEUMATICS.setCyl(1, 1);
       PNEUMATICS.setCyl(0, -1);
-    } else if (INPUT.isButtonPressed(ButtonEnum.IntakeOut)) {
+    } else if (INPUT.isButtonPressed(ButtonEnum.intakeOut)) {
       PNEUMATICS.setCyl(1,-1);
       PNEUMATICS.setCyl(0, 1);
     } else {
@@ -171,7 +171,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    
+    if (INPUT.isButtonPressed(ButtonEnum.intakeIn)) {
+    System.out.println(ELEVATOR.eCurrent);
+    testElevator.set(.2);
+    }
+    if (INPUT.isButtonPressed(ButtonEnum.intakeOut)) {
+      System.out.println(ELEVATOR.eCurrent);
+      testElevator.set(-.2);
+      }
 /*
     //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);

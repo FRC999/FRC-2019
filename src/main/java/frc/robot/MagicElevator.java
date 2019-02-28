@@ -14,7 +14,7 @@ public class MagicElevator extends MagicPID{
   int eTarget;
   int eCurrent; //Must be implemented
 
-  static final int eMin = 200; //In NativeUnits: Test value: Annoy build team to get real value
+  static final int eMin = 20; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
   /**
