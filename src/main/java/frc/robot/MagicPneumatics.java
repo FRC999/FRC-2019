@@ -80,7 +80,7 @@ public class MagicPneumatics {
      *  If this method doesn't work, you didn't create a comp!
      *  @see createCompressor
      */
-        boolean isCompressorOn() {return comp.enabled();} 
+    boolean isCompressorOn() {return comp.enabled();} 
     /** This method checks the state of the pressure switch on this class's private comp. If this method doesn't work, you didn't create a comp!
      *  @return true if the pressure is too low
      *  @see createCompressor
@@ -154,4 +154,5 @@ public boolean setWithDelay(DoubleSolenoid ds, DoubleSolenoid.Value stateOfDoubl
         return true;
     }
     else return false;
+}
 }
