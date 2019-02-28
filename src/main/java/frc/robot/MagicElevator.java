@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 public class MagicElevator extends MagicPID{
   int eTarget;
   int eCurrent; //Must be implemented
+  int ePrevious;
 
   static final int eMin = 20; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
@@ -39,14 +40,17 @@ public class MagicElevator extends MagicPID{
   public void updateElevatorTarget () {
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
     
-    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)) {eTarget += 20;}
-    if (INPUT.isButtonOn(ButtonEnum.elevatorDown)) {eTarget -=20;}
-    //If we also allow them to control the elevator axis via joystick, put code here
-
     if (eTarget > eMax) {eTarget = eMax;} //No going above the height limit
     if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
     INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
+
+  public double setElevatorTargetNU(int targ){
+    ePrevious = eTarget;
+    eTarget = targ;
+    return INPUT.setElevatorTarget(convertToNativeUnits(targ));
+  }
+  
 
   /**
    * Gets the elevator position, you numbskull
@@ -66,6 +70,8 @@ public class MagicElevator extends MagicPID{
    * Moves the elevator to the current target.  Or it should.
    */
   public void moveElevator() { 
-    talon.set(ControlMode.MotionMagic, eTarget);
+    if (ePrevious != eTarget){
+      talon.set(ControlMode.MotionMagic, eTarget);
+    }
   }
 }

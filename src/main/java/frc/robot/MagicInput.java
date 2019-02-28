@@ -113,7 +113,11 @@ import edu.wpi.first.wpilibj.Joystick;
           elevatorTarget = bob.getElevatorHeight();
         }
       }
+    
     }
+    elevatorTarget += getElevatorAdjuster() * .01; //Configure speed here
+    if (isButtonOn(ButtonEnum.elevatorUp)){elevatorTarget +=.1;}
+    if (isButtonOn(ButtonEnum.elevatorDown)){elevatorTarget -=.1;}
   }
   /**
    * Returns the joystick at the given port: not currently used
