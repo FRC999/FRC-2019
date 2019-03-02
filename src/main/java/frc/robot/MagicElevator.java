@@ -41,7 +41,7 @@ public class MagicElevator extends MagicPID{
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
     
     //if (eTarget > eMax) {eTarget = eMax; System.out.println("over max");} //No going above the height limit
-    if (eTarget < eMin) {eTarget = eMin; System.out.println("under min");} //No going below it, either
+    //if (eTarget < eMin) {eTarget = eMin; System.out.println("under min");} //No going below it, either
     INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
 

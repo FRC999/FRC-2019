@@ -171,11 +171,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
+    
     INPUT.updates();
+    /*
     System.out.println(INPUT.getElevatorTarget());
     ELEVATOR.elevatorPeriodic();
     System.out.println(ELEVATOR.getElevatorPos());
-
+    */
+    if (INPUT.isButtonOn(ButtonEnum.Three)){
+    if (INPUT.isButtonOn(ButtonEnum.testBool)){
+    testElevator.set(.2);}
+    if (!INPUT.isButtonOn(ButtonEnum.testBool)){testElevator.set(-.2);}
+    }
 /*
     //chassisDrive.arcadeDrive(0.4, 0, false);
 leftSide.set(.4);
