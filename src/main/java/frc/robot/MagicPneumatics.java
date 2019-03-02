@@ -155,3 +155,4 @@ public boolean setWithDelay(DoubleSolenoid ds, DoubleSolenoid.Value stateOfDoubl
     }
     else return false;
 }
+}
