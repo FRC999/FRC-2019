@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -63,7 +62,7 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    INPUT = new MagicInput();
+    INPUT = MagicInput.getInstance();
     //OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(9, INPUT);
     ELEVATOR.freeze();
@@ -150,11 +149,7 @@ public class Robot extends TimedRobot {
     OUTPUT.checkCamSwap();
     counter += 1;
     //Drive code: Jack says that's all I need
-
-    
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
-    
-   
   }
   
 

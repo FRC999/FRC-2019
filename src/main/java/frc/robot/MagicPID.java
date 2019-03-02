@@ -11,6 +11,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 /**
  * Intended to provide a common ground for all PID systems to make things easier (ish)
  * Inherited by class MagicElevator
+ * heavily based on CTRE's example PID code
  */
 public abstract class MagicPID {
   protected WPI_TalonSRX talon;
@@ -50,13 +51,16 @@ public abstract class MagicPID {
 
 /**
    * @param _tal The talon
-   * @param IN The MagicInput instance (till we make it a singleton)
    * @param cir The circumference of the thing (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
+   * @param smoothee how much scurve smoothing to apply
+   * @param slot "Which PID slot to pull gains from. Starting 2018, you can choose from
+	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based configuration." NOT the port number.
+   * @param port the port number of the talon
    */
-  MagicPID(MagicInput IN, double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee) {
-    talon = new WPI_TalonSRX(slot);
-    INPUT = IN;
+  MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port) {
+    talon = new WPI_TalonSRX(port);
+    INPUT = MagicInput.getInstance();
     circumference = cir;
     gearRatio = gearRat;
     kP = P;
