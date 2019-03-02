@@ -160,7 +160,10 @@ public class Robot extends TimedRobot {
     } else {
       PNEUMATICS.setCyl(1,0);
       PNEUMATICS.setCyl(0, 0);
-    }
+    if (MagicDelay.getInstance().startDelay(100, "TEST").test()) {
+      System.out.println("Delay is over at " + counter);
+      MagicDelay.getInstance().clearMemory();}
+      
   }
   
 
