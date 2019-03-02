@@ -5,6 +5,9 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
+
 /**
  * Intended to provide a common ground for all PID systems to make things easier (ish)
  * Inherited by class MagicElevator
@@ -51,8 +54,8 @@ public abstract class MagicPID {
    * @param cir The circumference of the thing (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
    */
-  MagicPID(WPI_TalonSRX _tal, MagicInput IN, double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee) {
-    talon = _tal;
+  MagicPID(MagicInput IN, double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee) {
+    talon = new WPI_TalonSRX(slot);
     INPUT = IN;
     circumference = cir;
     gearRatio = gearRat;
@@ -63,6 +66,8 @@ public abstract class MagicPID {
     kPeakOutput = peakOutput;
     kSlotIdx = slot;
     _smoothing = smoothee;
+
+
     
   
     
@@ -127,5 +132,11 @@ public abstract class MagicPID {
   public double convertFromNativeUnits(int input){
     return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
   } 
+
+  public void freeze(){talon.setNeutralMode(NeutralMode.Brake);}
+
+  public void moveTo(int newPos){talon.set(ControlMode.MotionMagic, newPos);}
+
+  public WPI_TalonSRX getTalon(){return talon;}
 
 }

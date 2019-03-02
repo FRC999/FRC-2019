@@ -46,7 +46,6 @@ public class Robot extends TimedRobot {
   // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
   // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
 
-  WPI_TalonSRX testElevator = new WPI_TalonSRX(9);
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
@@ -65,7 +64,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     INPUT = new MagicInput();
     //OUTPUT = new MagicOutput(INPUT);
-    ELEVATOR = new MagicElevator(testElevator, INPUT);
+    ELEVATOR = new MagicElevator(9, INPUT);
     PNEUMATICS = new MagicPneumatics(SolenoidEnum.leftThing.getSolenoid(), SolenoidEnum.rightThing.getSolenoid());
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
@@ -138,7 +137,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
      counter = 0;
-
   }
 
   /**
@@ -148,7 +146,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     INPUT.updates(); //Update the toggling booleen
     OUTPUT.checkCamSwap();
-   counter += 1;
+    counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
     if (INPUT.isButtonPressed(ButtonEnum.intakeIn)) {
@@ -178,48 +176,7 @@ public class Robot extends TimedRobot {
     ELEVATOR.elevatorPeriodic();
     System.out.println(ELEVATOR.getElevatorPos());
     */
-    if (INPUT.isButtonOn(ButtonEnum.Three)){
-    if (INPUT.isButtonOn(ButtonEnum.testBool)){
-    testElevator.set(.2);}
-    if (!INPUT.isButtonOn(ButtonEnum.testBool)){testElevator.set(-.2);}
-    }
-/*
-    //chassisDrive.arcadeDrive(0.4, 0, false);
-leftSide.set(.4);
-rightSide.set(-.4);
-    //test current draw
- // System.out.println("Input voltage = " + PDPJNI.getPDPVoltage(m_handle));
-  System.out.println("total current of all monitored PDP channels = " + testPDPJNI.getPDPTotalCurrent(m_handle));
-  //System.out.println("total energy in J of monitored channels = " + PDPJNI.getPDPTotalEnergy(m_handle));
-  System.out.println(
-    "current of: \nch.0 = " + PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle)
-   //+ ",\nch. 1 = " +PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle)
-   // + ",\nch. 2 = " + PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) + 
-  +  ", \nch. 3 = " + PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) );
-//System.out.println("total power(W):" + pdp.getTotalPower());
-if (PDPJNI.getPDPChannelCurrent((byte) 0,  m_handle) != 0.0) {testItCh0++;}
-if (PDPJNI.getPDPChannelCurrent((byte) 1,  m_handle) != 0.0) {testItCh1++;}
-if (PDPJNI.getPDPChannelCurrent((byte) 2,  m_handle) != 0.0) {testItCh2++;}
-if (PDPJNI.getPDPChannelCurrent((byte) 3,  m_handle) != 0.0) {testItCh3++;
-System.out.println("channel 3 has run for " + testItCh3 + " iterations");} */
-}
-@Override
-public void disabledInit() {
-
-}
-
-/** this method counts the number of cycles the robot has been enabled in autonomous
- *  or periodic. It returns a long. To work, it needs a "counter" variable that is initialised to zero every 
- * Auto- or Teleop - init and increments by one in autonomous or teleop periodic.
- *
- * long counter = 0; 
- *   @Override
- * public void teleopInit() {
- *    counter = 0; ...}
- *  @Override
- * public void teleopPeriodic() {
- * counter += 1; ... }
- */
+  }
 public static int getCycleCount() {
   return counter;
   }
