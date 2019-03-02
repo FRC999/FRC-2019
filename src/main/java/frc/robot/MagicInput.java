@@ -17,6 +17,9 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick turnStick;
   Joystick copilotStick;
   double elevatorTarget;
+
+  final static double deadzoneRaius = .01;
+
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case 
    */
@@ -64,13 +67,22 @@ import edu.wpi.first.wpilibj.Joystick;
       return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());
     return false;
   }
+
+  double joystickDeadzoneTest(double toTest){
+    if(Math.abs(toTest) > deadzoneRaius){
+      return toTest; 
+    }
+    else return 0;
+  }
+
   /**
    * Gets how far forward or back the drive stick is.  Hopefully.
    * @return a double between -1 and 1, with one being all the way forward
    */
+
   double getDrive(){
     if (driveStick != null){
-      return driveStick.getRawAxis(1);
+      return joystickDeadzoneTest(driveStick.getRawAxis(1));
     }
     return 0;
   }
@@ -80,7 +92,7 @@ import edu.wpi.first.wpilibj.Joystick;
    */
   double getTurn(){
     if (turnStick != null){
-      return turnStick.getRawAxis(0);
+      return joystickDeadzoneTest(turnStick.getRawAxis(0));
     }
     return 0;
   }
@@ -91,7 +103,7 @@ import edu.wpi.first.wpilibj.Joystick;
    */
   double getElevatorAdjuster(){
     if (copilotStick != null){
-      return copilotStick.getRawAxis(0);
+      return joystickDeadzoneTest(copilotStick.getRawAxis(0));
     }
     return 0;
   }
