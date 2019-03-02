@@ -1,7 +1,10 @@
 package frc.robot;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 /**
  * Intended to provide a common ground for all PID systems to make things easier (ish)
  * Inherited by class MagicElevator
@@ -14,17 +17,97 @@ public abstract class MagicPID {
   final double circumference;
   final double gearRatio;
 
+  /**
+	 * Which PID slot to pull gains from. Starting 2018, you can choose from
+	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based
+	 * configuration.
+	 */
+	public final int kSlotIdx;
+
+	/**
+	 * Talon SRX/ Victor SPX will supported multiple (cascaded) PID loops. For
+	 * now we just want the primary one.
+	 */
+	public static final int kPIDLoopIdx = 0;
+
+	/**
+	 * set to zero to skip waiting for confirmation, set to nonzero to wait and
+	 * report to DS if action fails.
+	 */
+  public static final int kTimeoutMs = 0;
+  
+  public final double kP;
+  public final double kI;
+  public final double kD;
+  public final double kF;
+  public final int iZone = 0;
+  public final double kPeakOutput;
+  public final int _smoothing;
+
+
 /**
    * @param _tal The talon
    * @param IN The MagicInput instance (till we make it a singleton)
    * @param cir The circumference of the thing (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
    */
-  MagicPID(WPI_TalonSRX _tal, MagicInput IN, double cir, double gearRat) {
+  MagicPID(WPI_TalonSRX _tal, MagicInput IN, double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee) {
     talon = _tal;
     INPUT = IN;
     circumference = cir;
     gearRatio = gearRat;
+    kP = P;
+    kI = I;
+    kD = D;
+    kF = F;
+    kPeakOutput = peakOutput;
+    kSlotIdx = slot;
+    _smoothing = smoothee;
+    
+  
+    
+    /* Factory default hardware to prevent unexpected behavior */
+    talon.configFactoryDefault();
+    
+  	/**
+		 * Configure Talon SRX Output and Sesnor direction accordingly
+		 * Invert Motor to have green LEDs when driving Talon Forward / Requesting Postiive Output
+		 * Phase sensor to have positive increment when driving Talon Forward (Green LED)
+		 */
+		talon.setSensorPhase(true);
+		talon.setInverted(false);
+
+		/* Configure Sensor Source for Pirmary PID */
+    talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
+    kPIDLoopIdx, 
+    kTimeoutMs);
+
+    /* Set relevant frame periods to be at least as fast as periodic rate */
+		talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
+		talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
+
+		/* Set the peak and nominal outputs */
+		talon.configNominalOutputForward(0, kTimeoutMs);
+		talon.configNominalOutputReverse(0, kTimeoutMs);
+		talon.configPeakOutputForward(1, kTimeoutMs);
+		talon.configPeakOutputReverse(-1, kTimeoutMs);
+
+    /* Set Motion Magic gains in slot0 - see documentation */
+    talon.selectProfileSlot(kSlotIdx, kPIDLoopIdx);
+    talon.config_kF(kSlotIdx, kF, kTimeoutMs);
+		talon.config_kP(kSlotIdx, kP, kTimeoutMs);
+		talon.config_kI(kSlotIdx, kI, kTimeoutMs);
+    talon.config_kD(kSlotIdx, kD, kTimeoutMs);
+    
+  	/* Set acceleration and vcruise velocity - see documentation */
+    talon.configMotionCruiseVelocity(15000, kTimeoutMs);
+    talon.configMotionAcceleration(6000, kTimeoutMs);
+    
+  	/* Zero the sensor */
+    talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+
+    // Use magical S- Curve magic
+    talon.configMotionSCurveStrength(_smoothing);
   }
 
   /**
