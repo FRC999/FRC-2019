@@ -17,18 +17,17 @@ public class MagicElevator extends MagicPID{
   static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
   /**
-   * @param tal The elevator talon
-   * @param in The MagicInput instance (till we make it a singleton)
+   * @param port The number of the elevator talon
    */
-  public MagicElevator(int slot, MagicInput in) {
-    super(in, 2.54*2*Math.PI, 1, .2, .0, .2, .2, 1.0, slot, _smoothing); 
-    //    input  circum.  gearRat S   P   D   I    F   slot#   s-curve smoothing
+  public MagicElevator(int port) {
+    super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,      port); // numbers are made up
+    //      circum.       gearRat  S   P   D   I    F   slot#   s-curve smoothing, port #
   }
 
   /**
    * Converts native units to centimeters, for logging and puting back in MagicOutput.
    * @param input native talon units for conversion
-   * @return centimer height of elevator (off the ground?), iff I got my math right
+   * @return centimeter height of elevator (off the ground?), iff I got my math right
    */
   public double convertFromNativeUnits(int input){
     return (double) ((input/stepsPerRotation)*circumference);

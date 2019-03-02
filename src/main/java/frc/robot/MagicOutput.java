@@ -18,8 +18,8 @@ public class MagicOutput{
   static final int CAMPORT1 = 0;
   static final int CAMPORT2 = 1;
 
-  MagicOutput(MagicInput inputToUse){
-    INPUT=inputToUse;
+  MagicOutput(){
+    INPUT= MagicInput.getInstance();
     backCam = CameraServer.getInstance().startAutomaticCapture(0);
     frontCam = CameraServer.getInstance().startAutomaticCapture(1);
     camServer = CameraServer.getInstance().getServer();
