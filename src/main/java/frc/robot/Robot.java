@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -59,6 +60,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    testElevator.setNeutralMode(NeutralMode.Brake);
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
@@ -148,20 +150,28 @@ public class Robot extends TimedRobot {
     OUTPUT.checkCamSwap();
     counter += 1;
     //Drive code: Jack says that's all I need
-    chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
-    if (INPUT.isButtonPressed(ButtonEnum.intakeIn)) {
-      PNEUMATICS.setCyl(1, 1);
-      PNEUMATICS.setCyl(0, -1);
-    } else if (INPUT.isButtonPressed(ButtonEnum.intakeOut)) {
-      PNEUMATICS.setCyl(1,-1);
-      PNEUMATICS.setCyl(0, 1);
+
+    if (INPUT.isButtonPressed(ButtonEnum.elevatorUp) == true && INPUT.isButtonPressed(ButtonEnum.elevatorDown) == false) {
+      testElevator.set(.5);
+    } else if (INPUT.isButtonPressed(ButtonEnum.elevatorDown) == true && INPUT.isButtonPressed(ButtonEnum.elevatorUp) == false)  {
+      testElevator.set(-.5);
     } else {
-      PNEUMATICS.setCyl(1,0);
-      PNEUMATICS.setCyl(0, 0); }
-    if (MagicDelay.getInstance().startDelay(100, "TEST").test()) {
-      System.out.println("Delay is over at " + counter);
-      MagicDelay.getInstance().clearMemory();}
-      
+      testElevator.set(0);
+    }
+    chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
+    if (INPUT.isButtonPressed(ButtonEnum.IntakeIn)) {
+      testElevator.set(.2);
+      //    PNEUMATICS.setCyl(1, 1);
+   //   PNEUMATICS.setCyl(0, -1);
+    } else if (INPUT.isButtonPressed(ButtonEnum.IntakeOut)) {
+      testElevator.set(-.2);
+      //  PNEUMATICS.setCyl(1,-1);
+    //  PNEUMATICS.setCyl(0, 1);
+    } else {
+      testElevator.set(0);
+    //  PNEUMATICS.setCyl(1,0);
+    //  PNEUMATICS.setCyl(0, 0);
+    }
   }
   
 
