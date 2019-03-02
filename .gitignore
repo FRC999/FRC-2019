@@ -16,3 +16,5 @@ hs_err_pid*
 *.lock
 *.bin
 /bin
+build/libs/FRC-2019.jar
+build/libs/FRC-2019.jar
