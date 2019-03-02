@@ -11,9 +11,10 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
  * WARNING: GEARBOX ON COMP-BOT IS DIFFERENT THAN SISTER-BOT
  */
 public class MagicElevator extends MagicPID{
-  int eTarget;
+  int eTarget = eMin;
   int eCurrent; //Must be implemented
-  int ePrevious;
+  int ePrevTarg;
+
 
   static final int eMin = 20; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
@@ -21,10 +22,9 @@ public class MagicElevator extends MagicPID{
   /**
    * @param tal The elevator talon
    * @param in The MagicInput instance (till we make it a singleton)
-   * @param circ The circumference of the thing (2.54*Math.PI*2 for the elevator)
    */
-  public MagicElevator(WPI_TalonSRX tal, MagicInput in, double circ) {
-    super(tal, in, circ);
+  public MagicElevator(WPI_TalonSRX tal, MagicInput in) {
+    super(tal, in, 2.54*2*Math.PI, 1);
   }
 
   /**
@@ -40,13 +40,13 @@ public class MagicElevator extends MagicPID{
   public void updateElevatorTarget () {
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
     
-    if (eTarget > eMax) {eTarget = eMax;} //No going above the height limit
-    if (eTarget < eMin) {eTarget = eMin;} //No going below it, either
+    //if (eTarget > eMax) {eTarget = eMax; System.out.println("over max");} //No going above the height limit
+    if (eTarget < eMin) {eTarget = eMin; System.out.println("under min");} //No going below it, either
     INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
 
   public double setElevatorTargetNU(int targ){
-    ePrevious = eTarget;
+    ePrevTarg = eTarget;
     eTarget = targ;
     return INPUT.setElevatorTarget(convertToNativeUnits(targ));
   }
@@ -70,8 +70,9 @@ public class MagicElevator extends MagicPID{
    * Moves the elevator to the current target.  Or it should.
    */
   public void moveElevator() { 
-    if (ePrevious != eTarget){
+    if (ePrevTarg != eTarget){
       talon.set(ControlMode.MotionMagic, eTarget);
+      System.out.println("Elevator in motion");
     }
   }
 }

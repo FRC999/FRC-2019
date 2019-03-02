@@ -3,8 +3,8 @@ package frc.robot;
 import com.kauailabs.navx.frc.AHRS;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 /**
- * Intended to provide a common ground for all PID systems to make things easier
- * Inherited by classes
+ * Intended to provide a common ground for all PID systems to make things easier (ish)
+ * Inherited by class MagicElevator
  */
 public abstract class MagicPID {
   protected WPI_TalonSRX talon;
@@ -12,25 +12,28 @@ public abstract class MagicPID {
 
   static final int stepsPerRotation = 4096;
   final double circumference;
+  final double gearRatio;
 
 /**
-   * @param tal The talon
-   * @param in The MagicInput instance (till we make it a singleton)
-   * @param circ The circumference of the thing (2.54*Math.PI*2 for the elevator)
+   * @param _tal The talon
+   * @param IN The MagicInput instance (till we make it a singleton)
+   * @param cir The circumference of the thing (2.54*Math.PI*2 for the elevator)
+   * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
    */
-  MagicPID(WPI_TalonSRX _tal, MagicInput IN, double cir) {
+  MagicPID(WPI_TalonSRX _tal, MagicInput IN, double cir, double gearRat) {
     talon = _tal;
     INPUT = IN;
     circumference = cir;
+    gearRatio = gearRat;
   }
 
   /**
    * Converts centimeters to the native Talon units for elevator PID use
-   * @param centis Centimeter height of the elevator (off the ground? not? more testing!)
+   * @param imput Centimeter height of the elevator (off the ground? not? more testing!)
    * @return the desired motor value
    */
-  public int convertToNativeUnits(double centis){
-    return (int) (stepsPerRotation * (centis/circumference));
+  public int convertToNativeUnits(double imput){
+    return (int) (stepsPerRotation * (imput/circumference) * gearRatio);
   }
 
     /**
@@ -39,7 +42,7 @@ public abstract class MagicPID {
    * @return centimer height of elevator (off the ground?), iff I got my math right
    */
   public double convertFromNativeUnits(int input){
-    return (double) ((input/stepsPerRotation)*circumference);
+    return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
   } 
 
 }

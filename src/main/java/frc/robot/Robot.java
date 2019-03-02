@@ -64,8 +64,8 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
     INPUT = new MagicInput();
-    OUTPUT = new MagicOutput(INPUT);
-    ELEVATOR = new MagicElevator(testElevator, INPUT, (Math.PI * 2 * 2.54));
+    //OUTPUT = new MagicOutput(INPUT);
+    ELEVATOR = new MagicElevator(testElevator, INPUT);
     PNEUMATICS = new MagicPneumatics(SolenoidEnum.leftThing.getSolenoid(), SolenoidEnum.rightThing.getSolenoid());
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
@@ -82,8 +82,6 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    INPUT.updates(); //Update the toggling booleen
-    OUTPUT.checkCamSwap();
     cycles++;
    // System.out.println(driveFL.getSelectedSensorVelocity(0));
   }
@@ -148,6 +146,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    INPUT.updates(); //Update the toggling booleen
+    OUTPUT.checkCamSwap();
    counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
@@ -214,6 +214,6 @@ public void disabledInit() {
  * counter += 1; ... }
  */
 public static int getCycleCount() {
-return counter;
+  return counter;
   }
 }

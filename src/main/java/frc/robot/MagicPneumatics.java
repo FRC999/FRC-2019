@@ -66,11 +66,16 @@ public class MagicPneumatics {
      *  @param port the port number of the comp
      */
     public Compressor createCompressor(int port, boolean cLoop) {
-      
-            Compressor c = new Compressor(port);
-            comp = c;
-            c.setClosedLoopControl(cLoop);
-            return c;
+            try {
+                Compressor c = new Compressor(port);
+                comp = c;
+                c.setClosedLoopControl(cLoop);
+                return c;
+
+            } catch (Exception e) {
+                System.out.println("Well shoot, compresser startup failed");
+                return null;
+            }
     }
     public Compressor createCompressor(int port) {
             return createCompressor(port, true);
