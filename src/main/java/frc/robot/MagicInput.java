@@ -24,7 +24,7 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick copilotStick;
   double elevatorTarget;
 
-  final static double deadzoneRaius = .01;
+  final static double deadzoneRadius = .01;
 
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case 
@@ -75,7 +75,7 @@ import edu.wpi.first.wpilibj.Joystick;
   }
 
   double joystickDeadzoneTest(double toTest){
-    if(Math.abs(toTest) > deadzoneRaius){
+    if(Math.abs(toTest) > deadzoneRadius){
       return toTest; 
     }
     else return 0;

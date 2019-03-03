@@ -9,6 +9,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,15 +41,18 @@ public class Robot extends TimedRobot {
   double turn;
   
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
-  WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
-  WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
-  WPI_TalonSRX driveRR = new WPI_TalonSRX(4); //Rear Right left tank drive motor
+   WPI_VictorSPX driveML = new WPI_VictorSPX(2); //middle left tank drive motor
+  WPI_VictorSPX driveRL = new WPI_VictorSPX(3); //rear left tank drive motor
+  WPI_TalonSRX driveFR = new WPI_TalonSRX(4); //Front Right left tank driv
+  WPI_VictorSPX driveMR = new WPI_VictorSPX(5); // middle right tank drive motor
+  WPI_VictorSPX driveRR = new WPI_VictorSPX(6); // rear right tank drive motor
+
   // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
   // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
 
 
-  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
-  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
+  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveML, driveRL);
+  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveML, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
 
  static int counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
@@ -64,7 +68,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     INPUT = MagicInput.getInstance();
     //OUTPUT = new MagicOutput(INPUT);
-    ELEVATOR = new MagicElevator(9, INPUT);
+    ELEVATOR = new MagicElevator(9);
     ELEVATOR.freeze();
     PNEUMATICS = new MagicPneumatics(SolenoidEnum.leftThing.getSolenoid(), SolenoidEnum.rightThing.getSolenoid());
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);

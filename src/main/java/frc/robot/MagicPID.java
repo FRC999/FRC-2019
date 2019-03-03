@@ -9,9 +9,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 
 /**
- * Intended to provide a common ground for all PID systems to make things easier (ish)
- * Inherited by class MagicElevator
- * heavily based on CTRE's example PID code
+ * Intended to provide a common ground for all PID systems to make things easier (ish).
+ * Each instance builds and operates one WPI_TalonSRX for PID control. 
+ * Inherited by classes MagicElevator, MagicClimber, . 
+ * heavily based on CTRE's example PID code,
+ * @see https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/92520fe425e63520f4a8e73ab3edac9890eeaeff/Java/MotionMagic/src/main/java/frc/robot/Robot.java
  */
 public abstract class MagicPID {
   protected WPI_TalonSRX talon;
@@ -50,13 +52,13 @@ public abstract class MagicPID {
 
 
 /**
-   * @param _tal The talon
-   * @param cir The circumference of the thing (2.54*Math.PI*2 for the elevator)
+   * 
+   * @param cir The circumference of the spool/wheel (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
    * @param smoothee how much scurve smoothing to apply
    * @param slot "Which PID slot to pull gains from. Starting 2018, you can choose from
 	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based configuration." NOT the port number.
-   * @param port the port number of the talon
+   * @param port the port number of the talon that this class operates
    */
   MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port) {
     talon = new WPI_TalonSRX(port);
@@ -86,7 +88,7 @@ public abstract class MagicPID {
 		talon.setSensorPhase(true);
 		talon.setInverted(false);
 
-		/* Configure Sensor Source for Pirmary PID */
+		/* Configure Sensor Source for Primary PID */
     talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
     kPIDLoopIdx, 
     kTimeoutMs);
@@ -121,11 +123,11 @@ public abstract class MagicPID {
 
   /**
    * Converts centimeters to the native Talon units for elevator PID use
-   * @param imput Centimeter height of the elevator (off the ground? not? more testing!)
+   * @param input Centimeter height of the elevator (off the ground? not? more testing!)
    * @return the desired motor value
    */
-  public int convertToNativeUnits(double imput){
-    return (int) (stepsPerRotation * (imput/circumference) * gearRatio);
+  public int convertToNativeUnits(double input){
+    return (int) (stepsPerRotation * (input/circumference) * gearRatio);
   }
 
     /**
@@ -136,9 +138,12 @@ public abstract class MagicPID {
   public double convertFromNativeUnits(int input){
     return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
   } 
-
+/**sets the talon's neutral mode to brake */
   public void freeze(){talon.setNeutralMode(NeutralMode.Brake);}
-
+/** sets the talon's motionmagic to move to a new position.
+ * 
+ * @param newPos the setpoint "in encoder ticks or an analog value, depending on the sensor", according to CTRE's javadocs on the WPI_TalonSRX
+*/
   public void moveTo(int newPos){talon.set(ControlMode.MotionMagic, newPos);}
 
   public WPI_TalonSRX getTalon(){return talon;}
