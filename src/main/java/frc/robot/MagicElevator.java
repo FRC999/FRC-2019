@@ -33,19 +33,43 @@ public class MagicElevator extends MagicPID{
     return (double) ((input/stepsPerRotation)*circumference);
   } 
 
-  //Check if the elevator button is pressed: if yes, do stuff
+  /**
+   * Check if the elevator button is pressed: if yes, do stuff
+   * Includes min/max validation
+   *  
+   */
+  
   public void updateElevatorTarget () {
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
+    eTarget = validateTarget(eTarget);
     
-    //if (eTarget > eMax) {eTarget = eMax; System.out.println("over max");} //No going above the height limit
-    //if (eTarget < eMin) {eTarget = eMin; System.out.println("under min");} //No going below it, either
-    INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
 
+  public int validateTarget(int targ){
+    if (targ > eMax) {
+      System.out.println("over max");
+      return eMax;
+    } 
+    else if (targ < eMin) {
+      targ = eMin; 
+      System.out.println("under min");
+      return eMin;
+    }
+    else{
+      return targ;
+    }
+  }
+
+  /**
+   * Changes the elevator target to whatever it is given
+   * Including the target stored in MagicInput
+   * Has validation
+   */
   public double setElevatorTargetNU(int targ){
+    targ = validateTarget(targ);
     ePrevTarg = eTarget;
     eTarget = targ;
-    return INPUT.setElevatorTarget(convertToNativeUnits(targ));
+    return INPUT.setElevatorTarget(convertFromNativeUnits(targ));
   }
   
 

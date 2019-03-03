@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     INPUT = MagicInput.getInstance();
     //OUTPUT = new MagicOutput(INPUT);
-    ELEVATOR = new MagicElevator(9, INPUT);
+    ELEVATOR = new MagicElevator(9);
     ELEVATOR.freeze();
     PNEUMATICS = new MagicPneumatics(SolenoidEnum.leftThing.getSolenoid(), SolenoidEnum.rightThing.getSolenoid());
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
@@ -165,6 +165,9 @@ public class Robot extends TimedRobot {
     System.out.println(INPUT.getElevatorTarget());
     ELEVATOR.elevatorPeriodic();
     System.out.println(ELEVATOR.getElevatorPos());
+    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){
+    ELEVATOR.zeroSensor();
+    }
     
   }
 public static int getCycleCount() {

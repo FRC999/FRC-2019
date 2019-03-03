@@ -120,6 +120,12 @@ public abstract class MagicPID {
   }
 
   /**
+   * Zero sensor 
+   */
+  public void zeroSensor(){
+    talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+  }
+  /**
    * Converts centimeters to the native Talon units for elevator PID use
    * @param imput Centimeter height of the elevator (off the ground? not? more testing!)
    * @return the desired motor value
