@@ -48,14 +48,14 @@ public class MagicElevator extends MagicPID{
 
   public int validateTarget(int targ){
     if (targ > eMax) {
-      targ = eMax;
+      targ = eMax-1;
       System.out.println("over max");
       setElevatorTargetNU(targ);
 
       return eMax;
     } 
     else if (targ < eMin) {
-      targ = eMin; 
+      targ = eMin+1; 
       System.out.println("under min");
       setElevatorTargetNU(targ);
 
