@@ -15,7 +15,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  * heavily based on CTRE's example PID code,
  * @see https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/92520fe425e63520f4a8e73ab3edac9890eeaeff/Java/MotionMagic/src/main/java/frc/robot/Robot.java
  */
-public abstract class MagicPID {
+public class MagicPID {
   protected WPI_TalonSRX talon;
   MagicInput INPUT;
 
@@ -147,5 +147,7 @@ public abstract class MagicPID {
   public void moveTo(int newPos){talon.set(ControlMode.MotionMagic, newPos);}
 
   public WPI_TalonSRX getTalon(){return talon;}
+
+  public void zeroSensor() {talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);}
 
 }
