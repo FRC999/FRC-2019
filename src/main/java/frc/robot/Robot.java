@@ -169,6 +169,9 @@ public class Robot extends TimedRobot {
     System.out.println(INPUT.getElevatorTarget());
     ELEVATOR.elevatorPeriodic();
     System.out.println(ELEVATOR.getElevatorPos());
+    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){
+    ELEVATOR.zeroSensor();
+    }
     
   }
 public static int getCycleCount() {

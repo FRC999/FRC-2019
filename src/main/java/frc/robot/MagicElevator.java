@@ -14,7 +14,7 @@ public class MagicElevator extends MagicPID{
   static final int _smoothing = 0;
   
   static final int eMin = 20; //In NativeUnits: Test value: Annoy build team to get real value
-  static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
+  static final int eMax = 90000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
   /**
    * @param port The number of the elevator talon
@@ -33,19 +33,49 @@ public class MagicElevator extends MagicPID{
     return (double) ((input/stepsPerRotation)*circumference);
   } 
 
-  //Check if the elevator button is pressed: if yes, do stuff
+  /**
+   * Check if the elevator button is pressed: if yes, do stuff
+   * Includes min/max validation
+   *  
+   */
+  
   public void updateElevatorTarget () {
+    ePrevTarg = eTarget;
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
+    eTarget = validateTarget(eTarget);
     
-    //if (eTarget > eMax) {eTarget = eMax; System.out.println("over max");} //No going above the height limit
-    //if (eTarget < eMin) {eTarget = eMin; System.out.println("under min");} //No going below it, either
-    INPUT.setElevatorTarget(convertFromNativeUnits(eTarget)); //Update the validated target in MagicInput
   }
 
+  public int validateTarget(int targ){
+    if (targ > eMax) {
+      targ = eMax-1;
+      System.out.println("over max");
+      setElevatorTargetNU(targ);
+
+      return eMax;
+    } 
+    else if (targ < eMin) {
+      targ = eMin+1; 
+      System.out.println("under min");
+      setElevatorTargetNU(targ);
+
+      return eMin;
+    }
+    else{
+      return targ;
+    }
+  }
+
+  /**
+   * Changes the elevator target to whatever it is given
+   * Including the target stored in MagicInput
+   * Has validation
+   */
   public double setElevatorTargetNU(int targ){
+    targ = validateTarget(targ);
     ePrevTarg = eTarget;
     eTarget = targ;
-    return INPUT.setElevatorTarget(convertToNativeUnits(targ));
+    return INPUT.setElevatorTarget(convertFromNativeUnits(targ));
   }
   
 

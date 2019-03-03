@@ -133,9 +133,9 @@ import edu.wpi.first.wpilibj.Joystick;
       }
     
     }
-    elevatorTarget += getElevatorAdjuster() * .01; //Configure speed here
-    if (isButtonOn(ButtonEnum.elevatorUp)){elevatorTarget +=.1;}
-    if (isButtonOn(ButtonEnum.elevatorDown)){elevatorTarget -=.1;}
+    elevatorTarget += getElevatorAdjuster() * .5; //Configure speed here
+    if (isButtonOn(ButtonEnum.elevatorUp)){elevatorTarget +=.1;} //And here
+    if (isButtonOn(ButtonEnum.elevatorDown)){elevatorTarget -=.1;} //And here
   }
   /**
    * Returns the joystick at the given port: not currently used
