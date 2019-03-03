@@ -14,7 +14,7 @@ public class MagicElevator extends MagicPID{
   static final int _smoothing = 0;
   
   static final int eMin = 20; //In NativeUnits: Test value: Annoy build team to get real value
-  static final int eMax = 2000;//In NativeUnits: Test value: please let us test!
+  static final int eMax = 90000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
   /**
    * @param port The number of the elevator talon
@@ -40,6 +40,7 @@ public class MagicElevator extends MagicPID{
    */
   
   public void updateElevatorTarget () {
+    ePrevTarg = eTarget;
     eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
     eTarget = validateTarget(eTarget);
     
@@ -47,12 +48,17 @@ public class MagicElevator extends MagicPID{
 
   public int validateTarget(int targ){
     if (targ > eMax) {
+      targ = eMax;
       System.out.println("over max");
+      setElevatorTargetNU(targ);
+
       return eMax;
     } 
     else if (targ < eMin) {
       targ = eMin; 
       System.out.println("under min");
+      setElevatorTargetNU(targ);
+
       return eMin;
     }
     else{
