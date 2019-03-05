@@ -4,9 +4,9 @@ public enum ButtonEnum {
     Three(0, 3, false), Cog(0,4,false), testBool(0,5,false), 
     cameraChange(0,6,false), 
     elevatorUp(2,1), elevatorDown(2,2),
-    elevatorLowHatch(2,7,10), elevatorMidHatch(2,8,20), elevatorHighHatch(2,9,30),
-    elevatorLowBall(2,10,40), elevatorMidBall(2,11,50), elevatorHighBall(2,12,60),
-    elevatorCargoShip(2,6,70);
+    elevatorLowHatch(2,7,20), elevatorMidHatch(2,8,48), elevatorHighHatch(2,9,77),
+    elevatorLowBall(2,10,24), elevatorMidBall(2,11,55), elevatorHighBall(2,12,83),
+    elevatorCargoShipHatch(2,6,20), elevatorCargoShipBall(2,7,43), elevatorFloor(2,9,0); //According to Mohawk Measurments
     final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;

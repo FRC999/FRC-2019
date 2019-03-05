@@ -10,10 +10,12 @@ public class MagicElevator extends MagicPID{
   int eCurrent; //Must be implemented
   int ePrevTarg;
 
+  static final int  eOffsetHeight = 2; //How high the zero point of the native units is off the floor in cm
+
 	/** How much smoothing [0,8] to use during MotionMagic */
-  static final int _smoothing = 0;
+  static int _smoothing = 0;
   
-  static final int eMin = 20; //In NativeUnits: Test value: Annoy build team to get real value
+  static final int eMin = 0; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 90000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
   /**
@@ -30,8 +32,13 @@ public class MagicElevator extends MagicPID{
    * @return centimeter height of elevator (off the ground?), iff I got my math right
    */
   public double convertFromNativeUnits(int input){
-    return (double) ((input/stepsPerRotation)*circumference);
+    return super.convertFromNativeUnits(input) + eOffsetHeight;
   } 
+
+  public int convertToNativeUnits(double input){
+    input -= eOffsetHeight;
+    return super.convertToNativeUnits(input);
+  }
 
   /**
    * Check if the elevator button is pressed: if yes, do stuff

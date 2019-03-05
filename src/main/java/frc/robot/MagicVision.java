@@ -2,6 +2,11 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.SerialPort;
 
+
+/**
+ * Not in use
+ * 
+ */
 public class MagicVision {
   private int bRate;
   private int counting;

@@ -32,6 +32,8 @@ public class MagicPneumatics {
      * @param ID The "id" number of the cylinder.  1 for left, 0 for right.
      * @param state -1 for reverse, 0 for off, 1 for forward
      */
+
+    
     public void setCyl(int ID, int state) { // -1 for back, 0 for off, 1 for forward
     switch (state) {
         case 1 : {

@@ -155,29 +155,7 @@ import edu.wpi.first.wpilibj.Joystick;
         return null;
       }
   }
-  /**
-   * Returns the joystick with the selected name
-   * Provide name in lower cammel case
-   * @param type string in lower camal case: ie "turn" or "turnStick"
-   * @return the chosen joystick, or null if no valid input
-   */
-  Joystick getJoystick(String type){
-      switch (type){
-        case "turn":
-        case "turnStick":
-          return driveStick;
-        case "drive":
-        case "driveStick":
-          return turnStick;
-        case "copilot":
-        case "copilotStick":
-          return copilotStick;
-        default:
-          System.out.println("Name of joystick given to getJoystick is invalid");
-          return null;
-      }
   
-  }
   /**
    * Gets the joystick of the specified button.  Used in MagicInput
    * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
