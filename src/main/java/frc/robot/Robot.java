@@ -70,7 +70,8 @@ public class Robot extends TimedRobot {
     //OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(9);
     ELEVATOR.freeze();
-    PNEUMATICS = new MagicPneumatics(SolenoidEnum.leftThing.getSolenoid(), SolenoidEnum.rightThing.getSolenoid());
+
+    PNEUMATICS = new MagicPneumatics(1,2,3,4);
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
     
   }
