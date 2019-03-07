@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
     INPUT = MagicInput.getInstance();
     //OUTPUT = new MagicOutput(INPUT);
     ELEVATOR = new MagicElevator(9);
-    ELEVATOR.freeze();
+    ELEVATOR.freeze(); //Every body clap your hands
 
     PNEUMATICS = new MagicPneumatics(1,2,3,4);
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);

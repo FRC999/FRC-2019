@@ -2,11 +2,13 @@ package frc.robot;
 public enum ButtonEnum {
     intakeIn(0, 1), intakeOut(0, 2), 
     Three(0, 3, false), Cog(0,4,false), testBool(0,5,false), 
-    cameraChange(0,6,false), 
     elevatorUp(2,1), elevatorDown(2,2),
-    elevatorLowHatch(2,7,20), elevatorMidHatch(2,8,48), elevatorHighHatch(2,9,77),
-    elevatorLowBall(2,10,24), elevatorMidBall(2,11,55), elevatorHighBall(2,12,83),
-    elevatorCargoShipHatch(2,6,20), elevatorCargoShipBall(2,7,43), elevatorFloor(2,9,0); //According to Mohawk Measurments
+
+    hatchClose(0,4), hatchOpen(0,3), cameraChange(0,6), retractCargoIntake(0,5),
+    toggleIntake(1,2), intakeCargo(1,1), outtakeCargo(1,3), endgame(1,7),
+    elevatorLowHatch(2,12,20), elevatorMidHatch(2,10,48), elevatorHighHatch(2,8,77),
+    elevatorLowBall(2,11,24), elevatorMidBall(2,9,55), elevatorHighBall(2,7,83),
+    elevatorCargoShipBall(2,5,43), elevatorFloor(2,3,0); //According to Mohawk Measurments
     final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;
