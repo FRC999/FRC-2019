@@ -22,7 +22,7 @@ public class MagicClimber extends MagicPID {
  * @param cylPort2 the reverse channel number of the MOAC
  */
    public MagicClimber (int port, int victorPort, int cylPort1, int cylPort2) { // this season, the port is 12, and the portVictor is 
-       super( 2.54*2*Math.PI, 1, .2, .0, .2, .2, 1.0, 0,  0, port,0);
+       super( 2.54*2*Math.PI, 1, .2, .0, .2, .2, 1.0, 0,  0, port,0, -4096, 4096);
        climbFollower = new WPI_VictorSPX(victorPort);
         climbFollower.set(ControlMode.Follower, port);
         MOAC = new DoubleSolenoid(cylPort1, cylPort2);
@@ -32,13 +32,13 @@ public class MagicClimber extends MagicPID {
 
 /**sets the climber arms to rotate out to a certain angle. Senses  then turns the MOAC on */
    public void climb(int target, double angle) {
-        moveTo(target); 
+        setTarget(target); 
     //if () // put a NavX angle of the robot test here
        MOAC.set(DoubleSolenoid.Value.kForward);
    }
 
    public void unClimb() {
-       moveTo(0);
+       setTarget(0);
        MOAC.set(DoubleSolenoid.Value.kReverse);
     }
 

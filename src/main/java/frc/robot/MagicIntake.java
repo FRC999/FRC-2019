@@ -15,8 +15,8 @@ public class MagicIntake  {
     MagicPneumatics PNEUMATICS;
     private ElevatorPresets currentPreset;
     public MagicIntake(int wrist, int elbow, int left, int right) {
-        wristTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,wrist, 0);
-        elbowTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,elbow, 0);
+        wristTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,wrist, 0, -4096, 4096);
+        elbowTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,elbow, 0, -4096, 4096);
         leftIntake = new WPI_VictorSPX(left);
         rightIntake = new WPI_VictorSPX(right);
     }
@@ -25,17 +25,17 @@ public class MagicIntake  {
      * @param goal the target, in Native Units.  If you want to input in degrees, too bad.
      */
     public void moveElbow (int goal){
-        elbowTalon.moveTo(goal);
+        elbowTalon.setTarget(goal);
         currentPreset = null;
     }
     public void moveWrist (int goal){
-        wristTalon.moveTo(goal);
+        wristTalon.setTarget(goal);
         currentPreset = null;
     }
     public void gotoPreset(ElevatorPresets preset) {
         if (currentPreset != preset){
-            wristTalon.moveTo(preset.getWristAngleNU());
-            elbowTalon.moveTo(preset.getElbowAngleNU());
+            wristTalon.setTarget(preset.getWristAngleNU());
+            elbowTalon.setTarget(preset.getElbowAngleNU());
             currentPreset = preset;
         }
         

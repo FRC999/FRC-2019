@@ -6,13 +6,11 @@ package frc.robot;
  * WARNING: GEARBOX ON COMP-BOT IS DIFFERENT THAN SISTER-BOT
  */
 public class MagicElevator extends MagicPID{
-  int eTarget = eMin;
-  int eCurrent; //Must be implemented
-  int ePrevTarg;
+  int eCurrent; 
   ElevatorPresets eTargetPreset;
   MagicIntake INTAKE;
 
-  static final int  eOffsetHeight = 2; //How high the zero point of the native units is off the floor in cm
+  static final int  eOffsetHeight = 2; //How high the zero point of the native units is off the floor in NU's
 
 	/** How much smoothing [0,8] to use during MotionMagic */
   static int _smoothing = 0;
@@ -24,76 +22,36 @@ public class MagicElevator extends MagicPID{
    * @param port The number of the elevator talon
    */
   public MagicElevator(int port, MagicIntake in) {
-    super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,       port,              0); // numbers are made up
-    //      circum.       gearRat  S   P   D   I    F   slot#   s-curve smoothing, port #  starting encorder pt.
+    super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,       port,     eOffsetHeight,       -4096, 4096); // numbers are made up
+    //      circum.       gearRat  S   P   D   I    F   slot#   s-curve smoothing, port #  start pt.   min    max
     INTAKE = in;
   }
 
   /**
-   * Converts native units to centimeters, for logging and puting back in MagicOutput.
-   * @param input native talon units for conversion
-   * @return centimeter height of elevator (off the ground?), iff I got my math right
-   */
-  public double convertFromNativeUnits(int input){
-    return super.convertFromNativeUnits(input) + eOffsetHeight;
-  } 
-
-  public int convertToNativeUnits(double input){
-    input -= eOffsetHeight;
-    return super.convertToNativeUnits(input);
-  }
-
-  /**
-   * Check if the elevator button is pressed: if yes, do stuff
+   * Check if the elevator button is pressed: if yes, update intake and such
    * Includes min/max validation
    *  
    */
-  
   public void updateElevatorTarget () {
-    ePrevTarg = eTarget;
     for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
       if (null != bob.getElevatorPreset()) {//We dont want to call a null variable's methods
         if (INPUT.isButtonPressed(bob)){
-          eTarget = bob.getElevatorPreset().getHeightNU();
+          setTarget(bob.getElevatorPreset().getHeightNU());
           eTargetPreset = bob.getElevatorPreset();
-          
+          INTAKE.gotoPreset(eTargetPreset);
         }  
       }
     }
-    eTarget = validateTarget(eTarget);
+    increaseTarget((int) INPUT.getElevatorAdjuster() * 1);
+    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){
+      increaseTarget(1);
+    }
+    if (INPUT.isButtonOn(ButtonEnum.elevatorDown)){
+      increaseTarget(-1);
+    }
     
   }
 
-  public int validateTarget(int targ){
-    if (targ > eMax) {
-      targ = eMax-1;
-      System.out.println("over max");
-      setElevatorTargetNU(targ);
-
-      return eMax;
-    } 
-    else if (targ < eMin) {
-      targ = eMin+1; 
-      System.out.println("under min");
-      setElevatorTargetNU(targ);
-
-      return eMin;
-    }
-    else{
-      return targ;
-    }
-  }
-
-  /**
-   * Changes the elevator target to whatever it is given
-   *
-   * Has validation
-   */
-  public void setElevatorTargetNU(int targ){
-    targ = validateTarget(targ);
-    ePrevTarg = eTarget;
-    eTarget = targ;
-  }
   
 
   /**
@@ -103,26 +61,13 @@ public class MagicElevator extends MagicPID{
   public int getElevatorPos() {
     return talon.getSelectedSensorPosition(0);
   }
-  public int getElevatorTarget() {
-    return eTarget;
-  }
+  
 
   /**
    * Updates elevator position, then moves elevator to that position.
    */
   public void elevatorPeriodic() {
-    eCurrent = getElevatorPos();
     updateElevatorTarget();
-    if (eCurrent == eTarget) {freeze();}
-    else {moveElevator();}
-  }
-  /**
-   * Moves the elevator to the current target.  Or it should.
-   */
-  public void moveElevator() { 
-    if (ePrevTarg != eTarget){
-      moveTo(eTarget);
-      System.out.println("Elevator in motion");
-    }
+    startMotion();
   }
 }

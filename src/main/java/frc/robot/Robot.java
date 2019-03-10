@@ -169,7 +169,7 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
     
     INPUT.updates();
-    System.out.println(ELEVATOR.getElevatorTarget());
+    System.out.println(ELEVATOR.getTarget());
     ELEVATOR.elevatorPeriodic();
     System.out.println(ELEVATOR.getElevatorPos());
     if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){

@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -22,6 +21,8 @@ public class MagicPID {
   static final int stepsPerRotation = 4096;
   final double circumference;
   final double gearRatio;
+  private int curTargetNU;
+  
 
   /**
 	 * Which PID slot to pull gains from. Starting 2018, you can choose from
@@ -49,6 +50,11 @@ public class MagicPID {
   public int iZone = 0;
   public double kPeakOutput;
   public int _smoothing;
+  public final int min;
+  public final int max;
+  public final int startPos;
+
+  protected int currentPos;
 
 
 /**
@@ -62,8 +68,10 @@ public class MagicPID {
    * @param port the port number of the talon that this class operates
    * @param startPoint the starting point of the system.  Ie, if the system starts at 90 ticks positive of
    * it's intended zero, set to 90.
+   * @param mi the minimum point (for validation)
+   * @param ma the maximum point (for validation)
    */
-  MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port, int startPoint) {
+  MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port, int startPoint, int mi, int ma) {
     talon = new WPI_TalonSRX(port);
     INPUT = MagicInput.getInstance();
     circumference = cir;
@@ -75,6 +83,9 @@ public class MagicPID {
     kPeakOutput = peakOutput;
     kSlotIdx = slot;
     _smoothing = smoothee;
+    min = mi;
+    max = ma;
+    startPos = startPoint;
 
 
     
@@ -130,6 +141,7 @@ public class MagicPID {
   public void zeroSensor(){
     talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
   }
+
   /**
    * Re-set sensor to another value
    */
@@ -153,15 +165,83 @@ public class MagicPID {
   public double convertFromNativeUnits(int input){
     return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
   } 
-/**sets the talon's neutral mode to brake */
-  public void freeze(){talon.setNeutralMode(NeutralMode.Brake);}
+/**sets the talon's neutral mode to brake, and starts braking */
+  public void freeze(){
+    talon.setNeutralMode(NeutralMode.Brake);
+    talon.set(0);
+  }
+  /**sets the talon's neut. mode to coast, and starts to sliiide */
+  public void slide(){
+    talon.setNeutralMode(NeutralMode.Coast);
+    talon.set(0);
+  }
 /** sets the talon's motionmagic to move to a new position.
  * 
  * @param newPos the setpoint "in encoder ticks or an analog value, depending on the sensor", according to CTRE's javadocs on the WPI_TalonSRX
 */
-  public void moveTo(int newPos){talon.set(ControlMode.MotionMagic, newPos);}
+  public void setTarget(int newPos){
+    if (curTargetNU != newPos){
+      validateTarget(newPos);
+    }
+  }
+  /**
+   * Moves talon to the selected position
+   */
+  public void startMotion(){
+    if(curTargetNU != getCurrentPos()){
+      talon.set(ControlMode.MotionMagic, curTargetNU);
+    }
+    else {
+      freeze();
+    }
+  }
 
   public WPI_TalonSRX getTalon(){return talon;}
+  public int getCurrentPos() {
+    currentPos = talon.getSelectedSensorPosition(0);
+    return currentPos;
+  }
 
-  
+  /**
+   * validates the target, then sets it
+   */
+  public int validateTarget(int targ){
+    if (targ > max) {
+      setTarget(max-1);
+      System.out.println("over max");
+
+      return max-1;
+    } 
+    else if (targ < min) {
+      setTarget(min+1); 
+      System.out.println("under min");
+
+      return min+1;
+    }
+    else{
+      curTargetNU = targ;
+      return targ;
+    }
+  }
+  /**
+   *  Validates existing target, updating it if nessessary
+   */   
+  public void validateTarget(){
+    validateTarget(curTargetNU);
+
+  }            
+  /**
+   * Sets target to be the starting position
+   */
+  public void retract(){
+    setTarget(startPos);
+
+  }
+  public int getTarget (){
+    return curTargetNU;
+  }
+  public int increaseTarget(int num){
+    setTarget(curTargetNU+=num);
+    return getTarget();
+  }
 }
