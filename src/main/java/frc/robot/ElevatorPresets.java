@@ -10,7 +10,7 @@ package frc.robot;
 public enum ElevatorPresets {
     lowHatch(20,0), midHatch(48,0), highHatch(77,0),
     lowBall(24,0), midBall(55,0), highBall(83,0),
-    cargoShipBall(43,0), offFloor(0,0), retract(0,0);
+    cargoShipBall(43,0), floor(0,0), retract(0,0);
     final private double heightCM;
     final private int heightNU;
     final private double elbowAngleDE;
@@ -42,7 +42,7 @@ public enum ElevatorPresets {
     /**
      * @return the height in native units
      */
-    public double getHeightNU() {
+    public int getHeightNU() {
         return heightNU;
     }
     /**

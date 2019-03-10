@@ -35,6 +35,7 @@ public class Robot extends TimedRobot {
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
   MagicPneumatics PNEUMATICS;
+  MagicIntake INTAKE;
 
   long cycles = 0;
   double forward;
@@ -68,7 +69,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
     INPUT = MagicInput.getInstance();
     //OUTPUT = new MagicOutput(INPUT);
-    ELEVATOR = new MagicElevator(9);
+    INTAKE = new MagicIntake(0,0,0,0);
+    ELEVATOR = new MagicElevator(9, INTAKE);
     ELEVATOR.freeze(); //Every body clap your hands
 
     PNEUMATICS = new MagicPneumatics(1,2,3,4);

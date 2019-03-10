@@ -55,12 +55,15 @@ public class MagicPID {
    * 
    * @param cir The circumference of the spool/wheel (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
-   * @param smoothee how much scurve smoothing to apply
+   * @param peakOutput
    * @param slot "Which PID slot to pull gains from. Starting 2018, you can choose from
 	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based configuration." NOT the port number.
+   * @param smoothee how much s-curve smoothing to apply
    * @param port the port number of the talon that this class operates
+   * @param startPoint the starting point of the system.  Ie, if the system starts at 90 ticks positive of
+   * it's intended zero, set to 90.
    */
-  MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port) {
+  MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port, int startPoint) {
     talon = new WPI_TalonSRX(port);
     INPUT = MagicInput.getInstance();
     circumference = cir;
@@ -115,7 +118,7 @@ public class MagicPID {
     talon.configMotionAcceleration(6000, kTimeoutMs);
     
   	/* Zero the sensor */
-    talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+    talon.setSelectedSensorPosition(startPoint, kPIDLoopIdx, kTimeoutMs);
 
     // Use magical S- Curve magic
     talon.configMotionSCurveStrength(_smoothing);
@@ -126,6 +129,12 @@ public class MagicPID {
    */
   public void zeroSensor(){
     talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
+  }
+  /**
+   * Re-set sensor to another value
+   */
+  public void setSensor (int set){
+    talon.setSelectedSensorPosition(set, kPIDLoopIdx, kTimeoutMs);
   }
   /**
    * Converts centimeters to the native Talon units for elevator PID use

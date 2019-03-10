@@ -9,6 +9,8 @@ public class MagicElevator extends MagicPID{
   int eTarget = eMin;
   int eCurrent; //Must be implemented
   int ePrevTarg;
+  ElevatorPresets eTargetPreset;
+  MagicIntake INTAKE;
 
   static final int  eOffsetHeight = 2; //How high the zero point of the native units is off the floor in cm
 
@@ -21,9 +23,10 @@ public class MagicElevator extends MagicPID{
   /**
    * @param port The number of the elevator talon
    */
-  public MagicElevator(int port) {
-    super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,      port); // numbers are made up
-    //      circum.       gearRat  S   P   D   I    F   slot#   s-curve smoothing, port #
+  public MagicElevator(int port, MagicIntake in) {
+    super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,       port,              0); // numbers are made up
+    //      circum.       gearRat  S   P   D   I    F   slot#   s-curve smoothing, port #  starting encorder pt.
+    INTAKE = in;
   }
 
   /**
@@ -48,7 +51,15 @@ public class MagicElevator extends MagicPID{
   
   public void updateElevatorTarget () {
     ePrevTarg = eTarget;
-    eTarget = convertToNativeUnits(INPUT.getElevatorTarget());
+    for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
+      if (null != bob.getElevatorPreset()) {//We dont want to call a null variable's methods
+        if (INPUT.isButtonPressed(bob)){
+          eTarget = bob.getElevatorPreset().getHeightNU();
+          eTargetPreset = bob.getElevatorPreset();
+          
+        }  
+      }
+    }
     eTarget = validateTarget(eTarget);
     
   }

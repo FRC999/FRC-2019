@@ -7,9 +7,9 @@ public enum ButtonEnum {
     hatchClose(0,4), hatchOpen(0,3), cameraChange(0,6), retractCargoIntake(0,5),
     toggleIntake(1,2), intakeCargo(1,1), outtakeCargo(1,3), endgame(1,7),
 
-    elevatorLowHatch(2,12), elevatorMidHatch(2,10), elevatorHighHatch(2,8),
-    elevatorLowBall(2,11), elevatorMidBall(2,9), elevatorHighBall(2,7),
-    elevatorCargoShipBall(2,5), elevatorFloor(2,3); 
+    elevatorLowHatch(2,12, ElevatorPresets.lowHatch), elevatorMidHatch(2,10, ElevatorPresets.midHatch), elevatorHighHatch(2,8, ElevatorPresets.highHatch),
+    elevatorLowBall(2,11, ElevatorPresets.lowBall), elevatorMidBall(2,9, ElevatorPresets.midBall), elevatorHighBall(2,7, ElevatorPresets.highBall),
+    elevatorCargoShipBall(2,5, ElevatorPresets.cargoShipBall), elevatorFloor(2,3, ElevatorPresets.floor), elevatorRetract(0,0,ElevatorPresets.retract);
     final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;
@@ -52,4 +52,5 @@ public enum ButtonEnum {
   public int getButtonNum() {return buttonNum;}   
   public int getJoystickNum() {return joystickNum;}   
   public TogglingButton getToggledButton(){return toggledButton;}
+  public ElevatorPresets getElevatorPreset() {return ePresets;}
 }
