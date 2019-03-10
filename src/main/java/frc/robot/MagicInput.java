@@ -34,20 +34,6 @@ import edu.wpi.first.wpilibj.Joystick;
     turnStick = new Joystick(1);
     copilotStick = new Joystick(2);
   }
-  /**
-   * Gets elevatorTarget, which is how high up the elevator should be, in Milis
-   */
-  double getElevatorTarget() {return elevatorTarget;}
-
-  /**
-   * Changes the elevatorTarget to be equal to whatever it is you want
-   * @param newVal The new value
-   * @return Returns the new value
-   */
-  double setElevatorTarget(double newVal) {
-    elevatorTarget = newVal;
-    return elevatorTarget;
-  }
 
   /**
    * Checks whether a button is "on" ie, it is toggled on or pressed.
@@ -125,17 +111,8 @@ import edu.wpi.first.wpilibj.Joystick;
     for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
       if (null != bob.getToggledButton()) {//We dont want to call a null variable's methods
         bob.getToggledButton().update(isButtonPressed(bob));
-    }
-      if (bob.getElevatorHeight() != -1){
-        if(isButtonPressed(bob)){ //Elevator Buttons dont toggle: lets avoid that overhead
-          elevatorTarget = bob.getElevatorHeight();
-        }
       }
-    
     }
-    elevatorTarget += getElevatorAdjuster() * .5; //Configure speed here
-    if (isButtonOn(ButtonEnum.elevatorUp)){elevatorTarget +=.1;} //And here
-    if (isButtonOn(ButtonEnum.elevatorDown)){elevatorTarget -=.1;} //And here
   }
   /**
    * Returns the joystick at the given port: not currently used

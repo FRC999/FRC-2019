@@ -75,14 +75,13 @@ public class MagicElevator extends MagicPID{
 
   /**
    * Changes the elevator target to whatever it is given
-   * Including the target stored in MagicInput
+   *
    * Has validation
    */
-  public double setElevatorTargetNU(int targ){
+  public void setElevatorTargetNU(int targ){
     targ = validateTarget(targ);
     ePrevTarg = eTarget;
     eTarget = targ;
-    return INPUT.setElevatorTarget(convertFromNativeUnits(targ));
   }
   
 
@@ -92,6 +91,9 @@ public class MagicElevator extends MagicPID{
    */
   public int getElevatorPos() {
     return talon.getSelectedSensorPosition(0);
+  }
+  public int getElevatorTarget() {
+    return eTarget;
   }
 
   /**

@@ -6,14 +6,15 @@ public enum ButtonEnum {
 
     hatchClose(0,4), hatchOpen(0,3), cameraChange(0,6), retractCargoIntake(0,5),
     toggleIntake(1,2), intakeCargo(1,1), outtakeCargo(1,3), endgame(1,7),
-    elevatorLowHatch(2,12,20), elevatorMidHatch(2,10,48), elevatorHighHatch(2,8,77),
-    elevatorLowBall(2,11,24), elevatorMidBall(2,9,55), elevatorHighBall(2,7,83),
-    elevatorCargoShipBall(2,5,43), elevatorFloor(2,3,0); //According to Mohawk Measurments
+
+    elevatorLowHatch(2,12), elevatorMidHatch(2,10), elevatorHighHatch(2,8),
+    elevatorLowBall(2,11), elevatorMidBall(2,9), elevatorHighBall(2,7),
+    elevatorCargoShipBall(2,5), elevatorFloor(2,3); 
     final private int buttonNum;
   final private int joystickNum;
   final private TogglingButton toggledButton;
-  final private double elevatorHeight; //In cm: Converted at MagicElevator
-  /**
+  final private ElevatorPresets ePresets;
+  /** 
    * If there is no boolean nor third double, it is a boring old button
    * @param numberOfJoystick the port number of the buttons joystick
    * @param numberOfButton the button number on the joystick of the button
@@ -22,7 +23,7 @@ public enum ButtonEnum {
     buttonNum = numberOfButton; 
     joystickNum = numberOfJoystick;
     toggledButton = null; //Code should avoid playing with TogglingButton properties on non-toggling buttons
-    elevatorHeight = -1; //0 is a valid value: -1 is not
+    ePresets = null;
   }
   /**
    * If it contains a boolean, it is a toggling button
@@ -34,22 +35,21 @@ public enum ButtonEnum {
     buttonNum = numberOfButton; 
     joystickNum = numberOfJoystick;
     toggledButton = new TogglingButton(toggledButtonState);
-    elevatorHeight = -1; //0 is a valid value: -1 is not
+    ePresets = null;
   }
   /**
-   * If its final value is an double, it is an elevator height selection button
+   * If its final value is an elevator button, it is an elevator height selection button
    * @param numberOfJoystick the port number of the buttons joystick
    * @param numberOfButton the button number on the joystick of the button
    * @param heightOfElevator the height (in centimeters) that the elevator should go to
    */
-  private ButtonEnum(int numberOfJoystick, int numberOfButton, double heightOfElevator){
+  private ButtonEnum(int numberOfJoystick, int numberOfButton, ElevatorPresets target) {
     buttonNum = numberOfButton; 
     joystickNum = numberOfJoystick;
-    toggledButton = null;
-    elevatorHeight = heightOfElevator;
+    toggledButton = null; //Code should avoid playing with TogglingButton properties on non-toggling buttons
+    ePresets = target;
   }
   public int getButtonNum() {return buttonNum;}   
   public int getJoystickNum() {return joystickNum;}   
   public TogglingButton getToggledButton(){return toggledButton;}
-  public double getElevatorHeight(){return elevatorHeight;}
 }
