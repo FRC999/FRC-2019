@@ -18,8 +18,10 @@ public class MagicElevator extends MagicPID{
   static final int eMin = 0; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 90000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
+  
   /**
    * @param port The number of the elevator talon
+   * @param the The intake to be updated when targets change
    */
   public MagicElevator(int port, MagicIntake in) {
     super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,       port,     eOffsetHeight,       -4096, 4096); // numbers are made up
@@ -30,6 +32,7 @@ public class MagicElevator extends MagicPID{
   /**
    * Check if the elevator button is pressed: if yes, update intake and such
    * Includes min/max validation
+   * Does not initiate motion
    *
    */
   public void updateElevatorTarget () {

@@ -57,11 +57,15 @@ public class MagicPID {
   protected int currentPos;
 
 
-/**
+  /**
    *
    * @param cir The circumference of the spool/wheel (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
-   * @param peakOutput
+   * @param p Porportional tuning value
+   * @param I Integral tuning value
+   * @param D Derivative tuning value
+   * @param F Feed-Forward tuning value
+   * @param peakOutput The maximum output of motors, from 0 to 1
    * @param slot "Which PID slot to pull gains from. Starting 2018, you can choose from
 	 * 0,1,2 or 3. Only the first two (0,1) are visible in web-based configuration." NOT the port number.
    * @param smoothee how much s-curve smoothing to apply
@@ -136,7 +140,7 @@ public class MagicPID {
   }
 
   /**
-   * Zero sensor
+   * Zero managed sensor
    */
   public void zeroSensor(){
     talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
@@ -148,6 +152,7 @@ public class MagicPID {
   public void setSensor (int set){
     talon.setSelectedSensorPosition(set, kPIDLoopIdx, kTimeoutMs);
   }
+
   /**
    * Converts centimeters to the native Talon units for elevator PID use
    * @param input Centimeter height of the elevator (off the ground? not? more testing!)
@@ -165,27 +170,36 @@ public class MagicPID {
   public double convertFromNativeUnits(int input){
     return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
   }
-/**sets the talon's neutral mode to brake, and starts braking */
+
+  /**
+   * sets the talon's neutral mode to brake, and starts braking \
+   */
   public void freeze(){
     talon.setNeutralMode(NeutralMode.Brake);
     talon.set(0);
   }
-  /**sets the talon's neut. mode to coast, and starts to sliiide */
+
+  /**
+   * sets the talon's neutral mode to coast, and starts to sliiide 
+   */
   public void slide(){
     talon.setNeutralMode(NeutralMode.Coast);
     talon.set(0);
   }
-/** sets the talon's motionmagic to move to a new position.
- *
- * @param newPos the setpoint "in encoder ticks or an analog value, depending on the sensor", according to CTRE's javadocs on the WPI_TalonSRX
-*/
+
+  /** 
+   * Sets the talon's MotionMagic to move to a new position.
+   * @param newPos the setpoint "in encoder ticks or an analog value, depending on the sensor", according to CTRE's javadocs on the WPI_TalonSRX
+   */
   public void setTarget(int newPos){
     if (curTargetNU != newPos){
       validateTarget(newPos);
     }
   }
+
   /**
    * Moves talon to the selected position
+   * If it is at the target position, 
    */
   public void startMotion(){
     if(curTargetNU != getCurrentPos()){
@@ -196,14 +210,21 @@ public class MagicPID {
     }
   }
 
+  /**
+   * Grabs the managed talon
+   */
   public WPI_TalonSRX getTalon(){return talon;}
+
+  /**
+   * Gets the current encoder position
+   */
   public int getCurrentPos() {
     currentPos = talon.getSelectedSensorPosition(0);
     return currentPos;
   }
 
   /**
-   * validates the target, then sets it
+   * Validates the target, then sets it
    */
   public int validateTarget(int targ){
     if (targ > max) {
@@ -223,6 +244,7 @@ public class MagicPID {
       return targ;
     }
   }
+
   /**
    *  Validates existing target, updating it if nessessary
    */
@@ -230,16 +252,26 @@ public class MagicPID {
     validateTarget(curTargetNU);
 
   }
+
   /**
-   * Sets target to be the starting position
+   * Sets target to be the starting position, and starts motion
    */
   public void retract(){
     setTarget(startPos);
-
+    startMotion();
   }
+
+  /**
+   * Gets the current MotionMagic target
+   */
   public int getTarget (){
     return curTargetNU;
   }
+
+  /**
+   * Inreases the target by the imputted ammount
+   * @param ammount to increase by in native units
+   */
   public int increaseTarget(int num){
     setTarget(curTargetNU+=num);
     return getTarget();

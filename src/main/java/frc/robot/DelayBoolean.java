@@ -12,9 +12,10 @@ public class DelayBoolean {
         initCount = Robot.getCycleCount();
         endCount = initCount + delayVal;
          }
-/** tests whether the current cycle number is greater than or equal to the sum of the
- *  delay number of cycles and the initial number of cycles. If it is, return true, else
- *  return false. */
+    /** tests whether the current cycle number is greater than or equal to the sum of the
+     *  delay number of cycles and the initial number of cycles. If it is, return true, else
+     *  return false. 
+     */
     public boolean test() {
          return (Robot.getCycleCount() >= endCount) ? true : false;
         }
