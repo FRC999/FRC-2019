@@ -38,9 +38,9 @@ public class MagicIntake  {
             elbowTalon.setTarget(preset.getElbowAngleNU());
             currentPreset = preset;
         }
-        
+
     }
-    public void intakeCargo(double speed) {       
+    public void intakeCargo(double speed) {
       leftIntake.set(speed);
       rightIntake.set(-speed);
     }

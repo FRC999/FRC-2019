@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   MagicElevator ELEVATOR;
-  MagicInput INPUT;  
+  MagicInput INPUT;
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
   MagicOutput OUTPUT;
   MagicPneumatics PNEUMATICS;
@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   long cycles = 0;
   double forward;
   double turn;
-  
+
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
    WPI_VictorSPX driveML = new WPI_VictorSPX(2); //middle left tank drive motor
   WPI_VictorSPX driveRL = new WPI_VictorSPX(3); //rear left tank drive motor
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
 
     PNEUMATICS = new MagicPneumatics(1,2,3,4);
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
-    
+
   }
 
   /**
@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
     }
 
   }
- 
+
   @Override
   public void teleopInit() {
      counter = 0;
@@ -158,7 +158,7 @@ public class Robot extends TimedRobot {
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
   }
-  
+
 
 
 
@@ -167,7 +167,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {
-    
+
     INPUT.updates();
     System.out.println(ELEVATOR.getTarget());
     ELEVATOR.elevatorPeriodic();
@@ -175,7 +175,7 @@ public class Robot extends TimedRobot {
     if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){
     ELEVATOR.zeroSensor();
     }
-    
+
   }
 public static int getCycleCount() {
   return counter;

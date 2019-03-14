@@ -9,8 +9,8 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
  * Intended to provide a common ground for all PID systems to make things easier (ish).
- * Each instance builds and operates one WPI_TalonSRX for PID control. 
- * Inherited by classes MagicElevator, MagicClimber, . 
+ * Each instance builds and operates one WPI_TalonSRX for PID control.
+ * Inherited by classes MagicElevator, MagicClimber, .
  * heavily based on CTRE's example PID code,
  * @see https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/92520fe425e63520f4a8e73ab3edac9890eeaeff/Java/MotionMagic/src/main/java/frc/robot/Robot.java
  */
@@ -22,7 +22,7 @@ public class MagicPID {
   final double circumference;
   final double gearRatio;
   private int curTargetNU;
-  
+
 
   /**
 	 * Which PID slot to pull gains from. Starting 2018, you can choose from
@@ -42,7 +42,7 @@ public class MagicPID {
 	 * report to DS if action fails.
 	 */
   public static final int kTimeoutMs = 0;
-  
+
   public double kP;
   public double kI;
   public double kD;
@@ -58,7 +58,7 @@ public class MagicPID {
 
 
 /**
-   * 
+   *
    * @param cir The circumference of the spool/wheel (2.54*Math.PI*2 for the elevator)
    * @param gearRat The ratio of the connected gearbox (imput rotations/output rotations)
    * @param peakOutput
@@ -88,12 +88,12 @@ public class MagicPID {
     startPos = startPoint;
 
 
-    
-  
-    
+
+
+
     /* Factory default hardware to prevent unexpected behavior */
     talon.configFactoryDefault();
-    
+
   	/**
 		 * Configure Talon SRX Output and Sesnor direction accordingly
 		 * Invert Motor to have green LEDs when driving Talon Forward / Requesting Postiive Output
@@ -104,7 +104,7 @@ public class MagicPID {
 
 		/* Configure Sensor Source for Primary PID */
     talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative,
-    kPIDLoopIdx, 
+    kPIDLoopIdx,
     kTimeoutMs);
 
     /* Set relevant frame periods to be at least as fast as periodic rate */
@@ -123,11 +123,11 @@ public class MagicPID {
 		talon.config_kP(kSlotIdx, kP, kTimeoutMs);
 		talon.config_kI(kSlotIdx, kI, kTimeoutMs);
     talon.config_kD(kSlotIdx, kD, kTimeoutMs);
-    
+
   	/* Set acceleration and vcruise velocity - see documentation */
     talon.configMotionCruiseVelocity(15000, kTimeoutMs);
     talon.configMotionAcceleration(6000, kTimeoutMs);
-    
+
   	/* Zero the sensor */
     talon.setSelectedSensorPosition(startPoint, kPIDLoopIdx, kTimeoutMs);
 
@@ -136,7 +136,7 @@ public class MagicPID {
   }
 
   /**
-   * Zero sensor 
+   * Zero sensor
    */
   public void zeroSensor(){
     talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
@@ -164,7 +164,7 @@ public class MagicPID {
    */
   public double convertFromNativeUnits(int input){
     return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
-  } 
+  }
 /**sets the talon's neutral mode to brake, and starts braking */
   public void freeze(){
     talon.setNeutralMode(NeutralMode.Brake);
@@ -176,7 +176,7 @@ public class MagicPID {
     talon.set(0);
   }
 /** sets the talon's motionmagic to move to a new position.
- * 
+ *
  * @param newPos the setpoint "in encoder ticks or an analog value, depending on the sensor", according to CTRE's javadocs on the WPI_TalonSRX
 */
   public void setTarget(int newPos){
@@ -211,9 +211,9 @@ public class MagicPID {
       System.out.println("over max");
 
       return max-1;
-    } 
+    }
     else if (targ < min) {
-      setTarget(min+1); 
+      setTarget(min+1);
       System.out.println("under min");
 
       return min+1;
@@ -225,11 +225,11 @@ public class MagicPID {
   }
   /**
    *  Validates existing target, updating it if nessessary
-   */   
+   */
   public void validateTarget(){
     validateTarget(curTargetNU);
 
-  }            
+  }
   /**
    * Sets target to be the starting position
    */

@@ -4,14 +4,14 @@ import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
-/** The purpose of this class is to have methods to do anything we might want to do with pneumatics 
- *  This includes: 
+/** The purpose of this class is to have methods to do anything we might want to do with pneumatics
+ *  This includes:
  *      Starting a comp,
- *      stopping a comp, even in the middle of a match, 
+ *      stopping a comp, even in the middle of a match,
  *      switching a double solenoid on and off,
  *      switching two double solenoids on or off in sync,
  *      switching two double solenoids on or off with a delay in between
- *      
+ *
 */
 public class MagicPneumatics {
     private Compressor comp;
@@ -30,7 +30,7 @@ public class MagicPneumatics {
     public MagicPneumatics(int portA1, int portA2, int portB1, int portB2) {
         comp = createCompressor();
         leftCyl = new DoubleSolenoid(portA1,portA2);
-        rightCyl = new DoubleSolenoid(portB1,portB2);    
+        rightCyl = new DoubleSolenoid(portB1,portB2);
     }
 
 
@@ -69,7 +69,7 @@ public class MagicPneumatics {
 }
 
     /** create a comp object at a specified port. returns the object and makes it this class's private comp
-     *  @param cLoop specifies whether closed loop control should be set 
+     *  @param cLoop specifies whether closed loop control should be set
      *  @param port the port number of the comp
      */
     public Compressor createCompressor(int port, boolean cLoop) {
@@ -96,7 +96,7 @@ public class MagicPneumatics {
      *  If this method doesn't work, you didn't create a comp!
      *  @see createCompressor
      */
-    boolean isCompressorOn() {return comp.enabled();} 
+    boolean isCompressorOn() {return comp.enabled();}
     /** This method checks the state of the pressure switch on this class's private comp. If this method doesn't work, you didn't create a comp!
      *  @return true if the pressure is too low
      *  @see createCompressor
@@ -159,7 +159,7 @@ public class MagicPneumatics {
         ds2.set(DoubleSolenoid.Value.kReverse);
         }
 /** Sets one DoubleSolenoid to one state, waits for a certain number of cycles, then sets another DoubleSolenoid to another state.
- * 
+ *
  * @param ds the DoubleSolenoid to be activated first.
  * @param stateOfDoubleSolenoid1 the state to set the first DoubleSolenoid.
  * @param stateOfDoubleSolenoid2 the state to set the second DoubleSolenoid.
@@ -169,7 +169,7 @@ public class MagicPneumatics {
  * @return true if the delay is over and the second DoubleSolenoid has been activated, false otherwise.
 */
 public boolean setWithDelay(DoubleSolenoid ds, DoubleSolenoid.Value stateOfDoubleSolenoid1, DoubleSolenoid.Value stateOfDoubleSolenoid2, DoubleSolenoid ds2, int delay, String ID) {
-    
+
     ds.set(stateOfDoubleSolenoid1);
     if (MagicDelay.getInstance().startDelay(delay, ID).test()) {
         ds2.set(stateOfDoubleSolenoid2);

@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 
 /**
  * Not in use
- * 
+ *
  */
 public class MagicVision {
   private int bRate;

@@ -12,7 +12,7 @@ import edu.wpi.cscore.VideoSink;
 public class MagicOutput{
   UsbCamera backCam;
   UsbCamera frontCam;
-  MagicInput INPUT;  
+  MagicInput INPUT;
   boolean lastCamPress;
   VideoSink camServer;
   static final int CAMPORT1 = 0;

@@ -1,7 +1,7 @@
 package frc.robot;
 public enum ButtonEnum {
-    intakeIn(0, 1), intakeOut(0, 2), 
-    Three(0, 3, false), Cog(0,4,false), testBool(0,5,false), 
+    intakeIn(0, 1), intakeOut(0, 2),
+    Three(0, 3, false), Cog(0,4,false), testBool(0,5,false),
     elevatorUp(2,1), elevatorDown(2,2),
 
     hatchClose(0,4), hatchOpen(0,3), cameraChange(0,6), retractCargoIntake(0,5),
@@ -14,13 +14,13 @@ public enum ButtonEnum {
   final private int joystickNum;
   final private TogglingButton toggledButton;
   final private ElevatorPresets ePresets;
-  /** 
+  /**
    * If there is no boolean nor third double, it is a boring old button
    * @param numberOfJoystick the port number of the buttons joystick
    * @param numberOfButton the button number on the joystick of the button
    */
   private ButtonEnum(int numberOfJoystick, int numberOfButton) {
-    buttonNum = numberOfButton; 
+    buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
     toggledButton = null; //Code should avoid playing with TogglingButton properties on non-toggling buttons
     ePresets = null;
@@ -32,7 +32,7 @@ public enum ButtonEnum {
    * @param toggledButtonState the inital state of the TogglingButton
    */
   private ButtonEnum(int numberOfJoystick, int numberOfButton, boolean toggledButtonState){
-    buttonNum = numberOfButton; 
+    buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
     toggledButton = new TogglingButton(toggledButtonState);
     ePresets = null;
@@ -44,13 +44,13 @@ public enum ButtonEnum {
    * @param heightOfElevator the height (in centimeters) that the elevator should go to
    */
   private ButtonEnum(int numberOfJoystick, int numberOfButton, ElevatorPresets target) {
-    buttonNum = numberOfButton; 
+    buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
     toggledButton = null; //Code should avoid playing with TogglingButton properties on non-toggling buttons
     ePresets = target;
   }
-  public int getButtonNum() {return buttonNum;}   
-  public int getJoystickNum() {return joystickNum;}   
+  public int getButtonNum() {return buttonNum;}
+  public int getJoystickNum() {return joystickNum;}
   public TogglingButton getToggledButton(){return toggledButton;}
   public ElevatorPresets getElevatorPreset() {return ePresets;}
 }

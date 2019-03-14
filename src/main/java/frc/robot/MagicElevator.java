@@ -1,12 +1,12 @@
 package frc.robot;
 
 /**
- * This class is to enable PID control of the elevator.  
+ * This class is to enable PID control of the elevator.
  * It is untested, because *someone* needs to give us a working elevator.
  * WARNING: GEARBOX ON COMP-BOT IS DIFFERENT THAN SISTER-BOT
  */
 public class MagicElevator extends MagicPID{
-  int eCurrent; 
+  int eCurrent;
   ElevatorPresets eTargetPreset;
   MagicIntake INTAKE;
 
@@ -14,7 +14,7 @@ public class MagicElevator extends MagicPID{
 
 	/** How much smoothing [0,8] to use during MotionMagic */
   static int _smoothing = 0;
-  
+
   static final int eMin = 0; //In NativeUnits: Test value: Annoy build team to get real value
   static final int eMax = 90000;//In NativeUnits: Test value: please let us test!
   //circumference is pi * 2.54 * 2; In centimeters:  Spool was measured at 1 inch radius
@@ -30,7 +30,7 @@ public class MagicElevator extends MagicPID{
   /**
    * Check if the elevator button is pressed: if yes, update intake and such
    * Includes min/max validation
-   *  
+   *
    */
   public void updateElevatorTarget () {
     for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
@@ -39,7 +39,7 @@ public class MagicElevator extends MagicPID{
           setTarget(bob.getElevatorPreset().getHeightNU());
           eTargetPreset = bob.getElevatorPreset();
           INTAKE.gotoPreset(eTargetPreset);
-        }  
+        }
       }
     }
     increaseTarget((int) INPUT.getElevatorAdjuster() * 1);
@@ -49,10 +49,10 @@ public class MagicElevator extends MagicPID{
     if (INPUT.isButtonOn(ButtonEnum.elevatorDown)){
       increaseTarget(-1);
     }
-    
+
   }
 
-  
+
 
   /**
    * Gets the elevator position, you numbskull
@@ -61,7 +61,7 @@ public class MagicElevator extends MagicPID{
   public int getElevatorPos() {
     return talon.getSelectedSensorPosition(0);
   }
-  
+
 
   /**
    * Updates elevator position, then moves elevator to that position.
