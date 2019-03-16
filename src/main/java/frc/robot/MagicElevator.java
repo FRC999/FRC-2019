@@ -7,7 +7,7 @@ package frc.robot;
  */
 public class MagicElevator extends MagicPID{
   int eCurrent;
-  ElevatorPresets eTargetPreset;
+  EncoderPresets eTargetPreset;
   MagicIntake INTAKE;
 
   static final int  eOffsetHeight = 2; //How high the zero point of the native units is off the floor in NU's

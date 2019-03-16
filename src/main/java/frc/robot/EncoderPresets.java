@@ -7,7 +7,7 @@
 
 package frc.robot;
 
-public enum ElevatorPresets {
+public enum EncoderPresets {
     lowHatch(20,0), midHatch(48,0), highHatch(77,0),
     lowBall(24,0), midBall(55,0), highBall(83,0),
     cargoShipBall(43,0), floor(0,0), retract(0,0);
@@ -17,7 +17,7 @@ public enum ElevatorPresets {
     final private int elbowAngleNU;
     final private double wristAngleDE;
     final private int wristAngleNU;
-    private ElevatorPresets(double height, double angle) {
+    private EncoderPresets(double height, double angle) {
         heightCM = height;
         heightNU = (int) (4096 * (height / (2.54 * Math.PI)));
         elbowAngleDE = angle;
@@ -25,7 +25,7 @@ public enum ElevatorPresets {
         wristAngleDE = -angle;
         wristAngleNU = -elbowAngleNU;
     }
-    private ElevatorPresets(double height, double angleE, double angleW){
+    private EncoderPresets(double height, double angleE, double angleW){
         heightCM = height;        
         heightNU = (int) (4096 * (height / (2.54 * Math.PI)));
         elbowAngleDE = angleE;

@@ -14,17 +14,17 @@ import edu.wpi.first.wpilibj.Joystick;
  */
  public class MagicInput {
  
-  private static MagicInput minstance = new MagicInput();
+  private static MagicInput mInstance = new MagicInput();
 
 
-     public static MagicInput getInstance() {return minstance;}
+     public static MagicInput getInstance() {return mInstance;}
  
   Joystick driveStick;
   Joystick turnStick;
   Joystick copilotStick;
   double elevatorTarget;
 
-  final static double deadzoneRadius = .01;
+  final static double deadZoneRadius = .01;
 
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case 
@@ -61,7 +61,7 @@ import edu.wpi.first.wpilibj.Joystick;
   }
 
   double joystickDeadzoneTest(double toTest){
-    if(Math.abs(toTest) > deadzoneRadius){
+    if(Math.abs(toTest) > deadZoneRadius){
       return toTest; 
     }
     else return 0;

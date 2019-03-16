@@ -13,7 +13,7 @@ public class MagicIntake  {
     private WPI_VictorSPX rightIntake;
     private DoubleSolenoid cableSolenoid;
     MagicPneumatics PNEUMATICS;
-    private ElevatorPresets currentPreset;
+    private EncoderPresets currentPreset;
     public MagicIntake(int wrist, int elbow, int left, int right) {
         wristTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,wrist, 0, -4096, 4096);
         elbowTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,elbow, 0, -4096, 4096);
@@ -32,7 +32,7 @@ public class MagicIntake  {
         wristTalon.setTarget(goal);
         currentPreset = null;
     }
-    public void gotoPreset(ElevatorPresets preset) {
+    public void gotoPreset(EncoderPresets preset) {
         if (currentPreset != preset){
             wristTalon.setTarget(preset.getWristAngleNU());
             elbowTalon.setTarget(preset.getElbowAngleNU());
