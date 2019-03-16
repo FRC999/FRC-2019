@@ -53,7 +53,7 @@ public class Robot extends TimedRobot {
 
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveML, driveRL);
-  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveML, driveRR);
+  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveMR, driveRR);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
 
  static int counter = 0;  //this is a counter for how many periodic enabled cycles the robot has been in, and increases by one every cycle
