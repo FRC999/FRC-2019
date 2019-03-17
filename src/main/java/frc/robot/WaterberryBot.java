@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
-  
+
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -45,21 +45,21 @@ public class WaterberryBot extends TimedRobot {
   boolean cylButton;
   boolean retractClimbCylinderButton;
   boolean camSwapButton;
-  
+
   double tilt;
   boolean zeroEnc;
   int testTolerence;
   DoubleSolenoid MOAC = new DoubleSolenoid (0,7); // mother of all cylinders
   WPI_TalonSRX testMotor;
   int _loops = 0;
-  
+
 
   WPI_TalonSRX climbTalon = new WPI_TalonSRX(12);
   WPI_VictorSPX climbFollower = new WPI_VictorSPX(11);
 
   double climbSpeed = 1; // value to set the climb talons to
   double targAngle = 40.0;
-  Compressor compress;  
+  Compressor compress;
 
   DoubleSolenoid hatchHolder = new DoubleSolenoid (2,5); // NEED A LEFT AND RIGHT
 
@@ -69,14 +69,14 @@ public class WaterberryBot extends TimedRobot {
   UsbCamera frontCam;
   UsbCamera backCam;
   VideoSink camServer;
-  
+
   WPI_TalonSRX FrontRight = new WPI_TalonSRX(1);
   WPI_TalonSRX FrontLeft = new WPI_TalonSRX(4);
   WPI_VictorSPX MiddleLeft = new WPI_VictorSPX(5);
   WPI_VictorSPX BackLeft = new WPI_VictorSPX(6);
   WPI_VictorSPX MiddleRight = new WPI_VictorSPX(2);
   WPI_VictorSPX BackRight = new WPI_VictorSPX(3);
-  SpeedControllerGroup leftSide = new SpeedControllerGroup(FrontLeft,MiddleLeft,BackLeft); 
+  SpeedControllerGroup leftSide = new SpeedControllerGroup(FrontLeft,MiddleLeft,BackLeft);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(FrontRight,MiddleRight,BackRight);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide,rightSide);
 
@@ -100,7 +100,7 @@ public class WaterberryBot extends TimedRobot {
 
     MOAC.set(DoubleSolenoid.Value.kReverse);
     hatchHolder.set(DoubleSolenoid.Value.kReverse);
-    cargoHolder.set(DoubleSolenoid.Value.kReverse);   
+    cargoHolder.set(DoubleSolenoid.Value.kReverse);
   }
 
   @Override
@@ -111,7 +111,7 @@ public class WaterberryBot extends TimedRobot {
     cylButton = leftStick.getRawButton(7);
     retractClimbCylinderButton = leftStick.getRawButton(8);
 
-    
+
     if (camSwapButton && !lastCamPress){
       System.out.println("Swapping Cams");
       camServer.setSource(frontCam);
@@ -141,7 +141,7 @@ public class WaterberryBot extends TimedRobot {
   @Override
   public void teleopInit() {
     climbTalon.setNeutralMode(NeutralMode.Brake);
-    compress.setClosedLoopControl(true); 
+    compress.setClosedLoopControl(true);
   }
 
   @Override

@@ -2,23 +2,23 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
- * MagicInput is a class designed to handle all input from the drivers station. 
+ * MagicInput is a class designed to handle all input from the drivers station.
  * It is primarally focused on the joysticks.  It provides this information to other
  * classes and methods, free of charge.  MagicInput, unlike other off-the-shelf input
  * brands, is designed for configuration, first and foremost.  Where is button is, and its
  * toggling behavior, is specified in ButtonEnum.  Do not use MagicInput
  * if you like writing long lines of code any time you wish to speak with the manager.
- * 
+ *
  * Use getJoystick() to fetch joysticks if you want to throw together a button without
  * putting it in ButtonEnum.  Otherwise, keep buttons there.
  */
  public class MagicInput {
- 
+
   private static MagicInput mInstance = new MagicInput();
 
 
      public static MagicInput getInstance() {return mInstance;}
- 
+
   Joystick driveStick;
   Joystick turnStick;
   Joystick copilotStick;
@@ -27,9 +27,9 @@ import edu.wpi.first.wpilibj.Joystick;
   final static double deadZoneRadius = .01;
 
   /**
-   * Note: Code checks if joystick is null: however, this (should) never be the case 
+   * Note: Code checks if joystick is null: however, this (should) never be the case
    */
- private MagicInput(){
+  private MagicInput(){
     driveStick = new Joystick(0);
     turnStick = new Joystick(1);
     copilotStick = new Joystick(2);
@@ -39,7 +39,7 @@ import edu.wpi.first.wpilibj.Joystick;
    * Checks whether a button is "on" ie, it is toggled on or pressed.
    * If it is a toggling button, checks whether it is toggled on, otherwise, checks if it is pressed
    * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
-   * @return true if on: false if not 
+   * @return true if on: false if not
    */
   boolean isButtonOn(ButtonEnum type) {
     if(null != getJoystick(type) && null != type.getToggledButton()){
@@ -62,7 +62,7 @@ import edu.wpi.first.wpilibj.Joystick;
 
   double joystickDeadzoneTest(double toTest){
     if(Math.abs(toTest) > deadZoneRadius){
-      return toTest; 
+      return toTest;
     }
     else return 0;
   }
@@ -99,12 +99,12 @@ import edu.wpi.first.wpilibj.Joystick;
     }
     return 0;
   }
-  
+
   /**
    * Updates TogglingButtons in ButtonEnum
    * This *must* be called every cycle for TogglingButtons to function
    * It also updates elevatorHeight with the current selection
-   * If more than one elevator height selector button is pressed, 
+   * If more than one elevator height selector button is pressed,
    * it should go to the last one on the ButtonEnum list.  Should.
    */
   void updates(){
@@ -126,13 +126,13 @@ import edu.wpi.first.wpilibj.Joystick;
       case 1:
         return turnStick;
       case 2:
-        return copilotStick; 
+        return copilotStick;
       default:
         System.out.println("joystick port number passed to getJoystick() is not 0, 1, or 2!");
         return null;
       }
   }
-  
+
   /**
    * Gets the joystick of the specified button.  Used in MagicInput
    * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
