@@ -6,8 +6,8 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
-
-public enum EncoderPresets {
+//NEEDS TO BE MORE GENERAL, WILL REVIEW AT EARLIEST CONVIENIENCE
+public enum EncoderPresets { //*** MUST CONVERT FROM IN. TO CM! ***
     lowHatch(20,0), midHatch(48,0), highHatch(77,0),
     lowBall(24,0), midBall(55,0), highBall(83,0),
     cargoShipBall(43,0), floor(0,0), retract(0,0);
@@ -18,15 +18,15 @@ public enum EncoderPresets {
     final private double wristAngleDE;
     final private int wristAngleNU;
     private EncoderPresets(double height, double angle) {
-        heightCM = height;
-        heightNU = (int) (4096 * (height / (2.54 * Math.PI)));
+        heightCM = height*2.54;
+        heightNU = (int) (4096 * (height / (2.54 * Math.PI))); //CLARIFY
         elbowAngleDE = angle;
         elbowAngleNU = (int) (4096 / 360 * angle);
-        wristAngleDE = -angle;
+        wristAngleDE = -angle; 
         wristAngleNU = -elbowAngleNU;
     }
     private EncoderPresets(double height, double angleE, double angleW){
-        heightCM = height;        
+        heightCM = height*2.54;        
         heightNU = (int) (4096 * (height / (2.54 * Math.PI)));
         elbowAngleDE = angleE;
         elbowAngleNU = (int) (4096 / 360 * angleE);
