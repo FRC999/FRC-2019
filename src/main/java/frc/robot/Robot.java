@@ -1,198 +1,201 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2017-2018 FIRST. All Rights Reserved.                        */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-/*
-Drive Front Left Talon
-Drive Back Left Talon
-Drive Front Right Talon
-Drive Back Right Talon
-
-Intake
-
-*/
-
-
 package frc.robot;
 
-import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
 /**
  * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
+ * functions corresponding to each mode, as described in the TimedRobot
  * documentation. If you change the name of this class or the package after
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends IterativeRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
-  
-  Joystick leftStick = new Joystick(0);
-  Joystick rightStick = new Joystick(1);
+public class Robot extends TimedRobot {
+  /**
+   * This function is run when the robot is first started up and should be used
+   * for any initialization code.
+   */
+  Joystick driveStick = new Joystick(0);
+  Joystick turnStick = new Joystick(1);
+  Joystick copilotStick = new Joystick(2);
+
+  boolean intakePush;
+  boolean intakePull;
+  boolean smallClimberUp;
+  boolean smallClimberDown;
+  boolean MOACUp;
+  boolean MOACDown;
+  boolean syringePull;
+  boolean syringePush;
+
+  WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
+  WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
+  WPI_VictorSPX driveBackLeft = new WPI_VictorSPX(6);
+  WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
+  WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2);
+  WPI_VictorSPX driveBackRight = new WPI_VictorSPX(3);
+
+  WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
+
+  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
+  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
+  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
+
+  DoubleSolenoid MOAC = new DoubleSolenoid(0, 7);
+  DoubleSolenoid lowClimber = new DoubleSolenoid(1, 6);
+  DoubleSolenoid intake = new DoubleSolenoid(2, 5);
+  DoubleSolenoid syringe = new DoubleSolenoid(3, 4);
+
+  Compressor comp = new Compressor(0);
   double forward;
   double turn;
-  static final int intakeIn = 5;//BUTTON Id
-  static final int intakeOut = 5;//BUTTON
-  static final double intakeVal = .5;  //rate at which the intake will spin
-  static final int elevatorUp = 6; //BUTTON
-  static final int elevatorDown = 6;//BUTTON
-  static final double elevatorVal = .25;  //rate at which the eleator will spin
-  static final double elevatorNeutral = .1; //value at which elevator will turn to get it to hld in place
-
-
-  WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
-  WPI_TalonSRX driveRL = new WPI_TalonSRX(2); //Rear left tank drive motor
-  WPI_TalonSRX driveFR = new WPI_TalonSRX(3); //Forward Right tank drive motor
-  WPI_TalonSRX driveRR = new WPI_TalonSRX(4); //Rear Right left tank drive motor
-  
-  WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
-  WPI_TalonSRX testRight = new WPI_TalonSRX(11);
-
-  WPI_TalonSRX testElevator = new WPI_TalonSRX(12);
-
-  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveRL);
-  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveRR);
-  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
-  
-  int pneumaticInButton = 1;//BUTTON
-  int compressorPort = 0;
-  Compressor testCompressor = new Compressor(compressorPort);
-  Solenoid solenoid1 = new Solenoid(0);
-  Solenoid solenoid2 = new Solenoid(1);
-   
-
-  /**
-   * This function is run when the robot is first started up and should be
-   * used for any initialization code.
-   */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    comp.setClosedLoopControl(true);
+    MOAC.set(Value.kOff);
+    lowClimber.set(Value.kOff);
+    intake.set(Value.kOff);
+    syringe.set(Value.kOff);
   }
-
-  /**
-   * This function is called every robot packet, no matter the mode. Use
-   * this for items like diagnostics that you want ran during disabled,
-   * autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before
-   * LiveWindow and SmartDashboard integrated updating.
-   */
   @Override
   public void robotPeriodic() {
-
+    intakePull = driveStick.getRawButton(3);
+    intakePush = driveStick.getRawButton(5);
+    syringePull = driveStick.getRawButton(4);
+    syringePush = driveStick.getRawButton(6);
+    smallClimberUp = driveStick.getRawButton(9);
+    smallClimberDown = driveStick.getRawButton(10);
+    MOACUp = driveStick.getRawButton(11);
+    MOACDown = driveStick.getRawButton(12);
+    forward = (driveStick.getRawAxis(1))*-1;
+    turn = driveStick.getRawAxis(0);
   }
-
-  /**
-   * This autonomous (along with the chooser code above) shows how to select
-   * between different autonomous modes using the dashboard. The sendable
-   * chooser code works with the Java SmartDashboard. If you prefer the
-   * LabVIEW Dashboard, remove all of the chooser code and uncomment the
-   * getString line to get the auto name from the text box below the Gyro
-   *
-   * <p>You can add additional auto modes by adding additional comparisons to
-   * the switch structure below with additional strings. If using the
-   * SendableChooser make sure to add them to the chooser code above as well.
-   */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // autoSelected = SmartDashboard.getString("Auto Selector",
-    // defaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    comp.setClosedLoopControl(true);
+    MOAC.set(Value.kReverse);
   }
-
-  /**
-   * This function is called periodically during autonomous.
-   */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    chassisDrive.arcadeDrive(forward, turn);
+  if (intakePull && !intakePush) {
+    intake.set(Value.kReverse);
+  } else if (intakePush && !intakePull) {
+    intake.set(Value.kForward);
+  } else {
+    intake.set(Value.kOff);
   }
- 
+  if (syringePull && !syringePush) {
+    syringe.set(Value.kReverse);
+  } else if (syringePush && !syringePull) {
+    syringe.set(Value.kForward);
+  } else {
+    syringe.set(Value.kOff);
+  }
+  if (MOACUp && !MOACDown) {
+    MOAC.set(Value.kReverse);
+  } else if (MOACDown && !MOACUp) {
+    MOAC.set(Value.kForward);
+  } else {
+    MOAC.set(Value.kOff);
+  }
+  if (smallClimberUp && !smallClimberDown) {
+    lowClimber.set(Value.kForward);
+  } else if (smallClimberDown && !smallClimberUp) {
+    lowClimber.set(Value.kReverse);
+  } else {
+    lowClimber.set(Value.kOff);
+  }
+  }
   @Override
   public void teleopInit() {
-    testCompressor.setClosedLoopControl(true);
-     
+    comp.setClosedLoopControl(true);
+    MOAC.set(Value.kReverse);
   }
-  /**
-   * This function is called periodically during operator control.
-   */
   @Override
   public void teleopPeriodic() {
-    forward = leftStick.getRawAxis(1);
-    turn = rightStick.getRawAxis(0);
     chassisDrive.arcadeDrive(forward, turn);
-    
-    
-    if (MagicInput.isButtonOn(ButtonEnum.IntakeIn) == true) {
-      System.out.println(ButtonEnum.IntakeIn +" is pressed");
-    }
-    
-    
-    //INTAKE
-    if (leftStick.getRawButton(intakeIn) == true && rightStick.getRawButton(intakeOut) == false) {
-      testLeft.set(intakeVal);
-      testRight.set(-intakeVal);
-    } else if (rightStick.getRawButton(intakeOut) == true && leftStick.getRawButton(intakeIn) == false) {
-      testLeft.set(-intakeVal);
-      testRight.set(intakeVal);
-    } else {
-      testLeft.set(0);
-      testRight.set(0);
-    }
-    
-    //ELEVATOR
-    boolean elevatorUpButtonPressed = leftStick.getRawButton(elevatorUp);
-    boolean elevatorDownButtonPressed = leftStick.getRawButton(elevatorDown);
-
-    if (elevatorUpButtonPressed == true && elevatorDownButtonPressed == false) {
-      testElevator.set(elevatorVal);
-      
-    } else if (elevatorUpButtonPressed == false && elevatorDownButtonPressed == true) {
-      testElevator.set(-elevatorVal);
-      
-    } else if (elevatorUpButtonPressed == true && elevatorDownButtonPressed == true) {
-      testElevator.set(elevatorNeutral);
-      
-    } else {
-     testElevator.set(0); 
-    }
-
-    //PNEUMATICS
-    boolean leftSolenoidInBoolean = leftStick.getRawButton(pneumaticInButton);
-    solenoid1.set(leftSolenoidInBoolean);
-    solenoid2.set(leftStick.getRawButton(2));
+  if (intakePull && !intakePush) {
+    intake.set(Value.kReverse);
+  } else if (intakePush && !intakePull) {
+    intake.set(Value.kForward);
+  } else {
+    intake.set(Value.kOff);
   }
-  /**
-   * This function is called periodically during test mode.
-   */
+  if (syringePull && !syringePush) {
+    syringe.set(Value.kReverse);
+  } else if (syringePush && !syringePull) {
+    syringe.set(Value.kForward);
+  } else {
+    syringe.set(Value.kOff);
+  }
+  if (MOACUp && !MOACDown) {
+    MOAC.set(Value.kReverse);
+  } else if (MOACDown && !MOACUp) {
+    MOAC.set(Value.kForward);
+  } else {
+    MOAC.set(Value.kOff);
+  }
+  if (smallClimberUp && !smallClimberDown) {
+    lowClimber.set(Value.kForward);
+  } else if (smallClimberDown && !smallClimberUp) {
+    lowClimber.set(Value.kReverse);
+  } else {
+    lowClimber.set(Value.kOff);
+  }
+  }
+  @Override
+  public void testInit() {
+    comp.setClosedLoopControl(true);
+    MOAC.set(Value.kReverse);
+    lowClimber.set(Value.kReverse);
+    intake.set(Value.kReverse);
+    syringe.set(Value.kReverse);
+  }
   @Override
   public void testPeriodic() {
+    if (intakePull && !intakePush) {
+      intake.set(Value.kReverse);
+    } else if (intakePush && !intakePull) {
+      intake.set(Value.kForward);
+    } else {
+      intake.set(Value.kOff);
+    }
+    if (syringePull && !syringePush) {
+      syringe.set(Value.kReverse);
+    } else if (syringePush && !syringePull) {
+      syringe.set(Value.kForward);
+    } else {
+      syringe.set(Value.kOff);
+    }
+    if (MOACUp && !MOACDown) {
+      MOAC.set(Value.kReverse);
+    } else if (MOACDown && !MOACUp) {
+      MOAC.set(Value.kForward);
+    } else {
+      MOAC.set(Value.kOff);
+    }
+    if (smallClimberUp && !smallClimberDown) {
+      lowClimber.set(Value.kForward);
+    } else if (smallClimberDown && !smallClimberUp) {
+      lowClimber.set(Value.kReverse);
+    } else {
+      lowClimber.set(Value.kOff);
+    }
   }
 }
