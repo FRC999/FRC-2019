@@ -13,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -71,7 +72,47 @@ public class Robot extends TimedRobot {
     lowClimber.set(Value.kOff);
     intake.set(Value.kOff);
     syringe.set(Value.kOff);
-  }
+    
+    int bRate = 115200;
+    SerialPort arduino;
+    try {
+      arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
+      System.out.println("Connected to kUSB");
+    } 
+    catch (Exception e) {
+	  System.out.println("Couldn't connect to kUSB, trying kUSB1");
+      try {
+        arduino = new SerialPort(bRate, SerialPort.Port.kUSB1);
+        System.out.println("Connected to kUSB1");
+      }
+      catch (Exception e1){
+        System.out.println("Couldn't Connect to kUSB1, trying kUSB2");
+        try {
+          arduino = new SerialPort(bRate, SerialPort.Port.kUSB2);
+          System.out.println("Connected to kUSB2");
+        }
+        catch (Exception e2) {
+          System.out.println("Not connected to any of the USB ports, trying MXP spot");
+          try {
+            arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
+            System.out.println("Connected to MXP port");
+          }
+          catch (Exception eMXP) {
+            System.out.println("Not Connected to MXP port, trying Onboard");
+            try {
+              arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
+              System.out.println("Connected to Onboard");  
+            }
+            catch (Exception eOnboard){
+              System.out.println("Not connected to any ports on the RoboRIO");
+  
+            }  //catch (Exception eOnboard)
+          } // catch (Exception eMXP)
+        }  //catch (Exception e2)
+      }  //catch (Exception e1)
+    }  //catch (Exception e)
+  } //robotInit()
+
   @Override
   public void robotPeriodic() {
     intakePull = driveStick.getRawButton(3);
