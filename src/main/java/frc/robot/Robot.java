@@ -44,6 +44,17 @@ public class Robot extends TimedRobot {
   boolean syringePull;
   boolean syringePush;
 
+  int xVal;
+  int yVal;
+  int hVal;
+  int wVal;
+  int distVal;
+  int confVal;
+  int blocksSeen;
+  String targetPosition;
+  int bRate = 115200;
+  SerialPort arduino;
+
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
   WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
   WPI_VictorSPX driveBackLeft = new WPI_VictorSPX(6);
@@ -72,9 +83,6 @@ public class Robot extends TimedRobot {
     lowClimber.set(Value.kOff);
     intake.set(Value.kOff);
     syringe.set(Value.kOff);
-    
-    int bRate = 115200;
-    SerialPort arduino;
     try {
       arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
@@ -130,6 +138,39 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
+  
+    //*** VISION ***
+    targetPosition = arduino.readString();
+    System.out.println(arduino.readString()); 
+      System.out.println("String TargetPosition = " + targetPosition);
+      var positions = targetPosition.split(";");
+       for (int i = 0; i < positions.length; i++) {
+      //  System.out.println("String TargetPosition = " + targetPosition);
+         var positionNums = positions[i].split(":");
+         if (positionNums[0] == "x") {
+           xVal = Integer.parseInt(positionNums[1]);
+           System.out.println("xval = " + xVal);
+         } else if (positionNums[0] == "y") {
+           yVal = Integer.parseInt(positionNums[1]);
+           System.out.println("yval =" + yVal);
+         } else if (positionNums[0] == "h") {
+           hVal = Integer.parseInt(positionNums[1]);
+           System.out.println("hval =" + hVal);
+         } else if (positionNums[0] == "w") {
+           wVal = Integer.parseInt(positionNums[1]);
+           System.out.println("wval =" + wVal);
+         } else if (positionNums[0] == "dist") {
+           distVal = Integer.parseInt(positionNums[1]);
+           System.out.println("distval =" + distVal);
+          } else if (positionNums[0] == "conf") {
+            distVal = Integer.parseInt(positionNums[1]);
+            System.out.println("confval =" + confVal);
+         } else {
+           System.out.println("Parsing sensor data failed.");
+        //   System.out.println("positionNums[0] = " + positionNums[0]);
+        //   System.out.println("positionNums[1] = " + positionNums[1]);
+          }
+        }
   }
   @Override
   public void autonomousPeriodic() {
