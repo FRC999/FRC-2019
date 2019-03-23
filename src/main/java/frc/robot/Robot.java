@@ -287,16 +287,16 @@ if (visionButton) {
           leftSide.set(0);
           rightSide.set(0);
       //    System.out.println("targetPosition = null");
-        } else if (xVal < 158 /* && distVal > 500 */) {
+        } else if (xVal < 130 && xVal > 0 /* && distVal > 500 */) {
           leftSide.set(0);
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
-        } else if (xVal == 158 /*&& distVal > 500 */) {
-         leftSide.set(.2);
-         rightSide.set(-.2);
+        } else if (xVal < 170 && xVal > 130 /*&& distVal > 500 */) {
+         leftSide.set(-.2);
+         rightSide.set(.2);
          //System.out.println("xVal == (316/2) && distVal > 500");
-        } else if (xVal > 158 /*&& distVal > 500 */) {
-         leftSide.set(.2);
+        } else if (xVal > 170 && xVal < 316 /*&& distVal > 500 */) {
+         leftSide.set(-.2);
          rightSide.set(0);
          //System.out.println("xVal > (316/2) && distVal > 500");
         } else {
