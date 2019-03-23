@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     lowClimber.set(Value.kOff);
     intake.set(Value.kOff);
     syringe.set(Value.kOff);
-    try {
+ /*   try {
       arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
     } 
@@ -122,7 +122,7 @@ public class Robot extends TimedRobot {
             }  //catch (Exception eOnboard)
           } // catch (Exception e2)
       }  //catch (Exception e1)
-    }  //catch (Exception e)
+    }  //catch (Exception e) */
   } //robotInit()
 
   @Override
@@ -145,6 +145,7 @@ public class Robot extends TimedRobot {
     MOAC.set(Value.kReverse);
   
     //*** VISION ***
+    /*
     targetPosition = arduino.readString();
     System.out.println(arduino.readString()); 
       System.out.println("String TargetPosition = " + targetPosition);
@@ -174,11 +175,12 @@ public class Robot extends TimedRobot {
            System.out.println("Parsing sensor data failed.");
         //   System.out.println("positionNums[0] = " + positionNums[0]);
         //   System.out.println("positionNums[1] = " + positionNums[1]);
-          }
-        }
+         }
+        } */
   }
   @Override
   public void autonomousPeriodic() {
+    /*
     if (visionButton) {
       for (int i = 0; i <= 10; i++) {
         if (i == 10);
@@ -189,15 +191,15 @@ public class Robot extends TimedRobot {
           leftSide.set(0);
           rightSide.set(0);
       //    System.out.println("targetPosition = null");
-        } else if (xVal < 158 /* && distVal > 500 */) {
+        } else if (xVal < 158 /* && distVal > 500 ) {
           leftSide.set(0);
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
-        } else if (xVal == 158 /*&& distVal > 500 */) {
+        } else if (xVal == 158 /*&& distVal > 500 ) {
          leftSide.set(0.2);
          rightSide.set(0.2);
          //System.out.println("xVal == (316/2) && distVal > 500");
-        } else if (xVal > 158 /*&& distVal > 500 */) {
+        } else if (xVal > 158 /*&& distVal > 500 ) {
          leftSide.set(0.2);
          rightSide.set(0);
          //System.out.println("xVal > (316/2) && distVal > 500");
@@ -206,7 +208,7 @@ public class Robot extends TimedRobot {
          leftSide.set(0);
          rightSide.set(0);
         }  
-      } else {
+      } else { */
     chassisDrive.arcadeDrive(forward, turn);
   if (intakePull && !intakePush) {
     intake.set(Value.kReverse);
@@ -237,14 +239,14 @@ public class Robot extends TimedRobot {
     lowClimber.set(Value.kOff);
   }
 }
-  }
+  //}
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
   
     //*** VISION ***
-    targetPosition = arduino.readString();
+/*    targetPosition = arduino.readString();
     System.out.println(arduino.readString()); 
       System.out.println("String TargetPosition = " + targetPosition);
       var positions = targetPosition.split(";");
@@ -275,10 +277,11 @@ public class Robot extends TimedRobot {
         //   System.out.println("positionNums[1] = " + positionNums[1]);
           }
         }
+        */
   }
   @Override
   public void teleopPeriodic() {
-    if (visionButton) {
+/*    if (visionButton) {
       for (int i = 0; i <= 100; i++) {
         if (i == 10);
         System.out.println(targetPosition);
@@ -288,15 +291,15 @@ public class Robot extends TimedRobot {
           leftSide.set(0);
           rightSide.set(0);
       //    System.out.println("targetPosition = null");
-        } else if (xVal < 158 /* && distVal > 500 */) {
+        } else if (xVal < 158 /* && distVal > 500 ) {
           leftSide.set(0);
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
-        } else if (xVal == 158 /*&& distVal > 500 */) {
+        } else if (xVal == 158 /*&& distVal > 500 ) {
          leftSide.set(0.2);
          rightSide.set(0.2);
          //System.out.println("xVal == (316/2) && distVal > 500");
-        } else if (xVal > 158 /*&& distVal > 500 */) {
+        } else if (xVal > 158 /*&& distVal > 500 ) {
          leftSide.set(0.2);
          rightSide.set(0);
          //System.out.println("xVal > (316/2) && distVal > 500");
@@ -305,7 +308,7 @@ public class Robot extends TimedRobot {
          leftSide.set(0);
          rightSide.set(0);
         }
-      } else {
+      } else { */
         chassisDrive.arcadeDrive(forward, turn);
       if (intakePull && !intakePush) {
         intake.set(Value.kReverse);
@@ -342,6 +345,6 @@ public class Robot extends TimedRobot {
       } else {
         lowClimber.set(Value.kOff);
       }
-    }
+    //}
       }
     }
