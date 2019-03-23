@@ -1,6 +1,5 @@
 package frc.robot;
 
-import com.kauailabs.navx.frc.AHRS;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -153,7 +152,5 @@ public class MagicPID {
   public void moveTo(int newPos){talon.set(ControlMode.MotionMagic, newPos);}
 
   public WPI_TalonSRX getTalon(){return talon;}
-
-  public void zeroSensor() {talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);}
 
 }
