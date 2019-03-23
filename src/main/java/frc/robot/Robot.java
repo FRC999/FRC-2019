@@ -58,9 +58,9 @@ public class Robot extends TimedRobot {
   int arduinoCounter;
   int bRate = 115200;
   SerialPort arduino;
-  String targetPosition = arduino.readString();
-  int startOfDataStream = targetPosition.indexOf("B");
-  int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+  String targetPosition;
+  int startOfDataStream;
+  int endOfDataStream;// looking for the first carriage return
   // The indexOf method returns -1 if it can't find the char in the string
   
 
@@ -256,8 +256,11 @@ if (visionButton) {
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
+      targetPosition = arduino.readString();
+        startOfDataStream = targetPosition.indexOf("B");
+        endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
         targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
+      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
         System.out.println(targetPosition);
         if (targetPosition.startsWith("Block")) {
           String[] positionNums = targetPosition.split(":");
@@ -278,25 +281,20 @@ if (visionButton) {
         //System.out.println("Bad String from Arduino: no carriage return character or too short");
       }
       if (targetPosition == null) {
-          leftSide.set(0);
-          rightSide.set(0);
+          chassisDrive.arcadeDrive(0, 0);
       //    System.out.println("targetPosition = null");
         } else if (xVal < 130 && xVal > 0 /* && distVal > 500 */) {
-          leftSide.set(0);
-          rightSide.set(.2);
+          chassisDrive.arcadeDrive(0, .2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
         } else if (xVal < 170 && xVal > 130 /*&& distVal > 500 */) {
-         leftSide.set(-.2);
-         rightSide.set(.2);
+         chassisDrive.arcadeDrive(.2, 0);
          //System.out.println("xVal == (316/2) && distVal > 500");
         } else if (xVal > 170 && xVal < 316 /*&& distVal > 500 */) {
-         leftSide.set(-.2);
-         rightSide.set(0);
+         chassisDrive.arcadeDrive(0, -.2);
          //System.out.println("xVal > (316/2) && distVal > 500");
         } else {
          System.out.println("none of the if statements in auto periodic applied, distval probably <500");
-         leftSide.set(0);
-         rightSide.set(0);
+          chassisDrive.arcadeDrive(0,0);
         }
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
