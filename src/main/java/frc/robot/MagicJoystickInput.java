@@ -142,32 +142,6 @@ import edu.wpi.first.wpilibj.Joystick;
     return getJoystick(type.getJoystickNum());
   }
 
-  /**
-   * Intended to help test MagicInput by printing out all current button values
-   */
-  void printAllValues(){
-    updates();
-    StringBuilder sb = new StringBuilder(500); //Create a StringBuilder with an inital capacity of 500 charicters
-    sb.append("Joystick Values: ");
-    sb.append("Drive: ");
-    sb.append(getDrive());
-    sb.append(" Turn: ");
-    sb.append(getTurn());
-    sb.append(" Elevator: ");
-    sb.append(getElevatorAdjuster());
-    
-    sb.append("Button Values: ");
-    for (ButtonEnum bob : ButtonEnum.values()){
-      if (true){ //Change to conditional if you only want to print a few of  the buttons
-        sb.append(bob.name());
-        sb.append(": ");
-        sb.append(isButtonOn(bob));
-        sb.append(", ");
-      }
-    }
-    System.out.print(sb);
-    System.out.print("/r");
-
-  }
+  
 
 }

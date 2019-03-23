@@ -9,7 +9,7 @@ import edu.wpi.cscore.VideoSink;
  * communication to the driver station
  * Or not.
  */
-public class MagicSwappingCams{
+public class MagicDriversOutput{
   UsbCamera backCam;
   UsbCamera frontCam;
   MagicJoystickInput INPUT;
@@ -17,8 +17,9 @@ public class MagicSwappingCams{
   VideoSink camServer;
   static final int CAMPORT1 = 0;
   static final int CAMPORT2 = 1;
+  StringBuilder oneLinePrint;
 
-  MagicSwappingCams(){
+  MagicDriversOutput(){
     INPUT= MagicJoystickInput.getInstance();
     backCam = CameraServer.getInstance().startAutomaticCapture(0);
     frontCam = CameraServer.getInstance().startAutomaticCapture(1);
@@ -40,5 +41,15 @@ public class MagicSwappingCams{
       camServer.setSource(backCam);
     }
     lastCamPress = INPUT.isButtonOn(ButtonEnum.cameraChange);
+  }
+  public StringBuilder addToPrint(String toPrint){
+    oneLinePrint.append(toPrint);
+    return oneLinePrint;
+  }
+  public String printMagicLine(){
+    System.out.print("/r");
+    System.out.print(oneLinePrint);
+    oneLinePrint.setLength(0);
+    return oneLinePrint.toString();
   }
 }

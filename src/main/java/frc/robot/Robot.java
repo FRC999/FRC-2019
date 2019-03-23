@@ -33,7 +33,7 @@ public class Robot extends TimedRobot {
   MagicElevator ELEVATOR;
   MagicJoystickInput INPUT;
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
-  MagicSwappingCams OUTPUT;
+  MagicDriversOutput OUTPUT;
   MagicPneumatics PNEUMATICS;
   MagicIntake INTAKE;
 
@@ -69,13 +69,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     INPUT = MagicJoystickInput.getInstance();
-    OUTPUT = new MagicSwappingCams();
+    //OUTPUT = new MagicSwappingCams();
     //INTAKE = new MagicIntake(0,0,0,0);
     //ELEVATOR = new MagicElevator(9, INTAKE);
     //ELEVATOR.freeze(); //Every body clap your hands
 
     //PNEUMATICS = new MagicPneumatics(1,2,3,4);
-    driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
+    //driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
   }
 
@@ -171,8 +171,27 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void testPeriodic() {    
-    INPUT.printAllValues();
-  }
+    INPUT.updates();
+    OUTPUT.addToPrint("Joystick Values: ");
+    OUTPUT.addToPrint("Drive: ");
+    OUTPUT.addToPrint(INPUT.getDrive().toString());
+    OUTPUT.addToPrint(" Turn: ");
+    OUTPUT.addToPrint(INPUT.getTurn());
+    OUTPUT.addToPrint(" Elevator: ");
+    OUTPUT.addToPrint(INPUT.getElevatorAdjuster());
+    
+    sb.append("Button Values: ");
+    for (ButtonEnum bob : ButtonEnum.values()){
+      if (true){ //Change to conditional if you only want to print a few of  the buttons
+        OUTPUT.addToPrint(bob.name());
+        OUTPUT.addToPrint(": ");
+        OUTPUT.addToPrint(INPUT.isButtonOn(bob));
+        OUTPUT.addToPrint(", "); 
+      }
+    }
+
+   
+}
 public static int getCycleCount() {
   return counter;
   }
