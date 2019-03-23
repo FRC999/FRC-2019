@@ -259,8 +259,9 @@ if (visionButton) {
       targetPosition = arduino.readString();
         startOfDataStream = targetPosition.indexOf("B");
         endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+      //indexOf returns -1 if it cannot find either char in the string
+        if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
         targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
         System.out.println(targetPosition);
         if (targetPosition.startsWith("Block")) {
           String[] positionNums = targetPosition.split(":");
@@ -281,20 +282,25 @@ if (visionButton) {
         //System.out.println("Bad String from Arduino: no carriage return character or too short");
       }
       if (targetPosition == null) {
-          chassisDrive.arcadeDrive(0, 0);
+          leftSide.set(0);
+          rightSide.set(0);
       //    System.out.println("targetPosition = null");
         } else if (xVal < 130 && xVal > 0 /* && distVal > 500 */) {
-          chassisDrive.arcadeDrive(0, .2);
+          leftSide.set(0);
+          rightSide.set(-.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
         } else if (xVal < 170 && xVal > 130 /*&& distVal > 500 */) {
-         chassisDrive.arcadeDrive(.2, 0);
+          leftSide.set(-.2);
+          rightSide.set(.2);
          //System.out.println("xVal == (316/2) && distVal > 500");
         } else if (xVal > 170 && xVal < 316 /*&& distVal > 500 */) {
-         chassisDrive.arcadeDrive(0, -.2);
+          leftSide.set( .2);
+          rightSide.set(0);
          //System.out.println("xVal > (316/2) && distVal > 500");
         } else {
          System.out.println("none of the if statements in auto periodic applied, distval probably <500");
-          chassisDrive.arcadeDrive(0,0);
+         leftSide.set(0);
+         rightSide.set(0);
         }
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
