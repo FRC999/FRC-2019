@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     INPUT = MagicJoystickInput.getInstance();
-    //OUTPUT = new MagicSwappingCams();
+    OUTPUT = new MagicDriversOutput();
     //INTAKE = new MagicIntake(0,0,0,0);
     //ELEVATOR = new MagicElevator(9, INTAKE);
     //ELEVATOR.freeze(); //Every body clap your hands
@@ -156,7 +156,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     INPUT.updates(); //Update the toggling booleen
-    OUTPUT.checkCamSwap();
     counter += 1;
     //Drive code: Jack says that's all I need
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
@@ -172,26 +171,31 @@ public class Robot extends TimedRobot {
    * This function is called periodically during test mode.
    */
   @Override
-  public void testPeriodic() {    
-    INPUT.updates();
-    OUTPUT.addToPrint("Joystick Values: ");
-    OUTPUT.addToPrint("Drive: ");
-    OUTPUT.addToPrint(Double.toString(INPUT.getDrive()));
-    OUTPUT.addToPrint(" Turn: ");
-    OUTPUT.addToPrint(Double.toString(INPUT.getTurn()));
-    OUTPUT.addToPrint(" Elevator: ");
-    OUTPUT.addToPrint(Double.toString(INPUT.getElevatorAdjuster()));
-    
-    OUTPUT.addToPrint("Button Values: ");
-    for (ButtonEnum bob : ButtonEnum.values()){
-      if (true){ //Change to conditional if you only want to print a few of  the buttons
-        OUTPUT.addToPrint(bob.name());
-        OUTPUT.addToPrint(": ");
-        OUTPUT.addToPrint(Boolean.toString(INPUT.isButtonOn(bob)));
-        OUTPUT.addToPrint(", "); 
+  public void testPeriodic() {
+    INPUT.updates();  
+    OUTPUT.checkCamSwap();  
+
+    if (counter % 10 == 0){
+      OUTPUT.addToPrint("\nJoystick Values: ");
+      OUTPUT.addToPrint("Drive: ");
+      OUTPUT.addToPrint(Double.toString(INPUT.getDrive()));
+      OUTPUT.addToPrint(" Turn: ");
+      OUTPUT.addToPrint(Double.toString(INPUT.getTurn()));
+      OUTPUT.addToPrint(" Elevator: ");
+      OUTPUT.addToPrint(Double.toString(INPUT.getElevatorAdjuster()));
+      
+      OUTPUT.addToPrint("\nButton Values: ");
+      for (ButtonEnum bob : ButtonEnum.values()){
+        if (INPUT.isButtonOn(bob) == true){ //Change to conditional if you only want to print a few of  the buttons
+          OUTPUT.addToPrint(bob.name());
+          OUTPUT.addToPrint(": ");
+          OUTPUT.addToPrint("true");
+          OUTPUT.addToPrint(", "); 
+        }
       }
+      OUTPUT.printMagicLine();
     }
-    OUTPUT.printMagicLine();
+    counter++;
 
    
 }

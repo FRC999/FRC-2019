@@ -1,16 +1,17 @@
 package frc.robot;
 public enum ButtonEnum {
     intakeIn(0, 1), intakeOut(0, 2),
-    Three(0, 3, false), Cog(0,4,false), testBool(0,5,false),
+    Three(0, 3, false), Cog(0,4,true), testBool(0,5,false),
     elevatorUp(2,1), elevatorDown(2,2),
 
-    hatchClose(0,4), hatchOpen(0,3), cameraChange(0,6), retractCargoIntake(0,5),
+    hatchClose(0,4), hatchOpen(0,3), cameraChange(0,6,false), retractCargoIntake(0,5),
     toggleIntake(1,2), intakeCargo(1,1), outtakeCargo(1,3), endgame(1,7),
 
     elevatorLowHatch(2,12, EncoderPresets.lowHatch), elevatorMidHatch(2,10, EncoderPresets.midHatch), elevatorHighHatch(2,8, EncoderPresets.highHatch),
     elevatorLowBall(2,11, EncoderPresets.lowBall), elevatorMidBall(2,9, EncoderPresets.midBall), elevatorHighBall(2,7, EncoderPresets.highBall),
-    elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), elevatorFloor(2,3, EncoderPresets.floor), elevatorRetract(0,0,EncoderPresets.retract);
-    final private int buttonNum;
+    elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), elevatorFloor(2,3, EncoderPresets.floor), elevatorRetract(0,9,EncoderPresets.retract);
+  
+  final private int buttonNum;
   final private int joystickNum;
   final private TogglingBoolean toggledButton;
   final private EncoderPresets ePresets;
