@@ -188,11 +188,7 @@ public class Robot extends TimedRobot {
          }
         } 
 if (visionButton) {
-  for (int i = 0; i <= 10; i++) {
-    if (i == 10);
     System.out.println(targetPosition);
-    i = 0;
-  }  
   if (targetPosition == null) {
       leftSide.set(0);
       rightSide.set(0);
