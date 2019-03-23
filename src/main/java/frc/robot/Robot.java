@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     lowClimber.set(Value.kOff);
     intake.set(Value.kOff);
     syringe.set(Value.kOff);
- /*   try {
+    try {
       arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
     } 
@@ -130,7 +130,7 @@ public class Robot extends TimedRobot {
           } // catch (Exception eMXP)
         }  //catch (Exception e2)
       }  //catch (Exception e1)
-    }  //catch (Exception e) */
+    }  //catch (Exception e) 
   } //robotInit()
 
   @Override
@@ -153,7 +153,6 @@ public class Robot extends TimedRobot {
     MOAC.set(Value.kReverse);
   
     //*** VISION ***
-    /*
     targetPosition = arduino.readString();
     System.out.println(arduino.readString()); 
       System.out.println("String TargetPosition = " + targetPosition);
@@ -184,41 +183,10 @@ public class Robot extends TimedRobot {
         //   System.out.println("positionNums[0] = " + positionNums[0]);
         //   System.out.println("positionNums[1] = " + positionNums[1]);
          }
-        } */
+        } 
   }
   @Override
   public void autonomousPeriodic() {
-<<<<<<< HEAD
-    /*
-    if (visionButton) {
-      for (int i = 0; i <= 10; i++) {
-        if (i == 10);
-        System.out.println(targetPosition);
-        i = 0;
-      }  
-      if (targetPosition == null) {
-          leftSide.set(0);
-          rightSide.set(0);
-      //    System.out.println("targetPosition = null");
-        } else if (xVal < 158 /* && distVal > 500 ) {
-          leftSide.set(0);
-          rightSide.set(.2);
-     //     System.out.println("xVal < (316/2) && distVal > 500");
-        } else if (xVal == 158 /*&& distVal > 500 ) {
-         leftSide.set(0.2);
-         rightSide.set(0.2);
-         //System.out.println("xVal == (316/2) && distVal > 500");
-        } else if (xVal > 158 /*&& distVal > 500 ) {
-         leftSide.set(0.2);
-         rightSide.set(0);
-         //System.out.println("xVal > (316/2) && distVal > 500");
-        } else {
-         System.out.println("none of the if statements in auto periodic applied, distval probably <500");
-         leftSide.set(0);
-         rightSide.set(0);
-        }  
-      } else { */
-=======
 if (visionButton) {
   for (int i = 0; i <= 10; i++) {
     if (i == 10);
@@ -247,7 +215,6 @@ if (visionButton) {
      rightSide.set(0);
     }
   } else {
->>>>>>> parent of b19372b... various progress
     chassisDrive.arcadeDrive(forward, turn);
   if (intakePull && !intakePush) {
     intake.set(Value.kReverse);
@@ -278,14 +245,14 @@ if (visionButton) {
     lowClimber.set(Value.kOff);
   }
 }
-  //}
+}
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
   
     //*** VISION ***
-/*    targetPosition = arduino.readString();
+    targetPosition = arduino.readString();
     System.out.println(arduino.readString()); 
       System.out.println("String TargetPosition = " + targetPosition);
       var positions = targetPosition.split(";");
@@ -316,17 +283,12 @@ if (visionButton) {
         //   System.out.println("positionNums[1] = " + positionNums[1]);
           }
         }
-        */
+        
   }
   @Override
   public void teleopPeriodic() {
-<<<<<<< HEAD
-/*    if (visionButton) {
-      for (int i = 0; i <= 100; i++) {
-=======
     if (visionButton) {
       for (int i = 0; i <= 10; i++) {
->>>>>>> parent of b19372b... various progress
         if (i == 10);
         System.out.println(targetPosition);
         i = 0;
@@ -339,15 +301,6 @@ if (visionButton) {
           leftSide.set(0);
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
-<<<<<<< HEAD
-        } else if (xVal == 158 /*&& distVal > 500 ) {
-         leftSide.set(0.2);
-         rightSide.set(0.2);
-         //System.out.println("xVal == (316/2) && distVal > 500");
-        } else if (xVal > 158 /*&& distVal > 500 ) {
-         leftSide.set(0.2);
-         rightSide.set(0);
-=======
         } else if (xVal == 158 /*&& distVal > 500 */) {
          leftSide.set(0);
          rightSide.set(.2);
@@ -355,14 +308,13 @@ if (visionButton) {
         } else if (xVal > 158 /*&& distVal > 500 */) {
          leftSide.set(0);
          rightSide.set(.2);
->>>>>>> parent of b19372b... various progress
          //System.out.println("xVal > (316/2) && distVal > 500");
         } else {
          System.out.println("none of the if statements in auto periodic applied, distval probably <500");
          leftSide.set(0);
          rightSide.set(0);
         }
-      } else { */
+      } else { 
         chassisDrive.arcadeDrive(forward, turn);
       if (intakePull && !intakePush) {
         intake.set(Value.kReverse);
@@ -392,6 +344,6 @@ if (visionButton) {
       } else {
         lowClimber.set(Value.kOff);
       }
-    //}
+    }
       }
     }
