@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
   Joystick driveStick = new Joystick(0);
   Joystick turnStick = new Joystick(1);
   Joystick copilotStick = new Joystick(2);
-
+  boolean LEDOn;
   boolean intakePush;
   boolean intakePull;
   boolean smallClimberUp;
@@ -52,6 +52,9 @@ public class Robot extends TimedRobot {
   int distVal;
   int confVal;
   int blocksSeen;
+  int pixyMountX;
+  int pixyMountY;
+  int pixyMountAngle;
   String targetPosition;
   int bRate = 115200;
   SerialPort arduino;
@@ -130,10 +133,11 @@ public class Robot extends TimedRobot {
     syringePush = driveStick.getRawButton(6);
     smallClimberUp = driveStick.getRawButton(9);
     smallClimberDown = driveStick.getRawButton(10);
+    visionButton = driveStick.getRawButton(2);
     MOACUp = driveStick.getRawButton(11);
     MOACDown = driveStick.getRawButton(12);
     forward = (driveStick.getRawAxis(1))*-1;
-    turn = driveStick.getRawAxis(0);
+    turn = turnStick.getRawAxis(0);
   }
   @Override
   public void autonomousInit() {
@@ -176,23 +180,27 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 if (visionButton) {
-    if (targetPosition == null) {
+  for (int i = 0; i <= 10; i++) {
+    if (i == 10);
+    System.out.println(targetPosition);
+    i = 0;
+  }  
+  if (targetPosition == null) {
       leftSide.set(0);
       rightSide.set(0);
-      System.out.println("targetPosition = null");
-    } else if (xVal < 158 && distVal > 500) {
+  //    System.out.println("targetPosition = null");
+    } else if (xVal < 158 /* && distVal > 500 */) {
       leftSide.set(0);
       rightSide.set(.2);
-      System.out.println("xVal < (316/2) && distVal > 500");
-      System.out.println(targetPosition);
-    } else if (xVal == 158 && distVal > 500) {
+ //     System.out.println("xVal < (316/2) && distVal > 500");
+    } else if (xVal == 158 /*&& distVal > 500 */) {
      leftSide.set(0);
      rightSide.set(.2);
-     System.out.println("xVal == (316/2) && distVal > 500");
-    } else if (xVal > 158 && distVal > 500) {
+     //System.out.println("xVal == (316/2) && distVal > 500");
+    } else if (xVal > 158 /*&& distVal > 500 */) {
      leftSide.set(0);
      rightSide.set(.2);
-     System.out.println("xVal > (316/2) && distVal > 500");
+     //System.out.println("xVal > (316/2) && distVal > 500");
     } else {
      System.out.println("none of the if statements in auto periodic applied, distval probably <500");
      leftSide.set(0);
@@ -234,76 +242,99 @@ if (visionButton) {
   public void teleopInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
+  
+    //*** VISION ***
+    targetPosition = arduino.readString();
+    System.out.println(arduino.readString()); 
+      System.out.println("String TargetPosition = " + targetPosition);
+      var positions = targetPosition.split(";");
+       for (int i = 0; i < positions.length; i++) {
+      //  System.out.println("String TargetPosition = " + targetPosition);
+         var positionNums = positions[i].split(":");
+         if (positionNums[0] == "x") {
+           xVal = Integer.parseInt(positionNums[1]);
+           System.out.println("xval = " + xVal);
+         } else if (positionNums[0] == "y") {
+           yVal = Integer.parseInt(positionNums[1]);
+           System.out.println("yval =" + yVal);
+         } else if (positionNums[0] == "h") {
+           hVal = Integer.parseInt(positionNums[1]);
+           System.out.println("hval =" + hVal);
+         } else if (positionNums[0] == "w") {
+           wVal = Integer.parseInt(positionNums[1]);
+           System.out.println("wval =" + wVal);
+         } else if (positionNums[0] == "dist") {
+           distVal = Integer.parseInt(positionNums[1]);
+           System.out.println("distval =" + distVal);
+          } else if (positionNums[0] == "conf") {
+            distVal = Integer.parseInt(positionNums[1]);
+            System.out.println("confval =" + confVal);
+         } else {
+           System.out.println("Parsing sensor data failed.");
+        //   System.out.println("positionNums[0] = " + positionNums[0]);
+        //   System.out.println("positionNums[1] = " + positionNums[1]);
+          }
+        }
   }
   @Override
   public void teleopPeriodic() {
-    chassisDrive.arcadeDrive(forward, turn);
-  if (intakePull && !intakePush) {
-    intake.set(Value.kReverse);
-  } else if (intakePush && !intakePull) {
-    intake.set(Value.kForward);
-  } else {
-    intake.set(Value.kOff);
-  }
-  if (syringePull && !syringePush) {
-    syringe.set(Value.kReverse);
-  } else if (syringePush && !syringePull) {
-    syringe.set(Value.kForward);
-  } else {
-    syringe.set(Value.kOff);
-  }
-  if (MOACUp && !MOACDown) {
-    MOAC.set(Value.kReverse);
-  } else if (MOACDown && !MOACUp) {
-    MOAC.set(Value.kForward);
-  } else {
-    MOAC.set(Value.kOff);
-  }
-  if (smallClimberUp && !smallClimberDown) {
-    lowClimber.set(Value.kForward);
-  } else if (smallClimberDown && !smallClimberUp) {
-    lowClimber.set(Value.kReverse);
-  } else {
-    lowClimber.set(Value.kOff);
-  }
-  }
-  @Override
-  public void testInit() {
-    comp.setClosedLoopControl(true);
-    MOAC.set(Value.kReverse);
-    lowClimber.set(Value.kReverse);
-    intake.set(Value.kReverse);
-    syringe.set(Value.kReverse);
-  }
-  @Override
-  public void testPeriodic() {
-    if (intakePull && !intakePush) {
-      intake.set(Value.kReverse);
-    } else if (intakePush && !intakePull) {
-      intake.set(Value.kForward);
-    } else {
-      intake.set(Value.kOff);
+    if (visionButton) {
+      for (int i = 0; i <= 10; i++) {
+        if (i == 10);
+        System.out.println(targetPosition);
+        i = 0;
+      }  
+      if (targetPosition == null) {
+          leftSide.set(0);
+          rightSide.set(0);
+      //    System.out.println("targetPosition = null");
+        } else if (xVal < 158 /* && distVal > 500 */) {
+          leftSide.set(0);
+          rightSide.set(.2);
+     //     System.out.println("xVal < (316/2) && distVal > 500");
+        } else if (xVal == 158 /*&& distVal > 500 */) {
+         leftSide.set(0);
+         rightSide.set(.2);
+         //System.out.println("xVal == (316/2) && distVal > 500");
+        } else if (xVal > 158 /*&& distVal > 500 */) {
+         leftSide.set(0);
+         rightSide.set(.2);
+         //System.out.println("xVal > (316/2) && distVal > 500");
+        } else {
+         System.out.println("none of the if statements in auto periodic applied, distval probably <500");
+         leftSide.set(0);
+         rightSide.set(0);
+        }
+      } else {
+        chassisDrive.arcadeDrive(forward, turn);
+      if (intakePull && !intakePush) {
+        intake.set(Value.kReverse);
+      } else if (intakePush && !intakePull) {
+        intake.set(Value.kForward);
+      } else {
+        intake.set(Value.kOff);
+      }
+      if (syringePull && !syringePush) {
+        syringe.set(Value.kReverse);
+      } else if (syringePush && !syringePull) {
+        syringe.set(Value.kForward);
+      } else {
+        syringe.set(Value.kOff);
+      }
+      if (MOACUp && !MOACDown) {
+        MOAC.set(Value.kReverse);
+      } else if (MOACDown && !MOACUp) {
+        MOAC.set(Value.kForward);
+      } else {
+        MOAC.set(Value.kOff);
+      }
+      if (smallClimberUp && !smallClimberDown) {
+        lowClimber.set(Value.kForward);
+      } else if (smallClimberDown && !smallClimberUp) {
+        lowClimber.set(Value.kReverse);
+      } else {
+        lowClimber.set(Value.kOff);
+      }
     }
-    if (syringePull && !syringePush) {
-      syringe.set(Value.kReverse);
-    } else if (syringePush && !syringePull) {
-      syringe.set(Value.kForward);
-    } else {
-      syringe.set(Value.kOff);
+      }
     }
-    if (MOACUp && !MOACDown) {
-      MOAC.set(Value.kReverse);
-    } else if (MOACDown && !MOACUp) {
-      MOAC.set(Value.kForward);
-    } else {
-      MOAC.set(Value.kOff);
-    }
-    if (smallClimberUp && !smallClimberDown) {
-      lowClimber.set(Value.kForward);
-    } else if (smallClimberDown && !smallClimberUp) {
-      lowClimber.set(Value.kReverse);
-    } else {
-      lowClimber.set(Value.kOff);
-    }
-  }
-}
