@@ -293,7 +293,7 @@ if (visionButton) {
      //     System.out.println("xVal < (316/2) && distVal > 500");
         } else if (xVal == 158 /*&& distVal > 500 */) {
          leftSide.set(.2);
-         rightSide.set(.2);
+         rightSide.set(-.2);
          //System.out.println("xVal == (316/2) && distVal > 500");
         } else if (xVal > 158 /*&& distVal > 500 */) {
          leftSide.set(.2);
