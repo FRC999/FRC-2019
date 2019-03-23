@@ -55,9 +55,15 @@ public class Robot extends TimedRobot {
   int pixyMountX;
   int pixyMountY;
   int pixyMountAngle;
-  String targetPosition;
+  int arduinoCounter;
   int bRate = 115200;
   SerialPort arduino;
+  String targetPosition = arduino.readString();
+  int startOfDataStream = targetPosition.indexOf("B");
+  int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+  // The indexOf method returns -1 if it can't find the char in the string
+  
+
 /*
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
   WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
@@ -250,39 +256,27 @@ if (visionButton) {
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
-    //*** VISION ***
-    targetPosition = arduino.readString();
-    System.out.println(arduino.readString()); 
-      System.out.println("String TargetPosition = " + targetPosition);
-      var positions = targetPosition.split(";");
-       for (int i = 0; i < positions.length; i++) {
-      //  System.out.println("String TargetPosition = " + targetPosition);
-         var positionNums = positions[i].split(":");
-         if (positionNums[0] == "x") {
-           xVal = Integer.parseInt(positionNums[1]);
-           System.out.println("xval = " + xVal);
-         } else if (positionNums[0] == "y") {
-           yVal = Integer.parseInt(positionNums[1]);
-           System.out.println("yval =" + yVal);
-         } else if (positionNums[0] == "h") {
-           hVal = Integer.parseInt(positionNums[1]);
-           System.out.println("hval =" + hVal);
-         } else if (positionNums[0] == "w") {
-           wVal = Integer.parseInt(positionNums[1]);
-           System.out.println("wval =" + wVal);
-         } else if (positionNums[0] == "dist") {
-           distVal = Integer.parseInt(positionNums[1]);
-           System.out.println("distval =" + distVal);
-          } else if (positionNums[0] == "conf") {
-            distVal = Integer.parseInt(positionNums[1]);
-            System.out.println("confval =" + confVal);
-         } else {
-           System.out.println("Parsing sensor data failed.");
-        //   System.out.println("positionNums[0] = " + positionNums[0]);
-        //   System.out.println("positionNums[1] = " + positionNums[1]);
-          }
+      if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
+        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
+        System.out.println(targetPosition);
+        if (targetPosition.startsWith("Block")) {
+          String[] positionNums = targetPosition.split(":");
+          // positionNums[0] would be "Block
+          // positionNums [1] would be number of block: always 0
+          xVal = Integer.parseInt(positionNums[2]);
+          yVal = Integer.parseInt(positionNums[3]);
+          wVal = Integer.parseInt(positionNums[4]);
+          hVal = Integer.parseInt(positionNums[5]);
+          distVal = Integer.parseInt(positionNums[6]);
+          confVal = Integer.parseInt(positionNums[7]);
+          blocksSeen = Integer.parseInt(positionNums[1]);
+          arduinoCounter = Integer.parseInt(positionNums[8]);
+        } else {
+          //System.out.println("Bad String from Arduino: Doesn't start with Block");
         }
-        
+      } else {
+        //System.out.println("Bad String from Arduino: no carriage return character or too short");
+      }
       if (targetPosition == null) {
           leftSide.set(0);
           rightSide.set(0);
@@ -333,7 +327,7 @@ if (visionButton) {
         lowClimber.set(Value.kReverse);
       } else {
         lowClimber.set(Value.kOff);
-      }
-    }
-      }
-    }
+      } // lowClimber
+    } // no vision
+      } // teleopPeriodic
+    } // Robot
