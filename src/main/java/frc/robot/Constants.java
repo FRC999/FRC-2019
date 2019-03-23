@@ -1,6 +1,6 @@
 package frc.robot;
 
-public class RobotConstants {
+public class Constants {
   static final int pneumaticInButton = 1;//BUTTON
   static final int intakeIn = 5;//BUTTON Id
   static final int intakeOut = 5;//BUTTON

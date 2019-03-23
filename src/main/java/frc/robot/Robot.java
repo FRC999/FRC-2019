@@ -112,6 +112,13 @@ public class Robot extends TimedRobot {
           System.out.println("Connected to kUSB2");
         }
         catch (Exception e2) {
+          System.out.println("Not connected to any of the USB ports, trying MXP spot");
+          try {
+            arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
+            System.out.println("Connected to MXP port");
+          }
+          catch (Exception eMXP) {
+            System.out.println("Not Connected to MXP port, trying Onboard");
             try {
               arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
               System.out.println("Connected to Onboard");  
@@ -120,7 +127,8 @@ public class Robot extends TimedRobot {
               System.out.println("Not connected to any ports on the RoboRIO");
   
             }  //catch (Exception eOnboard)
-          } // catch (Exception e2)
+          } // catch (Exception eMXP)
+        }  //catch (Exception e2)
       }  //catch (Exception e1)
     }  //catch (Exception e) */
   } //robotInit()
@@ -129,14 +137,14 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     intakePull = driveStick.getRawButton(3);
     intakePush = driveStick.getRawButton(5);
-    syringePull = driveStick.getRawButtonPressed(4);
-    //syringePush = driveStick.getRawButton(6);
+    syringePull = driveStick.getRawButton(4);
+    syringePush = driveStick.getRawButton(6);
     smallClimberUp = driveStick.getRawButton(9);
     smallClimberDown = driveStick.getRawButton(10);
     visionButton = driveStick.getRawButton(2);
     MOACUp = driveStick.getRawButton(11);
     MOACDown = driveStick.getRawButton(12);
-    forward = (driveStick.getRawAxis(1));
+    forward = (driveStick.getRawAxis(1))*-1;
     turn = turnStick.getRawAxis(0);
   }
   @Override
@@ -180,6 +188,7 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void autonomousPeriodic() {
+<<<<<<< HEAD
     /*
     if (visionButton) {
       for (int i = 0; i <= 10; i++) {
@@ -209,6 +218,36 @@ public class Robot extends TimedRobot {
          rightSide.set(0);
         }  
       } else { */
+=======
+if (visionButton) {
+  for (int i = 0; i <= 10; i++) {
+    if (i == 10);
+    System.out.println(targetPosition);
+    i = 0;
+  }  
+  if (targetPosition == null) {
+      leftSide.set(0);
+      rightSide.set(0);
+  //    System.out.println("targetPosition = null");
+    } else if (xVal < 158 /* && distVal > 500 */) {
+      leftSide.set(0);
+      rightSide.set(.2);
+ //     System.out.println("xVal < (316/2) && distVal > 500");
+    } else if (xVal == 158 /*&& distVal > 500 */) {
+     leftSide.set(0);
+     rightSide.set(.2);
+     //System.out.println("xVal == (316/2) && distVal > 500");
+    } else if (xVal > 158 /*&& distVal > 500 */) {
+     leftSide.set(0);
+     rightSide.set(.2);
+     //System.out.println("xVal > (316/2) && distVal > 500");
+    } else {
+     System.out.println("none of the if statements in auto periodic applied, distval probably <500");
+     leftSide.set(0);
+     rightSide.set(0);
+    }
+  } else {
+>>>>>>> parent of b19372b... various progress
     chassisDrive.arcadeDrive(forward, turn);
   if (intakePull && !intakePush) {
     intake.set(Value.kReverse);
@@ -281,8 +320,13 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void teleopPeriodic() {
+<<<<<<< HEAD
 /*    if (visionButton) {
       for (int i = 0; i <= 100; i++) {
+=======
+    if (visionButton) {
+      for (int i = 0; i <= 10; i++) {
+>>>>>>> parent of b19372b... various progress
         if (i == 10);
         System.out.println(targetPosition);
         i = 0;
@@ -295,6 +339,7 @@ public class Robot extends TimedRobot {
           leftSide.set(0);
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
+<<<<<<< HEAD
         } else if (xVal == 158 /*&& distVal > 500 ) {
          leftSide.set(0.2);
          rightSide.set(0.2);
@@ -302,6 +347,15 @@ public class Robot extends TimedRobot {
         } else if (xVal > 158 /*&& distVal > 500 ) {
          leftSide.set(0.2);
          rightSide.set(0);
+=======
+        } else if (xVal == 158 /*&& distVal > 500 */) {
+         leftSide.set(0);
+         rightSide.set(.2);
+         //System.out.println("xVal == (316/2) && distVal > 500");
+        } else if (xVal > 158 /*&& distVal > 500 */) {
+         leftSide.set(0);
+         rightSide.set(.2);
+>>>>>>> parent of b19372b... various progress
          //System.out.println("xVal > (316/2) && distVal > 500");
         } else {
          System.out.println("none of the if statements in auto periodic applied, distval probably <500");
@@ -317,19 +371,12 @@ public class Robot extends TimedRobot {
       } else {
         intake.set(Value.kOff);
       }
-      /*if (syringePull && !syringePush) {
+      if (syringePull && !syringePush) {
         syringe.set(Value.kReverse);
       } else if (syringePush && !syringePull) {
         syringe.set(Value.kForward);
       } else {
         syringe.set(Value.kOff);
-      } */
-      if (syringePull) {
-        if (syringe.get() == Value.kForward) {
-          syringe.set(Value.kReverse);
-        } else {
-          syringe.set(Value.kForward);
-        }
       }
       if (MOACUp && !MOACDown) {
         MOAC.set(Value.kReverse);
