@@ -10,7 +10,7 @@ import edu.wpi.cscore.VideoSource.ConnectionStrategy;
  * communication to the driver station
  * Or not.
  */
-public class MagicDriversOutput{
+public class MagicRobotCameras{
   UsbCamera backCam;
   UsbCamera frontCam;
   MagicJoystickInput INPUT;
@@ -18,9 +18,8 @@ public class MagicDriversOutput{
   VideoSink camServer;
   static final int CAMPORT1 = 0;
   static final int CAMPORT2 = 1;
-  StringBuilder oneLinePrint = new StringBuilder(500);
 
-  MagicDriversOutput(){
+  MagicRobotCameras(){
     INPUT= MagicJoystickInput.getInstance();
     backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
     backCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
@@ -48,15 +47,5 @@ public class MagicDriversOutput{
       camServer.setSource(backCam);
     }
     lastCamChoice = INPUT.isButtonOn(ButtonEnum.cameraChange);
-  }
-  public StringBuilder addToPrint(String toPrint){
-    oneLinePrint.append(toPrint);
-    return oneLinePrint;
-  }
-  public String printMagicLine(){
-    System.out.print("\n");
-    System.out.print(oneLinePrint);
-    oneLinePrint.delete(0,oneLinePrint.length());
-    return oneLinePrint.toString();
   }
 }

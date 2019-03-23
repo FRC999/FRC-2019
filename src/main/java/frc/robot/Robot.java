@@ -32,9 +32,10 @@ public class Robot extends TimedRobot {
   MagicElevator ELEVATOR;
   MagicJoystickInput INPUT;
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
-  MagicDriversOutput OUTPUT;
+  MagicRobotCameras OUTPUT;
   MagicPneumatics PNEUMATICS;
   MagicIntake INTAKE;
+  MagicDriverPrints PRINTER;
 
   long cycles = 0;
   double forward;
@@ -71,7 +72,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     INPUT = MagicJoystickInput.getInstance();
-    OUTPUT = new MagicDriversOutput();
+    OUTPUT = new MagicRobotCameras();
+    PRINTER = new MagicDriverPrints();
     //INTAKE = new MagicIntake(0,0,0,0);
     //ELEVATOR = new MagicElevator(9, INTAKE);
     //ELEVATOR.freeze(); //Every body clap your hands
@@ -176,24 +178,24 @@ public class Robot extends TimedRobot {
     OUTPUT.checkCamSwap();  
 
     if (counter % 10 == 0){
-      OUTPUT.addToPrint("\nJoystick Values: ");
-      OUTPUT.addToPrint("Drive: ");
-      OUTPUT.addToPrint(Double.toString(INPUT.getDrive()));
-      OUTPUT.addToPrint(" Turn: ");
-      OUTPUT.addToPrint(Double.toString(INPUT.getTurn()));
-      OUTPUT.addToPrint(" Elevator: ");
-      OUTPUT.addToPrint(Double.toString(INPUT.getElevatorAdjuster()));
+      PRINTER.addToPrint("\nJoystick Values: ");
+      PRINTER.addToPrint("Drive: ");
+      PRINTER.addToPrint(Double.toString(INPUT.getDrive()));
+      PRINTER.addToPrint(" Turn: ");
+      PRINTER.addToPrint(Double.toString(INPUT.getTurn()));
+      PRINTER.addToPrint(" Elevator: ");
+      PRINTER.addToPrint(Double.toString(INPUT.getElevatorAdjuster()));
       
-      OUTPUT.addToPrint("\nButton Values: ");
+      PRINTER.addToPrint("\nButton Values: ");
       for (ButtonEnum bob : ButtonEnum.values()){
         if (INPUT.isButtonOn(bob) == true){ //Change to conditional if you only want to print a few of  the buttons
-          OUTPUT.addToPrint(bob.name());
-          OUTPUT.addToPrint(": ");
-          OUTPUT.addToPrint("true");
-          OUTPUT.addToPrint(", "); 
+          PRINTER.addToPrint(bob.name());
+          PRINTER.addToPrint(": ");
+          PRINTER.addToPrint("true");
+          PRINTER.addToPrint(", "); 
         }
       }
-      OUTPUT.printMagicLine();
+      PRINTER.printMagicLine();
     }
     counter++;
 
