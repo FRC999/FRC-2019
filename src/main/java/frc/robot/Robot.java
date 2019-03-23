@@ -292,12 +292,12 @@ if (visionButton) {
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
         } else if (xVal == 158 /*&& distVal > 500 */) {
-         leftSide.set(0);
+         leftSide.set(.2);
          rightSide.set(.2);
          //System.out.println("xVal == (316/2) && distVal > 500");
         } else if (xVal > 158 /*&& distVal > 500 */) {
-         leftSide.set(0);
-         rightSide.set(.2);
+         leftSide.set(.2);
+         rightSide.set(0);
          //System.out.println("xVal > (316/2) && distVal > 500");
         } else {
          System.out.println("none of the if statements in auto periodic applied, distval probably <500");
