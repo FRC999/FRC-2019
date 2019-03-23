@@ -49,7 +49,7 @@ public class MagicDriversOutput{
   public String printMagicLine(){
     System.out.print("/r");
     System.out.print(oneLinePrint);
-    oneLinePrint.setLength(0);
+    oneLinePrint.delete(0,oneLinePrint.length());
     return oneLinePrint.toString();
   }
 }

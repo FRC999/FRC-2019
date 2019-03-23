@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 
 
 /**
@@ -41,6 +40,9 @@ public class Robot extends TimedRobot {
   double forward;
   double turn;
 
+  /**
+   * Switch to talon-victor-victor, talon-victor-victor for 2019 bot
+   */
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
   WPI_TalonSRX driveML = new WPI_TalonSRX(2); //middle left tank drive motor
   WPI_TalonSRX driveRL = new WPI_TalonSRX(3); //rear left tank drive motor
@@ -174,21 +176,22 @@ public class Robot extends TimedRobot {
     INPUT.updates();
     OUTPUT.addToPrint("Joystick Values: ");
     OUTPUT.addToPrint("Drive: ");
-    OUTPUT.addToPrint(INPUT.getDrive().toString());
+    OUTPUT.addToPrint(Double.toString(INPUT.getDrive()));
     OUTPUT.addToPrint(" Turn: ");
-    OUTPUT.addToPrint(INPUT.getTurn());
+    OUTPUT.addToPrint(Double.toString(INPUT.getTurn()));
     OUTPUT.addToPrint(" Elevator: ");
-    OUTPUT.addToPrint(INPUT.getElevatorAdjuster());
+    OUTPUT.addToPrint(Double.toString(INPUT.getElevatorAdjuster()));
     
-    sb.append("Button Values: ");
+    OUTPUT.addToPrint("Button Values: ");
     for (ButtonEnum bob : ButtonEnum.values()){
       if (true){ //Change to conditional if you only want to print a few of  the buttons
         OUTPUT.addToPrint(bob.name());
         OUTPUT.addToPrint(": ");
-        OUTPUT.addToPrint(INPUT.isButtonOn(bob));
+        OUTPUT.addToPrint(Boolean.toString(INPUT.isButtonOn(bob)));
         OUTPUT.addToPrint(", "); 
       }
     }
+    OUTPUT.printMagicLine();
 
    
 }

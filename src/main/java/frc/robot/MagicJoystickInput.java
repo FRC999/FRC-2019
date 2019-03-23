@@ -16,8 +16,7 @@ import edu.wpi.first.wpilibj.Joystick;
 
   private static MagicJoystickInput mInstance = new MagicJoystickInput();
 
-
-     public static MagicJoystickInput getInstance() {return mInstance;}
+  public static MagicJoystickInput getInstance() {return mInstance;}
 
   Joystick driveStick;
   Joystick turnStick;
@@ -56,7 +55,7 @@ import edu.wpi.first.wpilibj.Joystick;
    */
   boolean isButtonPressed(ButtonEnum type) {
     if(getJoystick(type) != null)
-      return getJoystick(type.getJoystickNum()).getRawButton(type.getButtonNum());
+      return getJoystick(type).getRawButton(type.getButtonNum());
     return false;
   }
 
