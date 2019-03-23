@@ -67,8 +67,9 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
     INPUT = MagicInput.getInstance();
-    //OUTPUT = new MagicOutput(INPUT);
+    OUTPUT = new MagicOutput();
     INTAKE = new MagicIntake(0,0,0,0);
     ELEVATOR = new MagicElevator(9, INTAKE);
     ELEVATOR.freeze(); //Every body clap your hands
@@ -166,16 +167,9 @@ public class Robot extends TimedRobot {
    * This function is called periodically during test mode.
    */
   @Override
-  public void testPeriodic() {
-
-    INPUT.updates();
-    System.out.println(ELEVATOR.getTarget());
-    ELEVATOR.elevatorPeriodic();
-    System.out.println(ELEVATOR.getElevatorPos());
-    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){
-    ELEVATOR.zeroSensor();
-    }
-
+  public void testPeriodic() {    
+    INPUT.printAllValues();
+    OUTPUT.checkCamSwap();
   }
 public static int getCycleCount() {
   return counter;

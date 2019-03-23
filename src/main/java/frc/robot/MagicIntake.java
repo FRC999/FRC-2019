@@ -15,8 +15,8 @@ public class MagicIntake  {
   MagicPneumatics PNEUMATICS;
   private EncoderPresets currentPreset;
   public MagicIntake(int wrist, int elbow, int left, int right) {
-    wristTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,wrist, 0, -4096, 4096);
-    elbowTalon = new MagicPID (0,1,0,0,0,0,.5,1,1,elbow, 0, -4096, 4096);
+    wristTalon = new MagicPID (0,1,0,0,0,0,.1,1,1,wrist, 0, -4096, 4096);
+    elbowTalon = new MagicPID (0,1,0,0,0,0,.1,1,1,elbow, 0, -4096, 4096);
     leftIntake = new WPI_VictorSPX(left);
     rightIntake = new WPI_VictorSPX(right);
   }

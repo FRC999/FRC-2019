@@ -24,8 +24,8 @@ public class MagicElevator extends MagicPID{
    * @param the The intake to be updated when targets change
    */
   public MagicElevator(int port, MagicIntake in) {
-    super( 2.54*2*Math.PI, 1,     .2, .0, .2, .2, 1.0,    0,     _smoothing,       port,     eOffsetHeight,       -4096, 4096); // numbers are made up
-    //      circum.       gearRat  S   P   D   I    F   slot#   s-curve smoothing, port #  start pt.   min    max
+    super( 2.54*2*Math.PI,   1,   .2, .0, .2, .2,   0.1,       0,     _smoothing,       port,     eOffsetHeight, -4096, 4096); // numbers are made up
+    //      circum.       gearRat  P   D   I   F  peakOutput  slot#   s-curve           port#       start pt.   min    max
     INTAKE = in;
   }
 
