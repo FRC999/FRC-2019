@@ -144,14 +144,17 @@ public class Robot extends TimedRobot {
     visionButton = driveStick.getRawButton(2);
     MOACUp = driveStick.getRawButton(11);
     MOACDown = driveStick.getRawButton(12);
-    forward = (driveStick.getRawAxis(1))*-1;
+    forward = (driveStick.getRawAxis(1));
     turn = turnStick.getRawAxis(0);
   }
   @Override
   public void autonomousInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
-  
+  }
+  @Override
+  public void autonomousPeriodic() {
+    
     //*** VISION ***
     targetPosition = arduino.readString();
     System.out.println(arduino.readString()); 
@@ -184,9 +187,6 @@ public class Robot extends TimedRobot {
         //   System.out.println("positionNums[1] = " + positionNums[1]);
          }
         } 
-  }
-  @Override
-  public void autonomousPeriodic() {
 if (visionButton) {
   for (int i = 0; i <= 10; i++) {
     if (i == 10);
