@@ -58,13 +58,21 @@ public class Robot extends TimedRobot {
   String targetPosition;
   int bRate = 115200;
   SerialPort arduino;
-
+/*
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
   WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
   WPI_VictorSPX driveBackLeft = new WPI_VictorSPX(6);
   WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
   WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2);
   WPI_VictorSPX driveBackRight = new WPI_VictorSPX(3);
+*/
+  WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
+  WPI_TalonSRX driveMiddleLeft = new WPI_TalonSRX(5);
+  WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(6);
+  WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
+  WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
+  WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
+
 
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
 
