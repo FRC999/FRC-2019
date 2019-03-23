@@ -9,13 +9,13 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -31,9 +31,9 @@ public class Robot extends TimedRobot {
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   MagicElevator ELEVATOR;
-  MagicInput INPUT;
+  MagicJoystickInput INPUT;
   MagicVision VISION = new MagicVision(115200, 200, 1, 300);
-  MagicOutput OUTPUT;
+  MagicSwappingCams OUTPUT;
   MagicPneumatics PNEUMATICS;
   MagicIntake INTAKE;
 
@@ -42,11 +42,11 @@ public class Robot extends TimedRobot {
   double turn;
 
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
-   WPI_VictorSPX driveML = new WPI_VictorSPX(2); //middle left tank drive motor
-  WPI_VictorSPX driveRL = new WPI_VictorSPX(3); //rear left tank drive motor
+  WPI_TalonSRX driveML = new WPI_TalonSRX(2); //middle left tank drive motor
+  WPI_TalonSRX driveRL = new WPI_TalonSRX(3); //rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(4); //Front Right left tank driv
-  WPI_VictorSPX driveMR = new WPI_VictorSPX(5); // middle right tank drive motor
-  WPI_VictorSPX driveRR = new WPI_VictorSPX(6); // rear right tank drive motor
+  WPI_TalonSRX driveMR = new WPI_TalonSRX(5); // middle right tank drive motor
+  WPI_TalonSRX driveRR = new WPI_TalonSRX(6); // rear right tank drive motor
 
   // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
   // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
@@ -68,13 +68,13 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
-    INPUT = MagicInput.getInstance();
-    OUTPUT = new MagicOutput();
-    INTAKE = new MagicIntake(0,0,0,0);
-    ELEVATOR = new MagicElevator(9, INTAKE);
-    ELEVATOR.freeze(); //Every body clap your hands
+    INPUT = MagicJoystickInput.getInstance();
+    OUTPUT = new MagicSwappingCams();
+    //INTAKE = new MagicIntake(0,0,0,0);
+    //ELEVATOR = new MagicElevator(9, INTAKE);
+    //ELEVATOR.freeze(); //Every body clap your hands
 
-    PNEUMATICS = new MagicPneumatics(1,2,3,4);
+    //PNEUMATICS = new MagicPneumatics(1,2,3,4);
     driveFL.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
   }
@@ -160,16 +160,18 @@ public class Robot extends TimedRobot {
     chassisDrive.arcadeDrive(INPUT.getDrive(), INPUT.getTurn());
   }
 
+  
 
 
 
+  @Override
+  public void testInit(){};
   /**
    * This function is called periodically during test mode.
    */
   @Override
   public void testPeriodic() {    
     INPUT.printAllValues();
-    OUTPUT.checkCamSwap();
   }
 public static int getCycleCount() {
   return counter;

@@ -1,6 +1,6 @@
 package frc.robot;
 
-class TogglingButton {
+class TogglingBoolean {
   //inspired by Cheesy Poof's class LatchedBoolean
   //https://github.com/Team254/FRC-2018-Public/blob/master/src/main/java/com/team254/lib/util/LatchedBoolean.java
   //boolean currentButtonState;
@@ -8,8 +8,8 @@ class TogglingButton {
   boolean toggleState = false;
 
   //constructors
-  public TogglingButton (boolean ToggleState) {this.toggleState = ToggleState;}
-  public TogglingButton () {toggleState = false;}
+  public TogglingBoolean (boolean ToggleState) {this.toggleState = ToggleState;}
+  public TogglingBoolean () {toggleState = false;}
 
   /**
    * Update the toggled state of the button based upon input

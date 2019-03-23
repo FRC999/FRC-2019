@@ -9,17 +9,17 @@ import edu.wpi.cscore.VideoSink;
  * communication to the driver station
  * Or not.
  */
-public class MagicOutput{
+public class MagicSwappingCams{
   UsbCamera backCam;
   UsbCamera frontCam;
-  MagicInput INPUT;
+  MagicJoystickInput INPUT;
   boolean lastCamPress;
   VideoSink camServer;
   static final int CAMPORT1 = 0;
   static final int CAMPORT2 = 1;
 
-  MagicOutput(){
-    INPUT= MagicInput.getInstance();
+  MagicSwappingCams(){
+    INPUT= MagicJoystickInput.getInstance();
     backCam = CameraServer.getInstance().startAutomaticCapture(0);
     frontCam = CameraServer.getInstance().startAutomaticCapture(1);
     camServer = CameraServer.getInstance().getServer();

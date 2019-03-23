@@ -16,7 +16,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
  */
 public class MagicPID {
   protected WPI_TalonSRX talon;
-  MagicInput INPUT;
+  MagicJoystickInput INPUT;
 
   static final int stepsPerRotation = 4096;
   final double circumference;
@@ -77,7 +77,7 @@ public class MagicPID {
    */
   MagicPID(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int smoothee, int port, int startPoint, int mi, int ma) {
     talon = new WPI_TalonSRX(port);
-    INPUT = MagicInput.getInstance();
+    INPUT = MagicJoystickInput.getInstance();
     circumference = cir;
     gearRatio = gearRat;
     kP = P;

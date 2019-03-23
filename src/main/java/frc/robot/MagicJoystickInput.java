@@ -12,12 +12,12 @@ import edu.wpi.first.wpilibj.Joystick;
  * Use getJoystick() to fetch joysticks if you want to throw together a button without
  * putting it in ButtonEnum.  Otherwise, keep buttons there.
  */
- public class MagicInput {
+ public class MagicJoystickInput {
 
-  private static MagicInput mInstance = new MagicInput();
+  private static MagicJoystickInput mInstance = new MagicJoystickInput();
 
 
-     public static MagicInput getInstance() {return mInstance;}
+     public static MagicJoystickInput getInstance() {return mInstance;}
 
   Joystick driveStick;
   Joystick turnStick;
@@ -29,7 +29,7 @@ import edu.wpi.first.wpilibj.Joystick;
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case
    */
-  private MagicInput(){
+  private MagicJoystickInput(){
     driveStick = new Joystick(0);
     turnStick = new Joystick(1);
     copilotStick = new Joystick(2);
@@ -156,7 +156,7 @@ import edu.wpi.first.wpilibj.Joystick;
     sb.append(" Elevator: ");
     sb.append(getElevatorAdjuster());
     
-    sb.append(" Button Values: ");
+    sb.append("Button Values: ");
     for (ButtonEnum bob : ButtonEnum.values()){
       if (true){ //Change to conditional if you only want to print a few of  the buttons
         sb.append(bob.name());
@@ -165,7 +165,8 @@ import edu.wpi.first.wpilibj.Joystick;
         sb.append(", ");
       }
     }
-    System.out.println(sb);
+    System.out.print(sb);
+    System.out.print("/r");
 
   }
 

@@ -12,7 +12,7 @@ public enum ButtonEnum {
     elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), elevatorFloor(2,3, EncoderPresets.floor), elevatorRetract(0,0,EncoderPresets.retract);
     final private int buttonNum;
   final private int joystickNum;
-  final private TogglingButton toggledButton;
+  final private TogglingBoolean toggledButton;
   final private EncoderPresets ePresets;
   /**
    * If there is no boolean nor third double, it is a boring old button
@@ -34,7 +34,7 @@ public enum ButtonEnum {
   private ButtonEnum(int numberOfJoystick, int numberOfButton, boolean toggledButtonState){
     buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
-    toggledButton = new TogglingButton(toggledButtonState);
+    toggledButton = new TogglingBoolean(toggledButtonState);
     ePresets = null;
   }
   /**
@@ -51,6 +51,6 @@ public enum ButtonEnum {
   }
   public int getButtonNum() {return buttonNum;}
   public int getJoystickNum() {return joystickNum;}
-  public TogglingButton getToggledButton(){return toggledButton;}
+  public TogglingBoolean getToggledButton(){return toggledButton;}
   public EncoderPresets getElevatorPreset() {return ePresets;}
 }
