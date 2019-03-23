@@ -246,7 +246,10 @@ if (visionButton) {
   public void teleopInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
-  
+  }
+  @Override
+  public void teleopPeriodic() {
+    if (visionButton) {
     //*** VISION ***
     targetPosition = arduino.readString();
     System.out.println(arduino.readString()); 
@@ -280,20 +283,11 @@ if (visionButton) {
           }
         }
         
-  }
-  @Override
-  public void teleopPeriodic() {
-    if (visionButton) {
-      for (int i = 0; i <= 10; i++) {
-        if (i == 10);
-        System.out.println(targetPosition);
-        i = 0;
-      }  
       if (targetPosition == null) {
           leftSide.set(0);
           rightSide.set(0);
       //    System.out.println("targetPosition = null");
-        } else if (xVal < 158 /* && distVal > 500 ) {
+        } else if (xVal < 158 /* && distVal > 500 */) {
           leftSide.set(0);
           rightSide.set(.2);
      //     System.out.println("xVal < (316/2) && distVal > 500");
