@@ -57,7 +57,7 @@ public class Robot extends TimedRobot {
   int pixyMountAngle;
   int arduinoCounter;
   int bRate = 115200;
-  SerialPort arduino;
+  SerialPort ard;
   String targetPosition;
   int startOfDataStream;
   int endOfDataStream;// looking for the first carriage return
@@ -97,7 +97,7 @@ public class Robot extends TimedRobot {
   double turn;
   @Override
   public void robotInit() {
-    V.startArduino();
+    ard = V.startArduino();
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kOff);
     lowClimber.set(Value.kOff);
@@ -127,15 +127,18 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     if (visionButton) {
-      V.getArray();
+      V.getArray(ard);
       if (V.getDist() >= V.getStopDist()) {
-     if (V.isOnLeft()) {
+     if (V.isOnLeft(V.parseVal(2,0,ard))) {
+      System.out.println("left");
        leftSide.set(0);
        rightSide.set(.2);
-      } else if (V.isInMiddle()) {
+      } else if (V.isInMiddle(V.parseVal(2,0,ard))) {
+        System.out.println("middle");
         leftSide.set(-.2);
         rightSide.set(.2);
-      } else if (V.isOnRight()) {
+      } else if (V.isOnRight(V.parseVal(2,0,ard))) {
+        System.out.println("right");
         leftSide.set(.2);
         rightSide.set(0);
       } else {
@@ -183,22 +186,24 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
-      V.getArray();
-      if (V.getDist() >= V.getStopDist()) {
-     if (V.isOnLeft()) {
+      System.out.println(V.parseVal(2,0,ard));
+      if (V.getBlocksSeen() > -1) {
+      //if (V.getDist() >= V.getStopDist()) {
+     if (V.isOnLeft(V.parseVal(2,0,ard))) {
        leftSide.set(0);
        rightSide.set(.2);
-      } else if (V.isInMiddle()) {
+      } else if (V.isInMiddle(V.parseVal(2,0,ard))) {
         leftSide.set(-.2);
         rightSide.set(.2);
-      } else if (V.isOnRight()) {
+      } else if (V.isOnRight(V.parseVal(2,0,ard))) {
         leftSide.set(.2);
         rightSide.set(0);
       } else {
         leftSide.set(0);
         rightSide.set(0);
       }
-    } //DISTANCE CHECKER END
+    }
+    //} //DISTANCE CHECKER END
     } else {
       chassisDrive.arcadeDrive(forward, turn);
       if (intakePull && !intakePush) {
