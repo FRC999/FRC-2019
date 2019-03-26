@@ -130,7 +130,7 @@ public class MagicVision {
     // The indexOf method returns -1 if it can't find the char in the string
     if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
       targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-      System.out.println(targetPosition);
+     // System.out.println(targetPosition);
       if (targetPosition.startsWith("Block")) {
         String[] positionNums = targetPosition.split(":");
         // positionNums[0] would be "Block
@@ -289,7 +289,7 @@ public class MagicVision {
       String [] val = getArray(arduino);
     return Integer.parseInt(val[index]);
     } catch (NullPointerException badInt) {
-      System.out.println("Could not fetch int");
+      //System.out.println("Could not fetch int");
     }
     }
     switch(index) {

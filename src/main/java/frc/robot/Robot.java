@@ -128,6 +128,8 @@ public class Robot extends TimedRobot {
     MOACDown = driveStick.getRawButton(12);
     forward = (driveStick.getRawAxis(1));
     turn = turnStick.getRawAxis(0);
+    elevatorUp = driveStick.getRawButton(8);
+    elevatorDown = driveStick.getRawButton(7);
   }
   @Override
   public void autonomousInit() {
@@ -136,11 +138,26 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void autonomousPeriodic() {
-    elevatorPos = elevator.getSelectedSensorPosition();
     if (visionButton) {
-    V.parseVal(2, 0, ard);
-    V.track(leftSide, rightSide);    
-    //} //DISTANCE CHECKER END
+      V.getArray(ard);
+      if (V.getDist() >= V.getStopDist()) {
+     if (V.isOnLeft(V.parseVal(2,0,ard))) {
+      System.out.println("left");
+       leftSide.set(0);
+       rightSide.set(.2);
+      } else if (V.isInMiddle(V.parseVal(2,0,ard))) {
+        System.out.println("middle");
+        leftSide.set(-.2);
+        rightSide.set(.2);
+      } else if (V.isOnRight(V.parseVal(2,0,ard))) {
+        System.out.println("right");
+        leftSide.set(.2);
+        rightSide.set(0);
+      } else {
+        leftSide.set(0);
+        rightSide.set(0);
+      }
+    } //DISTANCE CHECKER END
     } else {
       chassisDrive.arcadeDrive(forward, turn);
       if (intakePull && !intakePush) {
@@ -170,16 +187,9 @@ public class Robot extends TimedRobot {
         lowClimber.set(Value.kReverse);
       } else {
         lowClimber.set(Value.kOff);
-      } // lowClimber
-      if (elevatorUp && !elevatorDown) {
-        elevator.set(ControlMode.MotionMagic, elevatorSetPoint);
-      } else if(elevatorDown && !elevatorUp) {
-        elevator.set(ControlMode.MotionMagic, 300);
-      } else {
-        elevator.set(0);
       }
-    } // no vision
-      } // teleopPeriodic
+    }
+  }
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
@@ -189,8 +199,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     elevatorPos = elevator.getSelectedSensorPosition();
     if (visionButton) {
-    V.parseVal(2, 0, ard);
-    V.track(leftSide, rightSide);    
+    V.trackAlternate(leftSide, rightSide, V.isOnLeft(V.parseVal(2, 0, ard)), V.isInMiddle(V.parseVal(2, 0, ard)), V.isOnRight(V.parseVal(2, 0, ard)));    
     //} //DISTANCE CHECKER END
     } else {
       chassisDrive.arcadeDrive(forward, turn);
