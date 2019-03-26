@@ -21,7 +21,8 @@ public class MagicVision {
   private int endOfDataStream;
   private int blocksSeen;
   private SerialPort arduino;
-  final double speed = .25;
+  private String targetPosition;
+  final double speed = .5;
   final int leftMax = 130;
   final int rightMax = 170;
   final int min = 0;
@@ -35,19 +36,8 @@ public class MagicVision {
   **/
   public void removeFreakingAnnoyingVSCodeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
   public MagicVision(int baud, int stop) {
-    counting = 0;
     bRate = baud;
-    xVal = 0;
-    yVal = 0;
-    wVal = 0;
-    hVal = 0;
-    distVal = 0;
-    confVal = 0;
-    blocksSeen = 0;
-    arduinoCounter = 0;
     stopDistance = stop;
-    confidenceThreshold = 500;
-    delayCount = 1;
   }
   /**
    * @param baud the baud rate of the Arduino (Frequency, they must match between java and Arduino)
@@ -56,34 +46,13 @@ public class MagicVision {
    * @param conf the minimum accepted confidence value for distance;
    */
   public MagicVision(int baud, int stop, int delay, int conf) {
-    counting = 0;
     bRate = baud;
-    xVal = 0;
-    yVal = 0;
-    wVal = 0;
-    hVal = 0;
-    distVal = 0;
-    confVal = 0;
-    blocksSeen = 0;
-    arduinoCounter = 0;
     stopDistance = stop;
     confidenceThreshold = conf;
     delayCount = delay;
   }
   public MagicVision(int baud) {
-    counting = 0;
     bRate = baud;
-    xVal = 0;
-    yVal = 0;
-    wVal = 0;
-    hVal = 0;
-    distVal = 0;
-    confVal = 0;
-    blocksSeen = 0;
-    arduinoCounter = 0;
-    stopDistance = 200;
-    confidenceThreshold = 500;
-    delayCount = 1;
   }
   /**
    * @return the serial port of the arduino.
@@ -196,13 +165,13 @@ public class MagicVision {
   public boolean isOnRight(int val){return(val > rightMax && val < max);}
   
   public void track(SpeedControllerGroup left, SpeedControllerGroup right) {
-    if (isOnLeft(xVal)) {
+    if (isOnLeft(parseVal(xVal, 0))) {
       left.set(0);
       right.set(speed);
-    } else if (isOnRight(xVal)) {
+    } else if (isOnRight(parseVal(xVal, 10))) {
       left.set(-speed);
       right.set(0);
-    } else if (isInMiddle(xVal)) {
+    } else if (isInMiddle(parseVal(xVal, 10))) {
       left.set(-speed);
       right.set(speed);
     } else {
@@ -243,7 +212,7 @@ public class MagicVision {
     // The indexOf method returns -1 if it can't find the char in the string
     if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
       targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-      System.out.println(targetPosition);
+    //  System.out.println(targetPosition);
       if (targetPosition.startsWith("Block")) {
         String[] positionNums = targetPosition.split(":");
         return positionNums;
@@ -255,17 +224,16 @@ public class MagicVision {
    * Legacy parsers, kept in case we want to update one value without messing with the others
    * NVM, killing it with fire because that is the magic of GIT
    */
-  public int parseVal(int index, int delayCount, SerialPort arduino) {
-    counting = (counting + 1);
-    if (counting == delayCount) {
-      counting = 0;
-      String targetPosition = arduino.readString();
+  public int parseVal(int index, int delayCount) {
+    if (counting >= delayCount) {
+      counting +=1;
+      targetPosition = startArduino().readString();
       int startOfDataStream = targetPosition.indexOf("B");
       int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
       // The indexOf method returns -1 if it can't find the char in the string
       if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
         targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
+      //  System.out.println(targetPosition);
         if (targetPosition.startsWith("Block")) {
           String[] positionNums = targetPosition.split(":");
           // positionNums[0] would be "Block
@@ -275,7 +243,7 @@ public class MagicVision {
           hVal = Integer.parseInt(positionNums[5]);
           distVal = Integer.parseInt(positionNums[6]);
           confVal = Integer.parseInt(positionNums[7]);
-          blocksSeen = Integer.parseInt(positionNums[1]);
+          blocksSeen =  Integer.parseInt(positionNums[1]);
           arduinoCounter = Integer.parseInt(positionNums[8]);
         } else {
           System.out.println("Bad String from Arduino: Doesn't start with Block");
@@ -283,6 +251,8 @@ public class MagicVision {
       } else {
         System.out.println("Bad String from Arduino: no carriage return character or too short");
       }
+    } else {
+      counting -=10;
     }
     if (index >= 0 && index <= 8) {
     try {

@@ -7,7 +7,6 @@
 
 package frc.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -45,15 +44,6 @@ public class Robot extends TimedRobot {
   boolean syringePull;
   boolean syringePush;
   boolean visionButton;
-  boolean elevatorUp;
-  boolean elevatorDown;
-  boolean zeroElevator;
-
-  int elevatorPos;
-  int elevatorMin = 100;
-  int elevatorMax = 15000;
-  double elevatorSpeed = .25;
-  int elevatorSetPoint = 5000;
 
   int xVal;
   int yVal;
@@ -67,10 +57,11 @@ public class Robot extends TimedRobot {
   int pixyMountAngle;
   int arduinoCounter;
   int bRate = 115200;
-  SerialPort ard;
+  SerialPort arduino;
   String targetPosition;
   int startOfDataStream;
   int endOfDataStream;// looking for the first carriage return
+  double speed = .25;
   // The indexOf method returns -1 if it can't find the char in the string
   
 
@@ -89,7 +80,8 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
   WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
 
-  WPI_TalonSRX elevator = new WPI_TalonSRX(8);// elevator
+
+  WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
@@ -100,19 +92,52 @@ public class Robot extends TimedRobot {
   DoubleSolenoid intake = new DoubleSolenoid(2, 5);
   DoubleSolenoid syringe = new DoubleSolenoid(3, 4);
 
-  MagicVision V = new MagicVision(115200);
-
   Compressor comp = new Compressor(0);
   double forward;
   double turn;
   @Override
   public void robotInit() {
-    ard = V.startArduino();
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kOff);
     lowClimber.set(Value.kOff);
     intake.set(Value.kOff);
-    syringe.set(Value.kOff); 
+    syringe.set(Value.kOff);
+    try {
+      arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
+      System.out.println("Connected to kUSB");
+    } 
+    catch (Exception e) {
+	  System.out.println("Couldn't connect to kUSB, trying kUSB1");
+      try {
+        arduino = new SerialPort(bRate, SerialPort.Port.kUSB1);
+        System.out.println("Connected to kUSB1");
+      }
+      catch (Exception e1){
+        System.out.println("Couldn't Connect to kUSB1, trying kUSB2");
+        try {
+          arduino = new SerialPort(bRate, SerialPort.Port.kUSB2);
+          System.out.println("Connected to kUSB2");
+        }
+        catch (Exception e2) {
+          System.out.println("Not connected to any of the USB ports, trying MXP spot");
+          try {
+            arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
+            System.out.println("Connected to MXP port");
+          }
+          catch (Exception eMXP) {
+            System.out.println("Not Connected to MXP port, trying Onboard");
+            try {
+              arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
+              System.out.println("Connected to Onboard");  
+            }
+            catch (Exception eOnboard){
+              System.out.println("Not connected to any ports on the RoboRIO");
+  
+            }  //catch (Exception eOnboard)
+          } // catch (Exception eMXP)
+        }  //catch (Exception e2)
+      }  //catch (Exception e1)
+    }  //catch (Exception e) 
   } //robotInit()
 
   @Override
@@ -128,8 +153,6 @@ public class Robot extends TimedRobot {
     MOACDown = driveStick.getRawButton(12);
     forward = (driveStick.getRawAxis(1));
     turn = turnStick.getRawAxis(0);
-    elevatorUp = driveStick.getRawButton(8);
-    elevatorDown = driveStick.getRawButton(7);
   }
   @Override
   public void autonomousInit() {
@@ -138,58 +161,94 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void autonomousPeriodic() {
-    if (visionButton) {
-      V.getArray(ard);
-      if (V.getDist() >= V.getStopDist()) {
-     if (V.isOnLeft(V.parseVal(2,0,ard))) {
-      System.out.println("left");
-       leftSide.set(0);
-       rightSide.set(.2);
-      } else if (V.isInMiddle(V.parseVal(2,0,ard))) {
-        System.out.println("middle");
-        leftSide.set(-.2);
-        rightSide.set(.2);
-      } else if (V.isOnRight(V.parseVal(2,0,ard))) {
-        System.out.println("right");
-        leftSide.set(.2);
-        rightSide.set(0);
-      } else {
-        leftSide.set(0);
-        rightSide.set(0);
-      }
-    } //DISTANCE CHECKER END
+    
+    //*** VISION ***
+    targetPosition = arduino.readString();
+    System.out.println(arduino.readString()); 
+      System.out.println("String TargetPosition = " + targetPosition);
+      var positions = targetPosition.split(";");
+       for (int i = 0; i < positions.length; i++) {
+      //  System.out.println("String TargetPosition = " + targetPosition);
+         var positionNums = positions[i].split(":");
+         if (positionNums[0] == "x") {
+           xVal = Integer.parseInt(positionNums[1]);
+           System.out.println("xval = " + xVal);
+         } else if (positionNums[0] == "y") {
+           yVal = Integer.parseInt(positionNums[1]);
+           System.out.println("yval =" + yVal);
+         } else if (positionNums[0] == "h") {
+           hVal = Integer.parseInt(positionNums[1]);
+           System.out.println("hval =" + hVal);
+         } else if (positionNums[0] == "w") {
+           wVal = Integer.parseInt(positionNums[1]);
+           System.out.println("wval =" + wVal);
+         } else if (positionNums[0] == "dist") {
+           distVal = Integer.parseInt(positionNums[1]);
+           System.out.println("distval =" + distVal);
+          } else if (positionNums[0] == "conf") {
+            distVal = Integer.parseInt(positionNums[1]);
+            System.out.println("confval =" + confVal);
+         } else {
+           System.out.println("Parsing sensor data failed.");
+        //   System.out.println("positionNums[0] = " + positionNums[0]);
+        //   System.out.println("positionNums[1] = " + positionNums[1]);
+         }
+        } 
+if (visionButton) {
+    System.out.println(targetPosition);
+  if (targetPosition == null) {
+      leftSide.set(0);
+      rightSide.set(0);
+  //    System.out.println("targetPosition = null");
+    } else if (xVal < 158 /* && distVal > 500 */) {
+      leftSide.set(0);
+      rightSide.set(speed);
+ //     System.out.println("xVal < (316/2) && distVal > 500");
+    } else if (xVal == 158 /*&& distVal > 500 */) {
+     leftSide.set(0);
+     rightSide.set(speed);
+     //System.out.println("xVal == (316/2) && distVal > 500");
+    } else if (xVal > 158 /*&& distVal > 500 */) {
+     leftSide.set(0);
+     rightSide.set(.2);
+     //System.out.println("xVal > (316/2) && distVal > 500");
     } else {
-      chassisDrive.arcadeDrive(forward, turn);
-      if (intakePull && !intakePush) {
-        intake.set(Value.kReverse);
-      } else if (intakePush && !intakePull) {
-        intake.set(Value.kForward);
-      } else {
-        intake.set(Value.kOff);
-      }
-      if (syringePull && !syringePush) {
-        syringe.set(Value.kReverse);
-      } else if (syringePush && !syringePull) {
-        syringe.set(Value.kForward);
-      } else {
-        syringe.set(Value.kOff);
-      }
-      if (MOACUp && !MOACDown) {
-        MOAC.set(Value.kReverse);
-      } else if (MOACDown && !MOACUp) {
-        MOAC.set(Value.kForward);
-      } else {
-        MOAC.set(Value.kOff);
-      }
-      if (smallClimberUp && !smallClimberDown) {
-        lowClimber.set(Value.kForward);
-      } else if (smallClimberDown && !smallClimberUp) {
-        lowClimber.set(Value.kReverse);
-      } else {
-        lowClimber.set(Value.kOff);
-      }
+     System.out.println("none of the if statements in auto periodic applied, distval probably <500");
+     leftSide.set(0);
+     rightSide.set(0);
     }
+  } else {
+    chassisDrive.arcadeDrive(forward, turn);
+  if (intakePull && !intakePush) {
+    intake.set(Value.kReverse);
+  } else if (intakePush && !intakePull) {
+    intake.set(Value.kForward);
+  } else {
+    intake.set(Value.kOff);
   }
+  if (syringePull && !syringePush) {
+    syringe.set(Value.kReverse);
+  } else if (syringePush && !syringePull) {
+    syringe.set(Value.kForward);
+  } else {
+    syringe.set(Value.kOff);
+  }
+  if (MOACUp && !MOACDown) {
+    MOAC.set(Value.kReverse);
+  } else if (MOACDown && !MOACUp) {
+    MOAC.set(Value.kForward);
+  } else {
+    MOAC.set(Value.kOff);
+  }
+  if (smallClimberUp && !smallClimberDown) {
+    lowClimber.set(Value.kForward);
+  } else if (smallClimberDown && !smallClimberUp) {
+    lowClimber.set(Value.kReverse);
+  } else {
+    lowClimber.set(Value.kOff);
+  }
+}
+}
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
@@ -197,12 +256,55 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void teleopPeriodic() {
-    elevatorPos = elevator.getSelectedSensorPosition();
     if (visionButton) {
-    V.trackAlternate(leftSide, rightSide, V.isOnLeft(V.parseVal(2, 0, ard)), V.isInMiddle(V.parseVal(2, 0, ard)), V.isOnRight(V.parseVal(2, 0, ard)));    
-    //} //DISTANCE CHECKER END
-    } else {
-      chassisDrive.arcadeDrive(forward, turn);
+      targetPosition = arduino.readString();
+        startOfDataStream = targetPosition.indexOf("B");
+        endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
+      //indexOf returns -1 if it cannot find either char in the string
+        if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
+        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
+        System.out.println(targetPosition);
+        if (targetPosition.startsWith("Block")) {
+          String[] positionNums = targetPosition.split(":");
+          // positionNums[0] would be "Block
+          // positionNums [1] would be number of block: always 0
+          xVal = Integer.parseInt(positionNums[2]);
+          yVal = Integer.parseInt(positionNums[3]);
+          wVal = Integer.parseInt(positionNums[4]);
+          hVal = Integer.parseInt(positionNums[5]);
+          distVal = Integer.parseInt(positionNums[6]);
+          confVal = Integer.parseInt(positionNums[7]);
+          blocksSeen = Integer.parseInt(positionNums[1]);
+          arduinoCounter = Integer.parseInt(positionNums[8]);
+        } else {
+          //System.out.println("Bad String from Arduino: Doesn't start with Block");
+        }
+      } else {
+        //System.out.println("Bad String from Arduino: no carriage return character or too short");
+      }
+      if (targetPosition == null) {
+          leftSide.set(0);
+          rightSide.set(0);
+      //    System.out.println("targetPosition = null");
+        } else if (xVal < 130 && xVal > 0 /* && distVal > 500 */) {
+          leftSide.set(0);
+          rightSide.set(-speed);
+     //     System.out.println("xVal < (316/2) && distVal > 500");
+        } else if (xVal < 170 && xVal > 130 /*&& distVal > 500 */) {
+          leftSide.set(-speed);
+          rightSide.set(speed);
+         //System.out.println("xVal == (316/2) && distVal > 500");
+        } else if (xVal > 170 && xVal < 316 /*&& distVal > 500 */) {
+          leftSide.set(speed);
+          rightSide.set(0);
+         //System.out.println("xVal > (316/2) && distVal > 500");
+        } else {
+         System.out.println("none of the if statements in auto periodic applied, distval probably <500");
+         leftSide.set(0);
+         rightSide.set(0);
+        }
+      } else { 
+        chassisDrive.arcadeDrive(forward, turn);
       if (intakePull && !intakePush) {
         intake.set(Value.kReverse);
       } else if (intakePush && !intakePull) {
@@ -231,13 +333,6 @@ public class Robot extends TimedRobot {
       } else {
         lowClimber.set(Value.kOff);
       } // lowClimber
-      if (elevatorUp && !elevatorDown) {
-        elevator.set(ControlMode.MotionMagic, elevatorSetPoint);
-      } else if(elevatorDown && !elevatorUp) {
-        elevator.set(ControlMode.MotionMagic, 300);
-      } else {
-        elevator.set(0);
-      }
     } // no vision
       } // teleopPeriodic
     } // Robot
