@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -44,6 +45,15 @@ public class Robot extends TimedRobot {
   boolean syringePull;
   boolean syringePush;
   boolean visionButton;
+  boolean elevatorUp;
+  boolean elevatorDown;
+  boolean zeroElevator;
+
+  int elevatorPos;
+  int elevatorMin = 100;
+  int elevatorMax = 15000;
+  double elevatorSpeed = .25;
+  int elevatorSetPoint = 5000;
 
   int xVal;
   int yVal;
@@ -79,7 +89,7 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
   WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
 
-  WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
+  WPI_TalonSRX elevator = new WPI_TalonSRX(8);// elevator
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
@@ -126,83 +136,10 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void autonomousPeriodic() {
+    elevatorPos = elevator.getSelectedSensorPosition();
     if (visionButton) {
-      V.getArray(ard);
-      if (V.getDist() >= V.getStopDist()) {
-     if (V.isOnLeft(V.parseVal(2,0,ard))) {
-      System.out.println("left");
-       leftSide.set(0);
-       rightSide.set(.2);
-      } else if (V.isInMiddle(V.parseVal(2,0,ard))) {
-        System.out.println("middle");
-        leftSide.set(-.2);
-        rightSide.set(.2);
-      } else if (V.isOnRight(V.parseVal(2,0,ard))) {
-        System.out.println("right");
-        leftSide.set(.2);
-        rightSide.set(0);
-      } else {
-        leftSide.set(0);
-        rightSide.set(0);
-      }
-    } //DISTANCE CHECKER END
-    } else {
-      chassisDrive.arcadeDrive(forward, turn);
-      if (intakePull && !intakePush) {
-        intake.set(Value.kReverse);
-      } else if (intakePush && !intakePull) {
-        intake.set(Value.kForward);
-      } else {
-        intake.set(Value.kOff);
-      }
-      if (syringePull && !syringePush) {
-        syringe.set(Value.kReverse);
-      } else if (syringePush && !syringePull) {
-        syringe.set(Value.kForward);
-      } else {
-        syringe.set(Value.kOff);
-      }
-      if (MOACUp && !MOACDown) {
-        MOAC.set(Value.kReverse);
-      } else if (MOACDown && !MOACUp) {
-        MOAC.set(Value.kForward);
-      } else {
-        MOAC.set(Value.kOff);
-      }
-      if (smallClimberUp && !smallClimberDown) {
-        lowClimber.set(Value.kForward);
-      } else if (smallClimberDown && !smallClimberUp) {
-        lowClimber.set(Value.kReverse);
-      } else {
-        lowClimber.set(Value.kOff);
-      }
-    }
-  }
-  @Override
-  public void teleopInit() {
-    comp.setClosedLoopControl(true);
-    MOAC.set(Value.kReverse);
-  }
-  @Override
-  public void teleopPeriodic() {
-    if (visionButton) {
-      System.out.println(V.parseVal(2,0,ard));
-      if (V.getBlocksSeen() > -1) {
-      //if (V.getDist() >= V.getStopDist()) {
-     if (V.isOnLeft(V.parseVal(2,0,ard))) {
-       leftSide.set(0);
-       rightSide.set(.2);
-      } else if (V.isInMiddle(V.parseVal(2,0,ard))) {
-        leftSide.set(-.2);
-        rightSide.set(.2);
-      } else if (V.isOnRight(V.parseVal(2,0,ard))) {
-        leftSide.set(.2);
-        rightSide.set(0);
-      } else {
-        leftSide.set(0);
-        rightSide.set(0);
-      }
-    }
+    V.parseVal(2, 0, ard);
+    V.track(leftSide, rightSide);    
     //} //DISTANCE CHECKER END
     } else {
       chassisDrive.arcadeDrive(forward, turn);
@@ -234,6 +171,64 @@ public class Robot extends TimedRobot {
       } else {
         lowClimber.set(Value.kOff);
       } // lowClimber
+      if (elevatorUp && !elevatorDown) {
+        elevator.set(ControlMode.MotionMagic, elevatorSetPoint);
+      } else if(elevatorDown && !elevatorUp) {
+        elevator.set(ControlMode.MotionMagic, 300);
+      } else {
+        elevator.set(0);
+      }
+    } // no vision
+      } // teleopPeriodic
+  @Override
+  public void teleopInit() {
+    comp.setClosedLoopControl(true);
+    MOAC.set(Value.kReverse);
+  }
+  @Override
+  public void teleopPeriodic() {
+    elevatorPos = elevator.getSelectedSensorPosition();
+    if (visionButton) {
+    V.parseVal(2, 0, ard);
+    V.track(leftSide, rightSide);    
+    //} //DISTANCE CHECKER END
+    } else {
+      chassisDrive.arcadeDrive(forward, turn);
+      if (intakePull && !intakePush) {
+        intake.set(Value.kReverse);
+      } else if (intakePush && !intakePull) {
+        intake.set(Value.kForward);
+      } else {
+        intake.set(Value.kOff);
+      }
+      if (syringePull && !syringePush) {
+        syringe.set(Value.kReverse);
+      } else if (syringePush && !syringePull) {
+        syringe.set(Value.kForward);
+      } else {
+        syringe.set(Value.kOff);
+      }
+      if (MOACUp && !MOACDown) {
+        MOAC.set(Value.kReverse);
+      } else if (MOACDown && !MOACUp) {
+        MOAC.set(Value.kForward);
+      } else {
+        MOAC.set(Value.kOff);
+      }
+      if (smallClimberUp && !smallClimberDown) {
+        lowClimber.set(Value.kForward);
+      } else if (smallClimberDown && !smallClimberUp) {
+        lowClimber.set(Value.kReverse);
+      } else {
+        lowClimber.set(Value.kOff);
+      } // lowClimber
+      if (elevatorUp && !elevatorDown) {
+        elevator.set(ControlMode.MotionMagic, elevatorSetPoint);
+      } else if(elevatorDown && !elevatorUp) {
+        elevator.set(ControlMode.MotionMagic, 300);
+      } else {
+        elevator.set(0);
+      }
     } // no vision
       } // teleopPeriodic
     } // Robot
