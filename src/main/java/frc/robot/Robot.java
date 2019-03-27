@@ -7,6 +7,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -62,6 +63,8 @@ public class Robot extends TimedRobot {
   int startOfDataStream;
   int endOfDataStream;// looking for the first carriage return
   double speed = .25;
+  boolean elevatorUp;
+  boolean elevatorDown;
   // The indexOf method returns -1 if it can't find the char in the string
   
 
@@ -80,6 +83,9 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
   WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
 
+  int elevatorSetPoint = 5000;
+  int elevatorMin = 100;
+  int elevatorMax = 15000;
 
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
 
@@ -95,6 +101,7 @@ public class Robot extends TimedRobot {
   Compressor comp = new Compressor(0);
   double forward;
   double turn;
+  MagicVision V = new MagicVision();
   @Override
   public void robotInit() {
     comp.setClosedLoopControl(true);
@@ -153,6 +160,8 @@ public class Robot extends TimedRobot {
     MOACDown = driveStick.getRawButton(12);
     forward = (driveStick.getRawAxis(1));
     turn = turnStick.getRawAxis(0);
+    elevatorUp = driveStick.getRawButton(8);
+    elevatorDown = driveStick.getRawButton(7);
   }
   @Override
   public void autonomousInit() {
@@ -257,31 +266,7 @@ if (visionButton) {
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
-      targetPosition = arduino.readString();
-        startOfDataStream = targetPosition.indexOf("B");
-        endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
-      //indexOf returns -1 if it cannot find either char in the string
-        if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
-        targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-        System.out.println(targetPosition);
-        if (targetPosition.startsWith("Block")) {
-          String[] positionNums = targetPosition.split(":");
-          // positionNums[0] would be "Block
-          // positionNums [1] would be number of block: always 0
-          xVal = Integer.parseInt(positionNums[2]);
-          yVal = Integer.parseInt(positionNums[3]);
-          wVal = Integer.parseInt(positionNums[4]);
-          hVal = Integer.parseInt(positionNums[5]);
-          distVal = Integer.parseInt(positionNums[6]);
-          confVal = Integer.parseInt(positionNums[7]);
-          blocksSeen = Integer.parseInt(positionNums[1]);
-          arduinoCounter = Integer.parseInt(positionNums[8]);
-        } else {
-          //System.out.println("Bad String from Arduino: Doesn't start with Block");
-        }
-      } else {
-        //System.out.println("Bad String from Arduino: no carriage return character or too short");
-      }
+      V.parse();
       if (targetPosition == null) {
           leftSide.set(0);
           rightSide.set(0);
@@ -305,7 +290,16 @@ if (visionButton) {
         }
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
-      if (intakePull && !intakePush) {
+      int elevatorPos = elevatorDriver.getSelectedSensorPosition();
+      System.out.println(elevatorPos);
+      if (elevatorUp) {
+        elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
+      } else if(elevatorDown) {
+        elevatorDriver.set(ControlMode.MotionMagic, 300);
+      } else {
+        elevatorDriver.set(0);
+      }
+        if (intakePull && !intakePush) {
         intake.set(Value.kReverse);
       } else if (intakePush && !intakePull) {
         intake.set(Value.kForward);
