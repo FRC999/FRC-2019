@@ -1,3 +1,25 @@
-**Write todo list
-**Implement toggle behavior in MagicJoystick
-**Make it work: Add all missing files from TestBot
+Write simple compeitiion code (again)
+Check existing competition code for diamonds in the muck
+Figure out NavX problem
+Network tables ?!?
+PID Control: learn it and weep
+  Figure out theory propperly
+  Tune (finally)
+CLIMB!!! CLIMB!!! CLIMB!!! CLIMB!!! 
+Look into high CPU usage during competitions
+Figure out Vision (allow automated alignment with the two strips)
+Monkey scribbles
+  Write code to lock all things inside frame permiter for raiding
+  Pick up hatch from floor preset (?)
+Improve camera systems
+Code improvments
+  Idiot check code (logic errors)
+  Make code missile-proof (unexpected input handling)
+  Improve code documentation
+  Make code more universally applicable (dont assume game-specific things)
+  Clean and format code more consistently (indentation!!!)
+Pathweaver Magic
+
+Have a "phycological warfare" buttion which reverts PID to Waterbury state
+Implement squishy flumpf wheels
+Or coffie ground balloon thing
