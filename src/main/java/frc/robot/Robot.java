@@ -262,32 +262,13 @@ if (visionButton) {
   public void teleopInit() {
     comp.setClosedLoopControl(true);
     MOAC.set(Value.kReverse);
+    chassisDrive.setSafetyEnabled(false);
   }
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
-      V.parse();
-      if (targetPosition == null) {
-          leftSide.set(0);
-          rightSide.set(0);
-      //    System.out.println("targetPosition = null");
-        } else if (xVal < 130 && xVal > 0 /* && distVal > 500 */) {
-          leftSide.set(0);
-          rightSide.set(-speed);
-     //     System.out.println("xVal < (316/2) && distVal > 500");
-        } else if (xVal < 170 && xVal > 130 /*&& distVal > 500 */) {
-          leftSide.set(-speed);
-          rightSide.set(speed);
-         //System.out.println("xVal == (316/2) && distVal > 500");
-        } else if (xVal > 170 && xVal < 316 /*&& distVal > 500 */) {
-          leftSide.set(speed);
-          rightSide.set(0);
-         //System.out.println("xVal > (316/2) && distVal > 500");
-        } else {
-         System.out.println("none of the if statements in auto periodic applied, distval probably <500");
-         leftSide.set(0);
-         rightSide.set(0);
-        }
+      int x = V.parseVal(arduino, 2);
+      V.track(leftSide, rightSide, x);
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
