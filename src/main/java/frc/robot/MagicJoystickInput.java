@@ -3,7 +3,7 @@ import edu.wpi.first.wpilibj.Joystick;
 
 /**
  * MagicInput is a class designed to handle all input from the drivers station.
- * It is primarally focused on the joysticks.  It provides this information to other
+ * It is primarily focused on the joysticks.  It provides this information to other
  * classes and methods, free of charge.  MagicInput, unlike other off-the-shelf input
  * brands, is designed for configuration, first and foremost.  Where is button is, and its
  * toggling behavior, is specified in ButtonEnum.  Do not use MagicInput
@@ -88,7 +88,7 @@ import edu.wpi.first.wpilibj.Joystick;
     return 0;
   }
   /**
-   * Gets the elevator axis: we havent decided how to ultimatly treat this
+   * Gets the elevator axis: we haven't decided how to ultimately treat this
    * We should probably annoy the drive team or something
    * @return a double between -1 and 1, with 1 being at the top.  Maybe?
    */
@@ -107,7 +107,7 @@ import edu.wpi.first.wpilibj.Joystick;
    * it should go to the last one on the ButtonEnum list.  Should.
    */
   void updates(){
-    for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
+    for (ButtonEnum bob : ButtonEnum.values()){ //Properly magical iterator OF DOOM
       if (null != bob.getToggledButton()) {//We dont want to call a null variable's methods
         bob.getToggledButton().update(isButtonPressed(bob));
       }

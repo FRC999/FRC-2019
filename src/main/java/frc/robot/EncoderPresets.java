@@ -6,7 +6,7 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
-//NEEDS TO BE MORE GENERAL, WILL REVIEW AT EARLIEST CONVIENIENCE
+//NEEDS TO BE MORE GENERAL, WILL REVIEW AT EARLIEST CONVENIENCE
 public enum EncoderPresets {
   lowHatch(50,0), midHatch(123,0), highHatch(196,0),
   lowBall(61,0), midBall(140,0), highBall(211,0),

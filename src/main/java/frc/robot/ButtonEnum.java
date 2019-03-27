@@ -30,7 +30,7 @@ public enum ButtonEnum {
    * If it contains a boolean, it is a toggling button
    * @param numberOfJoystick the port number of the buttons joystick
    * @param numberOfButton the button number on the joystick of the button
-   * @param toggledButtonState the inital state of the TogglingButton
+   * @param toggledButtonState the initial state of the TogglingButton
    */
   private ButtonEnum(int numberOfJoystick, int numberOfButton, boolean toggledButtonState){
     buttonNum = numberOfButton;
