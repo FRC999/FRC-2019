@@ -19,7 +19,7 @@ public enum EncoderPresets {
   final private int wristAngleNU;
   private EncoderPresets(double height, double angle) {
     heightCM = height;
-    heightNU = (int) (4096 * (height / (2.54 * Math.PI))); //CLARIFY
+    heightNU = (int) (4096 * (height / (2.54 * Math.PI))); //2.54 is the diameter of the spool in CM
     elbowAngleDE = angle;
     elbowAngleNU = (int) (4096 / 360 * angle);
     wristAngleDE = -angle;
