@@ -76,9 +76,9 @@ public class MagicVision {
       distValLeft = Integer.parseInt(positionNums[6]);
       confValLeft = Integer.parseInt(positionNums[7]);
       blocksSeen = Integer.parseInt(positionNums[1]);
-      arduinoCounter = Integer.parseInt(positionNums[8]);
-   //   distValRight = Integer.parseInt(positionNums[9]);
-   //   confValRight = Integer.parseInt(positionNums[10]);
+      arduinoCounter = Integer.parseInt(positionNums[10]);
+      distValRight = Integer.parseInt(positionNums[8]);
+      confValRight = Integer.parseInt(positionNums[9]);
     } else {
       //System.out.println("Bad String from Arduino: Doesn't start with Block");
     }
