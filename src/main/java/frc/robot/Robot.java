@@ -102,6 +102,7 @@ public class Robot extends TimedRobot {
   double forward;
   double turn;
   MagicVision V = new MagicVision();
+  ExtraUtilities U = new ExtraUtilities();
   @Override
   public void robotInit() {
     comp.setClosedLoopControl(true);
@@ -280,34 +281,10 @@ if (visionButton) {
       } else {
         elevatorDriver.set(0);
       }
-        if (intakePull && !intakePush) {
-        intake.set(Value.kReverse);
-      } else if (intakePush && !intakePull) {
-        intake.set(Value.kForward);
-      } else {
-        intake.set(Value.kOff);
-      }
-      if (syringePull && !syringePush) {
-        syringe.set(Value.kReverse);
-      } else if (syringePush && !syringePull) {
-        syringe.set(Value.kForward);
-      } else {
-        syringe.set(Value.kOff);
-      }
-      if (MOACUp && !MOACDown) {
-        MOAC.set(Value.kReverse);
-      } else if (MOACDown && !MOACUp) {
-        MOAC.set(Value.kForward);
-      } else {
-        MOAC.set(Value.kOff);
-      }
-      if (smallClimberUp && !smallClimberDown) {
-        lowClimber.set(Value.kForward);
-      } else if (smallClimberDown && !smallClimberUp) {
-        lowClimber.set(Value.kReverse);
-      } else {
-        lowClimber.set(Value.kOff);
-      } // lowClimber
+        intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
+        syringe.set(U.TwoButtonCheckerPneumatics(syringePush, syringePull));
+        MOAC.set(U.TwoButtonCheckerPneumatics(MOACUp, MOACDown));
+        lowClimber.set((U.TwoButtonCheckerPneumatics(smallClimberUp, smallClimberDown)));
     } // no vision
       } // teleopPeriodic
     } // Robot
