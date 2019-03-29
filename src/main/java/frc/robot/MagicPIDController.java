@@ -161,7 +161,7 @@ public class MagicPIDController {
   }
 
   /**
-   * sets the talon's neutral mode to brake, and starts braking \
+   * sets the talon's neutral mode to brake, and starts braking
    */
   public void freeze(){
     talon.setNeutralMode(NeutralMode.Brake);
@@ -277,8 +277,8 @@ public class MagicPIDController {
     kF = F;
   }
   /**
-   * Increase PIDF values by the imputted numbers
-   * Imput negative values for decreasing
+   * Increase PIDF values by the inputted numbers
+   * Input negative values for decreasing
    * Intended for tuning: Remove before release
    */
   public void incrementTuningValues(double P, double I, double D, double F){
@@ -301,5 +301,10 @@ public class MagicPIDController {
     PRINTER.addToPrint(Double.toString(kD));
     PRINTER.addToPrint(" Feed-Forward: ");
     PRINTER.addToPrint(Double.toString(kF));
+    PRINTER.addToPrint(" Current Target: ");
+    PRINTER.addToPrint(Integer.toString(curTargetNU));
+    PRINTER.addToPrint(" Current Position: ");
+    PRINTER.addToPrint(Integer.toString(currentPos));
   }
+
 }
