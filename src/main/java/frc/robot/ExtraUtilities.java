@@ -8,7 +8,7 @@ public class ExtraUtilities {
         
     }
     /** Checks two buttons, which should each be intended to do the opposite of the other-
-     *  say, setting a motor to go forward or reverse.
+     *  say, setting a motor to go forward or reverse. This method saves us 5 lines.
      *@return the values it returns are intended to be multiplied by the set speed of the motor in the parameter list of WPI_TalonSRX.set() 
      * in order to simply make the motor go forward at a speed, in reverse at that speed, or stop.
      * If b1 is pressed and not b2, then it returns 1. 
