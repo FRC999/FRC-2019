@@ -3,16 +3,15 @@ public enum ButtonEnum {
     intakeIn(0, 1), intakeOut(0, 2),
     Three(0, 3, false), Cog(0,4,true), testBool(0,5,false),
 
-    hatchIntake(1,4), hatchOuttake(1,3), cameraChange(0,6,false), 
-    intakeCargo(1,6), outtakeCargo(1,5), endgame(1,7), vision(0,0),
+    hatchIntake(1,3), hatchOuttake(1,5), cameraChange(0, 6, false), 
+    intakeCargo(1,4), outtakeCargo(1,6), endgame(1,7), vision(0,0),
 
-    climbFront(0, 7, false), climbBack(0, 8, false), //Ask drive team for valid joystick port and button numbers so the code doesnt go "NEIN"
-    climbFrontDown(0,0), climbBackDown(0,0), climbFrontUp(0,0), climbBackUp(0,0),
+    climbFront(1, 8, false), climbBack(1, 7, false), 
 
     elevatorUp(2,1), elevatorDown(2,2),
     elevatorLowHatch(2,12, EncoderPresets.lowHatch), elevatorMidHatch(2,10, EncoderPresets.midHatch), elevatorHighHatch(2,8, EncoderPresets.highHatch),
     elevatorLowBall(2,11, EncoderPresets.lowBall), elevatorMidBall(2,9, EncoderPresets.midBall), elevatorHighBall(2,7, EncoderPresets.highBall),
-    elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), elevatorRetract(0,9,EncoderPresets.retract);
+    elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), elevatorRetract(2,3, EncoderPresets.retract);
   
   final private int buttonNum;
   final private int joystickNum;

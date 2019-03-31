@@ -140,9 +140,4 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick getJoystick(ButtonEnum type){
     return getJoystick(type.getJoystickNum());
   }
-
-  
-
-  
-
 }

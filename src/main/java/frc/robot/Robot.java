@@ -41,8 +41,8 @@ public class Robot extends TimedRobot {
   boolean intakePull;
   boolean frontClimberUp;
   boolean frontClimberDown;
-  boolean rearClimberUp;
-  boolean rearClimberDown;
+  boolean frontClimb;
+  boolean rearClimb;
   boolean visionButton;
 
   MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
@@ -166,12 +166,8 @@ public class Robot extends TimedRobot {
         
     intakePull = INPUT.isButtonOn(ButtonEnum.hatchIntake);
     intakePush = INPUT.isButtonOn(ButtonEnum.hatchOuttake);
-    frontClimberUp = INPUT.isButtonOn(ButtonEnum.climbFrontUp);
-    frontClimberDown = INPUT.isButtonOn(ButtonEnum.climbFrontDown);
     frontClimb = INPUT.isButtonOn(ButtonEnum.climbFront);
     visionButton = INPUT.isButtonOn(ButtonEnum.vision);
-    rearClimberUp = INPUT.isButtonOn(ButtonEnum.climbBackUp);
-    rearClimberDown = INPUT.isButtonOn(ButtonEnum.climbBackDown);
     
     elevatorUp = INPUT.isButtonOn(ButtonEnum.elevatorUp);
     elevatorDown = INPUT.isButtonOn(ButtonEnum.elevatorDown);
@@ -199,11 +195,8 @@ public class Robot extends TimedRobot {
       }
       */
         elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
-        rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
-        frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     }
-   }
+  }
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
@@ -229,8 +222,8 @@ public class Robot extends TimedRobot {
       */
         elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
         intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
-        rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
-        frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
+        //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
+        //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     } // no vision
       } // teleopPeriodic
     } // Robot
