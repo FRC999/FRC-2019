@@ -5,6 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+//CHECK SOLENOID ID's BEFORE USE!!!
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
@@ -38,13 +39,16 @@ public class Robot extends TimedRobot {
   boolean LEDOn;
   boolean intakePush;
   boolean intakePull;
-  boolean smallClimberUp;
-  boolean smallClimberDown;
-  boolean MOACUp;
-  boolean MOACDown;
-  boolean syringePull;
-  boolean syringePush;
+  boolean frontClimberUp;
+  boolean frontClimberDown;
+  boolean rearClimberUp;
+  boolean rearClimberDown;
   boolean visionButton;
+
+  MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
+  MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
+  MagicRobotCameras CAMERAS = new MagicRobotCameras();
+
 
   int xVal;
   int yVal;
@@ -65,6 +69,11 @@ public class Robot extends TimedRobot {
   double speed = .25;
   boolean elevatorUp;
   boolean elevatorDown;
+  boolean elevatorLowHatch;
+  boolean elevatorMiddleHatch;
+  boolean elevatorHighHatch;
+  boolean frontClimberToggle;
+  boolean backClimberToggle;
   // The indexOf method returns -1 if it can't find the char in the string
   
 
@@ -93,10 +102,9 @@ public class Robot extends TimedRobot {
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
   DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
 
-  DoubleSolenoid MOAC = new DoubleSolenoid(0, 7);
-  DoubleSolenoid lowClimber = new DoubleSolenoid(1, 6);
+  DoubleSolenoid frontClimber = new DoubleSolenoid(0, 7);
+  DoubleSolenoid rearClimber = new DoubleSolenoid(1, 6);
   DoubleSolenoid intake = new DoubleSolenoid(2, 5);
-  DoubleSolenoid syringe = new DoubleSolenoid(3, 4);
 
   Compressor comp = new Compressor(0);
   double forward;
@@ -106,10 +114,9 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     comp.setClosedLoopControl(true);
-    MOAC.set(Value.kOff);
-    lowClimber.set(Value.kOff);
+    rearClimber.set(Value.kOff);
+    frontClimber.set(Value.kOff);
     intake.set(Value.kOff);
-    syringe.set(Value.kOff);
     try {
       arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
@@ -150,119 +157,57 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    intakePull = driveStick.getRawButton(3);
-    intakePush = driveStick.getRawButton(5);
-    syringePull = driveStick.getRawButton(4);
-    syringePush = driveStick.getRawButton(6);
-    smallClimberUp = driveStick.getRawButton(9);
-    smallClimberDown = driveStick.getRawButton(10);
-    visionButton = driveStick.getRawButton(2);
-    MOACUp = driveStick.getRawButton(11);
-    MOACDown = driveStick.getRawButton(12);
-    forward = (driveStick.getRawAxis(1));
-    turn = turnStick.getRawAxis(0);
-    elevatorUp = driveStick.getRawButton(8);
-    elevatorDown = driveStick.getRawButton(7);
+    INPUT.updates();
+    PRINTER.printMagicLine();
+    CAMERAS.checkCamSwap();
+
+    forward = INPUT.getDrive();
+    turn = INPUT.getTurn();
+        
+    intakePull = INPUT.isButtonOn(ButtonEnum.hatchIntake);
+    intakePush = INPUT.isButtonOn(ButtonEnum.hatchOuttake);
+    frontClimberUp = INPUT.isButtonOn(ButtonEnum.climbFrontUp);
+    frontClimberDown = INPUT.isButtonOn(ButtonEnum.climbFrontDown);
+    frontClimb = INPUT.isButtonOn(ButtonEnum.climbFront);
+    visionButton = INPUT.isButtonOn(ButtonEnum.vision);
+    rearClimberUp = INPUT.isButtonOn(ButtonEnum.climbBackUp);
+    rearClimberDown = INPUT.isButtonOn(ButtonEnum.climbBackDown);
+    
+    elevatorUp = INPUT.isButtonOn(ButtonEnum.elevatorUp);
+    elevatorDown = INPUT.isButtonOn(ButtonEnum.elevatorDown);
   }
   @Override
   public void autonomousInit() {
     comp.setClosedLoopControl(true);
-    MOAC.set(Value.kReverse);
+    rearClimber.set(Value.kReverse);
   }
   @Override
   public void autonomousPeriodic() {
-    
-    //*** VISION ***
-    targetPosition = arduino.readString();
-    System.out.println(arduino.readString()); 
-      System.out.println("String TargetPosition = " + targetPosition);
-      var positions = targetPosition.split(";");
-       for (int i = 0; i < positions.length; i++) {
-      //  System.out.println("String TargetPosition = " + targetPosition);
-         var positionNums = positions[i].split(":");
-         if (positionNums[0] == "x") {
-           xVal = Integer.parseInt(positionNums[1]);
-           System.out.println("xval = " + xVal);
-         } else if (positionNums[0] == "y") {
-           yVal = Integer.parseInt(positionNums[1]);
-           System.out.println("yval =" + yVal);
-         } else if (positionNums[0] == "h") {
-           hVal = Integer.parseInt(positionNums[1]);
-           System.out.println("hval =" + hVal);
-         } else if (positionNums[0] == "w") {
-           wVal = Integer.parseInt(positionNums[1]);
-           System.out.println("wval =" + wVal);
-         } else if (positionNums[0] == "dist") {
-           distVal = Integer.parseInt(positionNums[1]);
-           System.out.println("distval =" + distVal);
-          } else if (positionNums[0] == "conf") {
-            distVal = Integer.parseInt(positionNums[1]);
-            System.out.println("confval =" + confVal);
-         } else {
-           System.out.println("Parsing sensor data failed.");
-        //   System.out.println("positionNums[0] = " + positionNums[0]);
-        //   System.out.println("positionNums[1] = " + positionNums[1]);
-         }
-        } 
-if (visionButton) {
-    System.out.println(targetPosition);
-  if (targetPosition == null) {
-      leftSide.set(0);
-      rightSide.set(0);
-  //    System.out.println("targetPosition = null");
-    } else if (xVal < 158 /* && distVal > 500 */) {
-      leftSide.set(0);
-      rightSide.set(speed);
- //     System.out.println("xVal < (316/2) && distVal > 500");
-    } else if (xVal == 158 /*&& distVal > 500 */) {
-     leftSide.set(0);
-     rightSide.set(speed);
-     //System.out.println("xVal == (316/2) && distVal > 500");
-    } else if (xVal > 158 /*&& distVal > 500 */) {
-     leftSide.set(0);
-     rightSide.set(.2);
-     //System.out.println("xVal > (316/2) && distVal > 500");
-    } else {
-     System.out.println("none of the if statements in auto periodic applied, distval probably <500");
-     leftSide.set(0);
-     rightSide.set(0);
+    if (visionButton) {
+      int x = V.parseVal(arduino, 2);
+      V.track(leftSide, rightSide, x);
+      } else { 
+        chassisDrive.arcadeDrive(forward, turn);
+      int elevatorPos = elevatorDriver.getSelectedSensorPosition();
+      System.out.println(elevatorPos);
+      /*if (elevatorUp) {
+        elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
+      } else if(elevatorDown) {
+        elevatorDriver.set(ControlMode.MotionMagic, 300);
+      } else {
+        elevatorDriver.set(0);
+      }
+      */
+        elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
+        intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
+        rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
+        frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     }
-  } else {
-    chassisDrive.arcadeDrive(forward, turn);
-  if (intakePull && !intakePush) {
-    intake.set(Value.kReverse);
-  } else if (intakePush && !intakePull) {
-    intake.set(Value.kForward);
-  } else {
-    intake.set(Value.kOff);
-  }
-  if (syringePull && !syringePush) {
-    syringe.set(Value.kReverse);
-  } else if (syringePush && !syringePull) {
-    syringe.set(Value.kForward);
-  } else {
-    syringe.set(Value.kOff);
-  }
-  if (MOACUp && !MOACDown) {
-    MOAC.set(Value.kReverse);
-  } else if (MOACDown && !MOACUp) {
-    MOAC.set(Value.kForward);
-  } else {
-    MOAC.set(Value.kOff);
-  }
-  if (smallClimberUp && !smallClimberDown) {
-    lowClimber.set(Value.kForward);
-  } else if (smallClimberDown && !smallClimberUp) {
-    lowClimber.set(Value.kReverse);
-  } else {
-    lowClimber.set(Value.kOff);
-  }
-}
-}
+   }
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
-    MOAC.set(Value.kReverse);
+    rearClimber.set(Value.kReverse);
     chassisDrive.setSafetyEnabled(false);
   }
   @Override
@@ -284,9 +229,8 @@ if (visionButton) {
       */
         elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
         intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
-        syringe.set(U.TwoButtonCheckerPneumatics(syringePush, syringePull));
-        MOAC.set(U.TwoButtonCheckerPneumatics(MOACUp, MOACDown));
-        lowClimber.set((U.TwoButtonCheckerPneumatics(smallClimberUp, smallClimberDown)));
+        rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
+        frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     } // no vision
       } // teleopPeriodic
     } // Robot

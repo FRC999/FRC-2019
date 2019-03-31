@@ -10,11 +10,11 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 /**
  * Intended to provide a common ground for all PID systems to make things easier (ish).
  * Each instance builds and operates one WPI_TalonSRX for PID control.
- * Inherited by classes MagicElevator, MagicClimber, .
+ * Inherited by classes MagicElevator, MagicClimber,
  * heavily based on CTRE's example PID code,
  * @see https://github.com/CrossTheRoadElec/Phoenix-Examples-Languages/blob/92520fe425e63520f4a8e73ab3edac9890eeaeff/Java/MotionMagic/src/main/java/frc/robot/Robot.java
  */
-public class MagicPIDController {
+public class MagicPIDMotor {
   protected WPI_TalonSRX talon;
   
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
@@ -75,7 +75,7 @@ public class MagicPIDController {
    * @param mi the minimum point (for validation)
    * @param ma the maximum point (for validation)
    */
-  MagicPIDController(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int port, int startPoint, int mi, int ma) {
+  public MagicPIDMotor(double cir, double gearRat, double P, double I, double D, double F, double peakOutput, int slot, int port, int startPoint, int mi, int ma) {
     talon = new WPI_TalonSRX(port);
     circumference = cir;
     gearRatio = gearRat;
