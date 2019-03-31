@@ -86,7 +86,7 @@ public class Robot extends TimedRobot {
   int elevatorSetPoint = 5000;
   int elevatorMin = 100;
   int elevatorMax = 15000;
-
+  double elevatorSpeed = .25;
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
@@ -274,13 +274,15 @@ if (visionButton) {
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
       System.out.println(elevatorPos);
-      if (elevatorUp) {
+      /*if (elevatorUp) {
         elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
       } else if(elevatorDown) {
         elevatorDriver.set(ControlMode.MotionMagic, 300);
       } else {
         elevatorDriver.set(0);
       }
+      */
+        elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
         intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
         syringe.set(U.TwoButtonCheckerPneumatics(syringePush, syringePull));
         MOAC.set(U.TwoButtonCheckerPneumatics(MOACUp, MOACDown));
