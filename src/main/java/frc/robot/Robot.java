@@ -44,6 +44,10 @@ public class Robot extends TimedRobot {
   boolean frontClimb;
   boolean rearClimb;
   boolean visionButton;
+  boolean cargoIn;
+  boolean cargoOut;
+  boolean hatchIn;
+  boolean hatchOut;
 
   MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
@@ -92,11 +96,16 @@ public class Robot extends TimedRobot {
   WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
   WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
 
+  WPI_VictorSPX cargo = new WPI_VictorSPX(13);
+  WPI_VictorSPX hatch = new WPI_VictorSPX(14);
   int elevatorSetPoint = 5000;
   int elevatorMin = 100;
   int elevatorMax = 15000;
   double elevatorSpeed = .25;
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
+  
+  double cargoSpeed = .25;
+  double hatchSpeed = .25;
 
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
@@ -109,8 +118,8 @@ public class Robot extends TimedRobot {
   Compressor comp = new Compressor(0);
   double forward;
   double turn;
-  MagicVision V = new MagicVision();
-  ExtraUtilities U = new ExtraUtilities();
+  MagicVision VISION = new MagicVision();
+  ExtraUtilities UTILITY = new ExtraUtilities();
   @Override
   public void robotInit() {
     comp.setClosedLoopControl(true);
@@ -180,8 +189,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     if (visionButton) {
-      int x = V.parseVal(arduino, 2);
-      V.track(leftSide, rightSide, x);
+      int x = VISION.parseVal(arduino, 2);
+      VISION.track(leftSide, rightSide, x);
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
@@ -194,9 +203,16 @@ public class Robot extends TimedRobot {
         elevatorDriver.set(0);
       }
       */
-        elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-    }
-  }
+        elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
+        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake)*hatchSpeed);
+        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
+        frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
+        rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+        
+        //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
+        //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
+    } // no vision
+      } // teleopPeriodic
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
@@ -206,8 +222,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
-      int x = V.parseVal(arduino, 2);
-      V.track(leftSide, rightSide, x);
+      int x = VISION.parseVal(arduino, 2);
+      VISION.track(leftSide, rightSide, x);
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
@@ -220,8 +236,12 @@ public class Robot extends TimedRobot {
         elevatorDriver.set(0);
       }
       */
-        elevatorDriver.set(U.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        intake.set(U.TwoButtonCheckerPneumatics(intakePush, intakePull));
+        elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
+        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake)*hatchSpeed);
+        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
+        frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
+        rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+
         //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
         //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     } // no vision

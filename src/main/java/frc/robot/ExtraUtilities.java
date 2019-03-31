@@ -59,4 +59,35 @@ public class ExtraUtilities {
         ExtraUtilities.<Double>Checker(false,true, 0.5);
     }
     */
+    public int twoButtonCheckerWithConstantSolenoid(boolean b1,boolean b2, DoubleSolenoid s1) {
+        if (b1 && !b2) {
+            s1.set(Value.kForward);
+            return 1;
+        } else if (!b1 && b2) {
+            s1.set(Value.kForward);
+            return -1;
+        } else {
+            s1.set(Value.kOff);
+            return 0;
+        }
+   }
+   public int twoButtonCheckerWithVariableSolenoid(boolean b1, boolean b2, DoubleSolenoid s1) {
+        if (b1 && !b2) {
+          s1.set(Value.kForward);
+         return 1;
+        } else if (!b1 && b2) {
+         s1.set(Value.kReverse);
+          return -1;
+        } else {
+         s1.set(Value.kOff);
+          return 0;
+        }
+   }
+   public Value SingleButtonCheckerPneumatics(boolean b1) {
+    if (b1) {
+        return Value.kForward;
+    } else {
+        return Value.kReverse;
+    }
+   }
 }

@@ -4,7 +4,7 @@ public enum ButtonEnum {
     Three(0, 3, false), Cog(0,4,true), testBool(0,5,false),
 
     hatchIntake(1,3), hatchOuttake(1,5), cameraChange(0, 6, false), 
-    intakeCargo(1,4), outtakeCargo(1,6), endgame(1,7), vision(0,0),
+    cargoIntake(1,4), cargoOuttake(1,6), endgame(1,7), vision(0,0),
 
     climbFront(1, 8, false), climbBack(1, 7, false), 
 
