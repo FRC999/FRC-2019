@@ -107,5 +107,23 @@ public class MagicVision {
      l.set(0);
      r.set(0);
     }
+  }// end track()
+
+ private int pathStages= 0;
+/** uses vision to locate the avaliable vision targets and drive a path towards them.
+ *  The path has two parts: a diagonal path that overshoots the goal so that the straight path can hit it straight.*/
+  public void hatchPathExecutor() {
+    
+    switch (pathStages) {
+      case 0:
+      break;
+      case 1:
+      break;
+      case 2:
+      break;
+      case 3:
+      break;
+      default:
+      break; }
   }
-}
+}// end class
