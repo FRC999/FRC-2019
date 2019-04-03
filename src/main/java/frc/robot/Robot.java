@@ -8,6 +8,8 @@
 //CHECK SOLENOID ID's BEFORE USE!!!
 package frc.robot;
 
+import java.util.Arrays;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -51,9 +54,10 @@ public class Robot extends TimedRobot {
 
   MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
-  MagicRobotCameras CAMERAS = new MagicRobotCameras();
-
-
+  //MagicRobotCameras CAMERAS = new MagicRobotCameras();
+  int [] test;
+  int delayCounter = 0;
+  int timingDelay = 5;
   int xVal;
   int yVal;
   int hVal;
@@ -66,6 +70,7 @@ public class Robot extends TimedRobot {
   int pixyMountAngle;
   int arduinoCounter;
   int bRate = 115200;
+ // int bRate = 9600;
   SerialPort arduino;
   String targetPosition;
   int startOfDataStream;
@@ -78,6 +83,12 @@ public class Robot extends TimedRobot {
   boolean elevatorHighHatch;
   boolean frontClimberToggle;
   boolean backClimberToggle;
+
+  int x;
+  int lDist;
+  int lConf;
+  int rDist;
+  int rConf;
   // The indexOf method returns -1 if it can't find the char in the string
   
 
@@ -118,7 +129,7 @@ public class Robot extends TimedRobot {
   Compressor comp = new Compressor(0);
   double forward;
   double turn;
-  MagicVision VISION = new MagicVision();
+  MagicVision VISION = new MagicVision(bRate); 
   ExtraUtilities UTILITY = new ExtraUtilities();
   @Override
   public void robotInit() {
@@ -126,6 +137,8 @@ public class Robot extends TimedRobot {
     rearClimber.set(Value.kOff);
     frontClimber.set(Value.kOff);
     intake.set(Value.kOff);
+    arduino = VISION.startArduino();
+    /*
     try {
       arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
@@ -162,13 +175,14 @@ public class Robot extends TimedRobot {
         }  //catch (Exception e2)
       }  //catch (Exception e1)
     }  //catch (Exception e) 
+    */
   } //robotInit()
 
   @Override
   public void robotPeriodic() {
     INPUT.updates();
-    PRINTER.printMagicLine();
-    CAMERAS.checkCamSwap();
+    //PRINTER.printMagicLine();
+    //CAMERAS.checkCamSwap();
 
     forward = INPUT.getDrive();
     turn = INPUT.getTurn();
@@ -176,6 +190,9 @@ public class Robot extends TimedRobot {
     intakePull = INPUT.isButtonOn(ButtonEnum.hatchIntake);
     intakePush = INPUT.isButtonOn(ButtonEnum.hatchOuttake);
     frontClimb = INPUT.isButtonOn(ButtonEnum.climbFront);
+    rearClimb = INPUT.isButtonOn(ButtonEnum.climbBack);
+    //frontClimb = turnStick.getRawButton(8);
+    //rearClimb = turnStick.getRawButton(7);
     visionButton = INPUT.isButtonOn(ButtonEnum.vision);
     
     elevatorUp = INPUT.isButtonOn(ButtonEnum.elevatorUp);
@@ -189,12 +206,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     if (visionButton) {
-      int x = VISION.parseVal(arduino, 2);
-      VISION.track(leftSide, rightSide, x);
+      VISION.getArray(arduino);
+        int [] test = VISION.parseVal(arduino, 2, 6, 7, 8, 9);
+      VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], test[3], test[4], 500, 500, .25);
+      VISION.trackWithVision(arduino, leftSide, rightSide, x, lDist, lConf, rDist, rConf, 500, 500, .25);
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
-      System.out.println(elevatorPos);
+   //   System.out.println(elevatorPos);
       /*if (elevatorUp) {
         elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
       } else if(elevatorDown) {
@@ -220,14 +239,21 @@ public class Robot extends TimedRobot {
     chassisDrive.setSafetyEnabled(false);
   }
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic(){
+    chassisDrive.feed(); 
     if (visionButton) {
-      int x = VISION.parseVal(arduino, 2);
-      VISION.track(leftSide, rightSide, x);
+      if (delayCounter == 1) {
+       test = VISION.parseVal(arduino, 2, 6, 7, 8, 9);
+       VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], test[3], test[4], 10, 50, .25);
+      System.out.println(Arrays.toString(test));
+      } else if(delayCounter > timingDelay) {
+        delayCounter = 0;
+      }
+      delayCounter++;
       } else { 
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
-      System.out.println(elevatorPos);
+   //   System.out.println(elevatorPos);
       /*if (elevatorUp) {
         elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
       } else if(elevatorDown) {
@@ -241,7 +267,7 @@ public class Robot extends TimedRobot {
         cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
         frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
         rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
-
+        
         //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
         //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     } // no vision
