@@ -25,6 +25,15 @@ public class MagicVision {
   final int rightMax = 170;
   final int min = 0;
   final int max = 316;
+
+  final int pixyXFieldOfViewDegrees = 60;
+  final double pixyXFieldOfViewRadians = (60 * (2*Math.PI)/360);
+  final int pixyYFieldOfViewDegrees = 40;
+  final double pixyYFieldOfViewRadians = ( 40  * (2*Math.PI)/360);
+
+  final int widthOfPixyInPixels = 316;
+  final int heightOfPixyInPixels = 208;
+  final double xRadiansPerPixel = pixyXFieldOfViewRadians/ widthOfPixyInPixels;
   
   public MagicVision() {
   }
@@ -109,19 +118,29 @@ public class MagicVision {
     }
   }// end track()
 
- private int pathStages= 0;
-/** uses vision to locate the avaliable vision targets and drive a path towards them.
+ private int pathStages= 1;
+/** Objective: get the robot parallel to the hatch.
+ * uses vision to locate the rightmost avaliable vision target, orient using it and two distance sensors, drive backwards, 
+ * then follow a pathto get to the hatch straight.
  *  The path has two parts: a diagonal path that overshoots the goal so that the straight path can hit it straight.*/
-  public void hatchPathExecutor() {
+  public void hatchPathExecutor(SerialPort arduino) {
     
     switch (pathStages) {
-      case 0:
-      break;
       case 1:
+              if (parseVal(arduino, 1) == -1) // if it does not see a vision target
+              { }// rotate
+              else if () {// if robot center is pointed at the center of the hatch
+                
+
+              } // else from if  (parseVal(arduino, 1) == -1)
       break;
       case 2:
       break;
       case 3:
+      break;
+      case 4:
+      break;
+      case 5:
       break;
       default:
       break; }
