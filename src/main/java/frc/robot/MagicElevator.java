@@ -8,7 +8,6 @@ package frc.robot;
 public class MagicElevator extends MagicPIDMotor{
   int eCurrent;
   EncoderPresets eTargetPreset;
-  MagicIntake INTAKE;
 
   MagicJoystickInput INPUT;
   static final int  eOffsetHeight = 2; //How high the zero point of the native units is off the floor in NU's
@@ -21,10 +20,9 @@ public class MagicElevator extends MagicPIDMotor{
    * @param port The number of the elevator talon
    * @param the The intake to be updated when targets change
    */
-  public MagicElevator(int port, MagicIntake in) {
+  public MagicElevator(int port) {
     super( 2.54*2*Math.PI,   1,   .2, .0, .2, .2,   0.1,       0,     port,      eOffsetHeight, -4096, 4096); // numbers are made up
     //      circum.       gearRat  P   D   I   F  peakOutput  slot#   talon#       start pt.     min    max
-    INTAKE = in;
   }
 
   /**

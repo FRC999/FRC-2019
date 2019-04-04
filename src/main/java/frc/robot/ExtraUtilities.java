@@ -26,9 +26,10 @@ public class ExtraUtilities {
             return 0;
         }
     }
-        /** Checks two pneumatics buttons, which should each be intended to do the opposite of the other-
-     *  one extending a doubleSolenoid and the other retracting it.
-     *@return the state we want the DoubleSolenoid to be in
+    /** 
+     * Checks two pneumatics buttons, which should each be intended to do the opposite of the other-
+     * one extending a doubleSolenoid and the other retracting it.
+     * @return the state we want the DoubleSolenoid to be in
      * If b1 is pressed and not b2, then it returns Value.kForward. 
      * if b2 is pressed and not b1, then it returns Value.kReverse.
      * if both or neither are pressed, then it returns Value.kOff.

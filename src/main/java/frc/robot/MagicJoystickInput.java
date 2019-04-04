@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick driveStick;
   Joystick turnStick;
   Joystick copilotStick;
-  double elevatorTarget;
 
   final static double deadZoneRadius = .2; //WARNING: Very high! Only for testing purposes!
 
