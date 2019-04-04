@@ -54,7 +54,7 @@ public class Robot extends TimedRobot {
 
   MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
-  //MagicRobotCameras CAMERAS = new MagicRobotCameras();
+  MagicRobotCameras CAMERAS = new MagicRobotCameras();
   int [] test;
   int delayCounter = 0;
   int timingDelay = 5;
@@ -92,21 +92,21 @@ public class Robot extends TimedRobot {
   // The indexOf method returns -1 if it can't find the char in the string
   
 
-/*
+
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
   WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
   WPI_VictorSPX driveBackLeft = new WPI_VictorSPX(6);
   WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
   WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2);
   WPI_VictorSPX driveBackRight = new WPI_VictorSPX(3);
-*/
+/*
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
   WPI_TalonSRX driveMiddleLeft = new WPI_TalonSRX(5);
   WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(6);
   WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
   WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
   WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
-
+*/
   WPI_VictorSPX cargo = new WPI_VictorSPX(13);
   WPI_VictorSPX hatch = new WPI_VictorSPX(14);
   int elevatorSetPoint = 5000;
@@ -182,11 +182,10 @@ public class Robot extends TimedRobot {
   public void robotPeriodic() {
     INPUT.updates();
     //PRINTER.printMagicLine();
-    //CAMERAS.checkCamSwap();
+    CAMERAS.checkCamSwap();
 
-    forward = INPUT.getDrive();
+    forward = (INPUT.getDrive())*-1;
     turn = INPUT.getTurn();
-        
     intakePull = INPUT.isButtonOn(ButtonEnum.hatchIntake);
     intakePush = INPUT.isButtonOn(ButtonEnum.hatchOuttake);
     frontClimb = INPUT.isButtonOn(ButtonEnum.climbFront);
@@ -223,7 +222,13 @@ public class Robot extends TimedRobot {
       }
       */
         elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake)*hatchSpeed);
+        if (intakePull && !intakePush) {
+          hatch.set(.25);
+        } else if (!hatchIn && hatchOut) {
+          hatch.set(.25);
+        } else {
+          hatch.set(0);
+        }
         cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
         frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
         rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
@@ -263,11 +268,19 @@ public class Robot extends TimedRobot {
       }
       */
         elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake)*hatchSpeed);
+        if (hatchIn && !hatchOut) {
+          hatch.set(.25);
+        } else if (!hatchIn && hatchOut) {
+          hatch.set(.25);
+        } else {
+          hatch.set(0);
+        }
+        hatch.set(UTILITY.TwoButtonChecker(intakePush, intakePull));
         cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
         frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
         rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
-        
+        System.out.println(frontClimber.get());
+        System.out.println(rearClimber.get());
         //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
         //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
     } // no vision
