@@ -8,6 +8,8 @@
 //CHECK SOLENOID ID's BEFORE USE!!!
 package frc.robot;
 
+import java.util.Arrays;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
@@ -18,6 +20,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -52,7 +55,9 @@ public class Robot extends TimedRobot {
   MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
   MagicRobotCameras CAMERAS = new MagicRobotCameras();
-
+  int[] test;
+  int delayCounter = 0;
+  int timingDelay = 5;
   int xVal;
   int yVal;
   int hVal;
@@ -65,6 +70,7 @@ public class Robot extends TimedRobot {
   int pixyMountAngle;
   int arduinoCounter;
   int bRate = 115200;
+  // int bRate = 9600;
   SerialPort arduino;
   String targetPosition;
   int startOfDataStream;
@@ -77,22 +83,27 @@ public class Robot extends TimedRobot {
   boolean elevatorHighHatch;
   boolean frontClimberToggle;
   boolean backClimberToggle;
+
+  int x;
+  int lDist;
+  int lConf;
+  int rDist;
+  int rConf;
   // The indexOf method returns -1 if it can't find the char in the string
 
-  /*
-   * WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4); WPI_VictorSPX
-   * driveMiddleLeft = new WPI_VictorSPX(5); WPI_VictorSPX driveBackLeft = new
-   * WPI_VictorSPX(6); WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
-   * WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2); WPI_VictorSPX
-   * driveBackRight = new WPI_VictorSPX(3);
-   */
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
-  WPI_TalonSRX driveMiddleLeft = new WPI_TalonSRX(5);
-  WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(6);
+  WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
+  WPI_VictorSPX driveBackLeft = new WPI_VictorSPX(6);
   WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
-  WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
-  WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
-
+  WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2);
+  WPI_VictorSPX driveBackRight = new WPI_VictorSPX(3);
+  /*
+   * WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4); WPI_TalonSRX
+   * driveMiddleLeft = new WPI_TalonSRX(5); WPI_TalonSRX driveBackLeft = new
+   * WPI_TalonSRX(6); WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
+   * WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2); WPI_TalonSRX
+   * driveBackRight = new WPI_TalonSRX(3);
+   */
   WPI_VictorSPX cargo = new WPI_VictorSPX(13);
   WPI_VictorSPX hatch = new WPI_VictorSPX(14);
   int elevatorSetPoint = 5000;
@@ -115,7 +126,7 @@ public class Robot extends TimedRobot {
   Compressor comp = new Compressor(0);
   double forward;
   double turn;
-  MagicVision VISION = new MagicVision();
+  MagicVision VISION = new MagicVision(bRate);
   ExtraUtilities UTILITY = new ExtraUtilities();
 
   @Override
@@ -124,51 +135,43 @@ public class Robot extends TimedRobot {
     rearClimber.set(Value.kOff);
     frontClimber.set(Value.kOff);
     intake.set(Value.kOff);
-    try {
-      arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
-      System.out.println("Connected to kUSB");
-    } catch (Exception e) {
-      System.out.println("Couldn't connect to kUSB, trying kUSB1");
-      try {
-        arduino = new SerialPort(bRate, SerialPort.Port.kUSB1);
-        System.out.println("Connected to kUSB1");
-      } catch (Exception e1) {
-        System.out.println("Couldn't Connect to kUSB1, trying kUSB2");
-        try {
-          arduino = new SerialPort(bRate, SerialPort.Port.kUSB2);
-          System.out.println("Connected to kUSB2");
-        } catch (Exception e2) {
-          System.out.println("Not connected to any of the USB ports, trying MXP spot");
-          try {
-            arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
-            System.out.println("Connected to MXP port");
-          } catch (Exception eMXP) {
-            System.out.println("Not Connected to MXP port, trying Onboard");
-            try {
-              arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
-              System.out.println("Connected to Onboard");
-            } catch (Exception eOnboard) {
-              System.out.println("Not connected to any ports on the RoboRIO");
-
-            } // catch (Exception eOnboard)
-          } // catch (Exception eMXP)
-        } // catch (Exception e2)
-      } // catch (Exception e1)
-    } // catch (Exception e)
+    arduino = VISION.startArduino();
+    /*
+     * try { arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
+     * System.out.println("Connected to kUSB"); } catch (Exception e) {
+     * System.out.println("Couldn't connect to kUSB, trying kUSB1"); try { arduino =
+     * new SerialPort(bRate, SerialPort.Port.kUSB1);
+     * System.out.println("Connected to kUSB1"); } catch (Exception e1) {
+     * System.out.println("Couldn't Connect to kUSB1, trying kUSB2"); try { arduino
+     * = new SerialPort(bRate, SerialPort.Port.kUSB2);
+     * System.out.println("Connected to kUSB2"); } catch (Exception e2) {
+     * System.out.println("Not connected to any of the USB ports, trying MXP spot");
+     * try { arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
+     * System.out.println("Connected to MXP port"); } catch (Exception eMXP) {
+     * System.out.println("Not Connected to MXP port, trying Onboard"); try {
+     * arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
+     * System.out.println("Connected to Onboard"); } catch (Exception eOnboard) {
+     * System.out.println("Not connected to any ports on the RoboRIO");
+     * 
+     * } // catch (Exception eOnboard) } // catch (Exception eMXP) } //catch
+     * (Exception e2) } //catch (Exception e1) } //catch (Exception e)
+     */
   } // robotInit()
 
   @Override
   public void robotPeriodic() {
     INPUT.updates();
-    PRINTER.printMagicLine();
+    // PRINTER.printMagicLine();
     CAMERAS.checkCamSwap();
 
-    forward = INPUT.getDrive();
+    forward = (INPUT.getDrive()) * -1;
     turn = INPUT.getTurn();
-
     intakePull = INPUT.isButtonOn(ButtonEnum.hatchIntake);
     intakePush = INPUT.isButtonOn(ButtonEnum.hatchOuttake);
     frontClimb = INPUT.isButtonOn(ButtonEnum.climbFront);
+    rearClimb = INPUT.isButtonOn(ButtonEnum.climbBack);
+    // frontClimb = turnStick.getRawButton(8);
+    // rearClimb = turnStick.getRawButton(7);
     visionButton = INPUT.isButtonOn(ButtonEnum.vision);
 
     elevatorUp = INPUT.isButtonOn(ButtonEnum.elevatorUp);
@@ -184,12 +187,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     if (visionButton) {
-      int x = VISION.parseVal(arduino, 2);
-      VISION.track(leftSide, rightSide, x);
+      VISION.getArray(arduino);
+      int[] test = VISION.parseVal(arduino, 2, 6, 7, 8, 9);
+      VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], test[3], test[4], 500, 500, .25);
+      VISION.trackWithVision(arduino, leftSide, rightSide, x, lDist, lConf, rDist, rConf, 500, 500, .25);
     } else {
       chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
-      System.out.println(elevatorPos);
+      // System.out.println(elevatorPos);
       /*
        * if (elevatorUp) { elevatorDriver.set(ControlMode.MotionMagic,
        * elevatorSetPoint); } else if(elevatorDown) {
@@ -197,7 +202,13 @@ public class Robot extends TimedRobot {
        * elevatorDriver.set(0); }
        */
       elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown) * elevatorSpeed);
-      hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake) * hatchSpeed);
+      if (intakePull && !intakePush) {
+        hatch.set(.25);
+      } else if (!hatchIn && hatchOut) {
+        hatch.set(.25);
+      } else {
+        hatch.set(0);
+      }
       cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut) * cargoSpeed);
       frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
       rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
@@ -218,13 +229,20 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+    chassisDrive.feed();
     if (visionButton) {
-      int x = VISION.parseVal(arduino, 2);
-      VISION.track(leftSide, rightSide, x);
+      if (delayCounter == 1) {
+        test = VISION.parseVal(arduino, 2, 6, 7, 8, 9);
+        VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], test[3], test[4], 10, 50, .25);
+        System.out.println(Arrays.toString(test));
+      } else if (delayCounter > timingDelay) {
+        delayCounter = 0;
+      }
+      delayCounter++;
     } else {
       chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
-      System.out.println(elevatorPos);
+      // System.out.println(elevatorPos);
       /*
        * if (elevatorUp) { elevatorDriver.set(ControlMode.MotionMagic,
        * elevatorSetPoint); } else if(elevatorDown) {
@@ -232,11 +250,19 @@ public class Robot extends TimedRobot {
        * elevatorDriver.set(0); }
        */
       elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown) * elevatorSpeed);
-      hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake) * hatchSpeed);
+      if (hatchIn && !hatchOut) {
+        hatch.set(.25);
+      } else if (!hatchIn && hatchOut) {
+        hatch.set(.25);
+      } else {
+        hatch.set(0);
+      }
+      hatch.set(UTILITY.TwoButtonChecker(intakePush, intakePull));
       cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut) * cargoSpeed);
       frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
       rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
-
+      System.out.println(frontClimber.get());
+      System.out.println(rearClimber.get());
       // rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp,
       // rearClimberDown));
       // frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp,
