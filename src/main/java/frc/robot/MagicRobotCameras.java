@@ -16,20 +16,26 @@ public class MagicRobotCameras{
   MagicJoystickInput INPUT;
   boolean lastCamChoice;
   VideoSink camServer;
-  static final int CAMPORT1 = 0;
-  static final int CAMPORT2 = 1;
+  static final int CAMPORT1 = 0; //NOTE: Not technically port numbers, technically device numbers
+  static final int CAMPORT2 = 1; //Therefore, 0 and 1 go to devices 0 and 1.
 
   MagicRobotCameras(){
     INPUT= MagicJoystickInput.getInstance();
-    backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
-    backCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    backCam.setResolution(640, 480);
 
-    frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
-    frontCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
-    frontCam.setResolution(640, 480);
-    
-    camServer = CameraServer.getInstance().getServer();
+    try{
+      backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
+      backCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+      backCam.setResolution(640, 480);
+
+      frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
+      frontCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+      frontCam.setResolution(640, 480);
+      
+      camServer = CameraServer.getInstance().getServer();
+    }
+    catch (Exception e){
+      System.out.println("Cameras have failed spectacularally: ABORT!");
+    }
   }
 
 /**

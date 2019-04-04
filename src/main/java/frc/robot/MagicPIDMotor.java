@@ -259,6 +259,14 @@ public class MagicPIDMotor {
   }
 
   /**
+   * Gets the current position
+   * @return the current position in native units
+   */
+  public int getPosition(){
+    return talon.getSelectedSensorPosition();
+  }
+
+  /**
    * Increases the target by the imputed amount
    * @param num amount to increase by in native units
    */

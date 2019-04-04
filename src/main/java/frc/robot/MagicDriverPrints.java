@@ -14,7 +14,7 @@ public class MagicDriverPrints{
   public String printMagicLine(){
     System.out.print("\n");
     System.out.print(sb);
-    sb.delete(0,sb.length());
+    sb.setLength(0);
     return sb.toString();
   }
 }
