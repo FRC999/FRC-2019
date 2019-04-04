@@ -35,6 +35,7 @@ public class MagicVision {
   final int heightOfPixyInPixels = 208;
   final double xRadiansPerPixel = pixyXFieldOfViewRadians/ widthOfPixyInPixels;
   final double distanceBetweenDistanceSensorsCm = 80-2.5;
+  final double wheelDiametermm = 76.2; // 3 in * 25.4 mm/in
   
   public MagicVision() {
   }
@@ -126,16 +127,16 @@ public class MagicVision {
  * uses vision to locate the rightmost avaliable vision target, orient using it and two distance sensors, drive backwards, 
  * then follow a pathto get to the hatch straight.
  *  The path has two parts: a diagonal path that overshoots the goal so that the straight path can hit it straight.*/
-  public void hatchPathExecutor(SerialPort arduino) {
+  public void hatchPathExecutor(SerialPort arduino, WPI_TalonSRX encoderTalon1, WPI_TalonSRX encoderTalon2, DifferentialDrive drive) {
     
     switch (pathStages) {
       case 1:
               if (parseVal(arduino, 1) == -1) // if it does not see a vision target
-              { Robot.chassisDrive(0,0.2);}// rotate arbitrarily
+              { drive.arcadeDrive(0,0.2);}// rotate arbitrarily
         /* else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 - 10))
-        Robot.chassisDrive(0,0.2);
+        drive.arcadeDrive(0,0.2);
         else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 + 10)
-        Robot.chassisDrive(0, - 0.2);  // might want to swap minus signs with the other one
+        drive.arcadeDrive(0, - 0.2);  // might want to swap minus signs with the other one
         */
               else {// if robot center is pointed at the center of the hatch
               
@@ -143,7 +144,9 @@ public class MagicVision {
                 distanceToHatch = (parseVal(arduino, 6) +parseVal(arduino, 8))/2;
                 angleToHatch = Math.arcTan(    (distanceBetweenDistanceSensorsCm * 10)/ 
                                (Math.abs(parseVal(arduino, 6) - parseVal(arduino, 8))) );
-                Robot.zeroDriveEncoders();
+                encoderTalon1.setSelectedSensorPosition(0);
+                encoderTalon2.setSelectedSensorPosition(0);
+ 
                 pathStages = 2;
                 }// if confvals are greater than 800
                 else 
@@ -152,19 +155,19 @@ public class MagicVision {
       break;
       case 2:
       // d = distanceToHatch + 
-        //(2 * Math.PI * wheelRadiusMillimeters * Math.abs(Robot.driveFrontLeft.getSelectedSensorPosition() + Robot.driveFrontRight.getSelectedSensorPosition())/2);
+        //(2 * Math.PI * wheelRadiusmm * Math.abs(encoderTalon1.getSelectedSensorPosition() + encoderTalon2.getSelectedSensorPosition())/2);
       // if d > predeterminedArbitraryDistance
-      //{Robot.chassisDrive.arcadeDrive(0,0); pathStages = 3;}
-      // else {Robot.chassisDrive.arcadeDrive(-0.3, 0);}
+      //{drive.arcadeDrive(0,0); pathStages = 3;}
+      // else {drive.arcadeDrive(-0.3, 0);}
       break;
       case 3:
       /* d = distanceToHatch + 
-       (2 * Math.PI * wheelRadiusMillimeters * Math.abs(Robot.driveFrontLeft.getSelectedSensorPosition() + Robot.driveFrontRight.getSelectedSensorPosition())/2);
+       (2 * Math.PI * wheelRadiusmm * Math.abs(encoderTalon1.getSelectedSensorPosition() + encoderTalon2.getSelectedSensorPosition())/2);
       if ((Angle2 + AngleToHatch + MinimumTurnableAngle) >= 2* Math.PI)
-       Angle2 = 180 - angleToHatch - minAccAngle;
+       Angle2 = 2 * Math.PI - angleToHatch - minAccAngle;
        
        A = d * Math.sin(angleToHatch) / Math.sin(angle2);
-       B = */
+       B = d * Math.sin(2 * Math.PI - angleToHatch - angle2) / Math.sin() ;*/
       break;
       case 4:
       break;
