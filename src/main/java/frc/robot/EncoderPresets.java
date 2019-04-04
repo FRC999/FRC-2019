@@ -6,68 +6,31 @@
 /*----------------------------------------------------------------------------*/
 
 package frc.robot;
+
 //NEEDS TO BE MORE GENERAL, WILL REVIEW AT EARLIEST CONVENIENCE
 public enum EncoderPresets {
-  lowHatch(50,0), midHatch(123,0), highHatch(196,0),
-  lowBall(61,0), midBall(140,0), highBall(211,0),
-  cargoShipBall(110,0), floor(0,0), retract(0,0);
+  lowHatch(50), midHatch(123), highHatch(196), lowBall(61), midBall(140), highBall(211), cargoShipBall(110), floor(0),
+  retract(0);
   final private double heightCM;
   final private int heightNU;
-  final private double elbowAngleDE;
-  final private int elbowAngleNU;
-  final private double wristAngleDE;
-  final private int wristAngleNU;
-  private EncoderPresets(double height, double angle) {
+
+  private EncoderPresets(double height) {
     heightCM = height;
-    heightNU = (int) (4096 * (height / (2.54 * Math.PI))); //2.54 is the diameter of the spool in CM
-    elbowAngleDE = angle;
-    elbowAngleNU = (int) (4096 / 360 * angle);
-    wristAngleDE = -angle;
-    wristAngleNU = -elbowAngleNU;
+    heightNU = (int) (4096 * (height / (2.54 * Math.PI))); // 2.54 is the diameter of the spool in CM
   }
-  private EncoderPresets(double height, double angleE, double angleW){
-    heightCM = height;
-    heightNU = (int) (4096 * (height / (2.54 * Math.PI)));
-    elbowAngleDE = angleE;
-    elbowAngleNU = (int) (4096 / 360 * angleE);
-    wristAngleDE = angleW;
-    wristAngleNU = (int) (4096 / 360 * angleW);
-  }
+
   /**
    * @return the height in CM
    */
   public double getHeightCM() {
     return heightCM;
   }
+
   /**
    * @return the height in native units
    */
   public int getHeightNU() {
     return heightNU;
-  }
-  /**
-   * @return the angle of the elbow
-   */
-  public double getElbowAngleDE() {
-    return elbowAngleDE;
-  }
-  /**
-   * @return the angle of the wrist
-   */
-  public double getWristAngleDE() {
-    return wristAngleDE;
-  }
-  /**
-   * @return the angle of the elbow in NU's
-   */
-  public int getElbowAngleNU() {
-    return elbowAngleNU;
-  }
-  /**
-   * @return the angle of the wrist in NU's
-   */
-  public int getWristAngleNU() {
-    return wristAngleNU;
   }
 
 }

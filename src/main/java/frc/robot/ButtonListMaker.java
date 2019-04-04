@@ -51,32 +51,34 @@ public class ButtonListMaker {
         curSb = new StringBuilder("Button " + Integer.toString(curBut) + "Oh shoot! Two entries bound to this button!");
         continue;// Exit this iteration, but continue the loop
       }
-      curSb = new StringBuilder(50); //TODO: Adjust up to whatever the final length of the stringbuilder is
+      curSb = new StringBuilder(65);
       curSb.append("Button ");
-      curSb.append(String.format("%2d", curBut)); //Button number padded to two zeroes
+      curSb.append(String.format("%2d", curBut)); // Button number padded to two zeroes
       curSb.append("Named ");
-      curSb.append(String.format("%-20s", bob.name())); //Name padded to twenty charicters: left aligned
+      curSb.append(String.format("%-20s", bob.name())); // Name padded to twenty charicters: left aligned
       curSb.append("Toggles ");
-      curSb.append((bob.getToggledButton() != null) ? "Yah" : "Nah"); //Whether it is a toggling button
+      curSb.append((bob.getToggledButton() != null) ? "Yah" : "Nah"); // Whether it is a toggling button
       curSb.append("Elevator Height ");
-      if (bob.getElevatorPreset() == null) { 
-        curSb.append("Nah"); 
-      } else {//If it is an elevator controller...
-        curSb.append(String.format("%3d", bob.getElevatorPreset().getHeightCM())); //state the height in CM
+      if (bob.getElevatorPreset() == null) {
+        curSb.append("Nah");
+      } else {// If it is an elevator controller...
+        curSb.append(String.format("%3d", bob.getElevatorPreset().getHeightCM())); // state the height in CM
       }
     }
-    //Set the titles on each joystick
-    //The additional newline ensures an empty space between the title and the main body of the table
+    // Set the titles on each joystick
+    // The additional newline ensures an empty space between the title and the main
+    // body of the table
     joystick0List[0] = new StringBuilder("Joystick 0 (drive/left stick): \n");
     joystick1List[0] = new StringBuilder("Joystick 1 (turn/right stick): \n");
     joystick2List[0] = new StringBuilder("Joystick 2 (co-pilot's stick): \n");
 
-    StringBuilder sb = new StringBuilder(500);
+    StringBuilder sb = new StringBuilder(65 * 13 + 32);
     for (StringBuilder joy : joystick0List) {
       sb.append(joy);
       sb.append("\n");
     }
-    sb.append("\n \n"); //Two additional newlines ensure that there are three spaces between the end of one string and the start of the next
+    sb.append("\n \n"); // Two additional newlines ensure that there are three spaces between the end of
+                        // one string and the start of the next
     joystick0String = sb.toString();
     sb.setLength(0);
 

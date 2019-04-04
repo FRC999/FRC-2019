@@ -53,7 +53,6 @@ public class Robot extends TimedRobot {
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
   MagicRobotCameras CAMERAS = new MagicRobotCameras();
 
-
   int xVal;
   int yVal;
   int hVal;
@@ -79,16 +78,14 @@ public class Robot extends TimedRobot {
   boolean frontClimberToggle;
   boolean backClimberToggle;
   // The indexOf method returns -1 if it can't find the char in the string
-  
 
-/*
-  WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
-  WPI_VictorSPX driveMiddleLeft = new WPI_VictorSPX(5);
-  WPI_VictorSPX driveBackLeft = new WPI_VictorSPX(6);
-  WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
-  WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2);
-  WPI_VictorSPX driveBackRight = new WPI_VictorSPX(3);
-*/
+  /*
+   * WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4); WPI_VictorSPX
+   * driveMiddleLeft = new WPI_VictorSPX(5); WPI_VictorSPX driveBackLeft = new
+   * WPI_VictorSPX(6); WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
+   * WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2); WPI_VictorSPX
+   * driveBackRight = new WPI_VictorSPX(3);
+   */
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
   WPI_TalonSRX driveMiddleLeft = new WPI_TalonSRX(5);
   WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(6);
@@ -103,7 +100,7 @@ public class Robot extends TimedRobot {
   int elevatorMax = 15000;
   double elevatorSpeed = .25;
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
-  
+
   double cargoSpeed = .25;
   double hatchSpeed = .25;
 
@@ -120,6 +117,7 @@ public class Robot extends TimedRobot {
   double turn;
   MagicVision VISION = new MagicVision();
   ExtraUtilities UTILITY = new ExtraUtilities();
+
   @Override
   public void robotInit() {
     comp.setClosedLoopControl(true);
@@ -129,40 +127,35 @@ public class Robot extends TimedRobot {
     try {
       arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
-    } 
-    catch (Exception e) {
-	  System.out.println("Couldn't connect to kUSB, trying kUSB1");
+    } catch (Exception e) {
+      System.out.println("Couldn't connect to kUSB, trying kUSB1");
       try {
         arduino = new SerialPort(bRate, SerialPort.Port.kUSB1);
         System.out.println("Connected to kUSB1");
-      }
-      catch (Exception e1){
+      } catch (Exception e1) {
         System.out.println("Couldn't Connect to kUSB1, trying kUSB2");
         try {
           arduino = new SerialPort(bRate, SerialPort.Port.kUSB2);
           System.out.println("Connected to kUSB2");
-        }
-        catch (Exception e2) {
+        } catch (Exception e2) {
           System.out.println("Not connected to any of the USB ports, trying MXP spot");
           try {
             arduino = new SerialPort(bRate, SerialPort.Port.kMXP);
             System.out.println("Connected to MXP port");
-          }
-          catch (Exception eMXP) {
+          } catch (Exception eMXP) {
             System.out.println("Not Connected to MXP port, trying Onboard");
             try {
               arduino = new SerialPort(bRate, SerialPort.Port.kOnboard);
-              System.out.println("Connected to Onboard");  
-            }
-            catch (Exception eOnboard){
+              System.out.println("Connected to Onboard");
+            } catch (Exception eOnboard) {
               System.out.println("Not connected to any ports on the RoboRIO");
-  
-            }  //catch (Exception eOnboard)
+
+            } // catch (Exception eOnboard)
           } // catch (Exception eMXP)
-        }  //catch (Exception e2)
-      }  //catch (Exception e1)
-    }  //catch (Exception e) 
-  } //robotInit()
+        } // catch (Exception e2)
+      } // catch (Exception e1)
+    } // catch (Exception e)
+  } // robotInit()
 
   @Override
   public void robotPeriodic() {
@@ -172,78 +165,82 @@ public class Robot extends TimedRobot {
 
     forward = INPUT.getDrive();
     turn = INPUT.getTurn();
-        
+
     intakePull = INPUT.isButtonOn(ButtonEnum.hatchIntake);
     intakePush = INPUT.isButtonOn(ButtonEnum.hatchOuttake);
     frontClimb = INPUT.isButtonOn(ButtonEnum.climbFront);
     visionButton = INPUT.isButtonOn(ButtonEnum.vision);
-    
+
     elevatorUp = INPUT.isButtonOn(ButtonEnum.elevatorUp);
     elevatorDown = INPUT.isButtonOn(ButtonEnum.elevatorDown);
   }
+
   @Override
   public void autonomousInit() {
     comp.setClosedLoopControl(true);
     rearClimber.set(Value.kReverse);
   }
+
   @Override
   public void autonomousPeriodic() {
     if (visionButton) {
       int x = VISION.parseVal(arduino, 2);
       VISION.track(leftSide, rightSide, x);
-      } else { 
-        chassisDrive.arcadeDrive(forward, turn);
+    } else {
+      chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
       System.out.println(elevatorPos);
-      /*if (elevatorUp) {
-        elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
-      } else if(elevatorDown) {
-        elevatorDriver.set(ControlMode.MotionMagic, 300);
-      } else {
-        elevatorDriver.set(0);
-      }
-      */
-        elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake)*hatchSpeed);
-        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
-        frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
-        rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
-        
-        //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
-        //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
+      /*
+       * if (elevatorUp) { elevatorDriver.set(ControlMode.MotionMagic,
+       * elevatorSetPoint); } else if(elevatorDown) {
+       * elevatorDriver.set(ControlMode.MotionMagic, 300); } else {
+       * elevatorDriver.set(0); }
+       */
+      elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown) * elevatorSpeed);
+      hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake) * hatchSpeed);
+      cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut) * cargoSpeed);
+      frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
+      rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+
+      // rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp,
+      // rearClimberDown));
+      // frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp,
+      // frontClimberDown)));
     } // no vision
-      } // teleopPeriodic
+  } // teleopPeriodic
+
   @Override
   public void teleopInit() {
     comp.setClosedLoopControl(true);
     rearClimber.set(Value.kReverse);
     chassisDrive.setSafetyEnabled(false);
   }
+
   @Override
   public void teleopPeriodic() {
     if (visionButton) {
       int x = VISION.parseVal(arduino, 2);
       VISION.track(leftSide, rightSide, x);
-      } else { 
-        chassisDrive.arcadeDrive(forward, turn);
+    } else {
+      chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
       System.out.println(elevatorPos);
-      /*if (elevatorUp) {
-        elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
-      } else if(elevatorDown) {
-        elevatorDriver.set(ControlMode.MotionMagic, 300);
-      } else {
-        elevatorDriver.set(0);
-      }
-      */
-        elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake)*hatchSpeed);
-        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
-        frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
-        rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+      /*
+       * if (elevatorUp) { elevatorDriver.set(ControlMode.MotionMagic,
+       * elevatorSetPoint); } else if(elevatorDown) {
+       * elevatorDriver.set(ControlMode.MotionMagic, 300); } else {
+       * elevatorDriver.set(0); }
+       */
+      elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown) * elevatorSpeed);
+      hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, intake) * hatchSpeed);
+      cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut) * cargoSpeed);
+      frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
+      rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
 
-        //rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp, rearClimberDown));
-        //frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp, frontClimberDown)));
+      // rearClimber.set(U.TwoButtonCheckerPneumatics(rearClimberUp,
+      // rearClimberDown));
+      // frontClimber.set((U.TwoButtonCheckerPneumatics(frontClimberUp,
+      // frontClimberDown)));
     } // no vision
-      } // teleopPeriodic
-    } // Robot
+  } // teleopPeriodic
+} // Robot
