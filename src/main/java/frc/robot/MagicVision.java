@@ -132,7 +132,12 @@ public class MagicVision {
       case 1:
               if (parseVal(arduino, 1) == -1) // if it does not see a vision target
               { Robot.chassisDrive(0,0.2);}// rotate arbitrarily
-              else if () {// if robot center is pointed at the center of the hatch
+        /* else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 - 10))
+        Robot.chassisDrive(0,0.2);
+        else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 + 10)
+        Robot.chassisDrive(0, - 0.2);  // might want to swap minus signs with the other one
+        */
+              else {// if robot center is pointed at the center of the hatch
               
                 if (parseVal(arduino, 7) > 800 && parseVal(arduino, 9 > 800)) {
                 distanceToHatch = (parseVal(arduino, 6) +parseVal(arduino, 8))/2;
@@ -146,13 +151,15 @@ public class MagicVision {
               } // else if robot center is pointed at from the hatch
       break;
       case 2:
-      // d = distanceToHatch + Math.abs( new encoder distance);
+      // d = distanceToHatch + 
+        //(2 * Math.PI * wheelRadiusMillimeters * Math.abs(Robot.driveFrontLeft.getSelectedSensorPosition() + Robot.driveFrontRight.getSelectedSensorPosition())/2);
       // if d > predeterminedArbitraryDistance
       //{Robot.chassisDrive.arcadeDrive(0,0); pathStages = 3;}
       // else {Robot.chassisDrive.arcadeDrive(-0.3, 0);}
       break;
       case 3:
-      /* d = distanceToHatch + Math.abs( new encoder distance);
+      /* d = distanceToHatch + 
+       (2 * Math.PI * wheelRadiusMillimeters * Math.abs(Robot.driveFrontLeft.getSelectedSensorPosition() + Robot.driveFrontRight.getSelectedSensorPosition())/2);
       if ((Angle2 + AngleToHatch + MinimumTurnableAngle) >= 2* Math.PI)
        Angle2 = 180 - angleToHatch - minAccAngle;
        
