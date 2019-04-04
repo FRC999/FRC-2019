@@ -1,13 +1,13 @@
 package frc.robot;
 
-import java.util.concurrent.TimeUnit;
+//import java.util.concurrent.TimeUnit; // Never used
 
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 
 public class MagicVision {
   private int bRate;
-  private int counting = 0;
+  private int counting = 0; // Never used?
   private int xVal; //In order of appearance
   private int yVal;
   private int wVal;
@@ -23,7 +23,7 @@ public class MagicVision {
   private int startOfDataStream;
   private int endOfDataStream;
   private int blocksSeen;
-  private SerialPort arduinoPort;
+  //private SerialPort arduinoPort; // Never Used
   final int leftMax = 154;
   final int rightMax = 162;
   boolean left;
@@ -31,6 +31,7 @@ public class MagicVision {
   boolean middle;
   boolean backwards;
   public void removeFreakingAnnoyingVSCodeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
+
   public MagicVision(int baud, int stop) {
     counting = 0;
     bRate = baud;
@@ -45,7 +46,7 @@ public class MagicVision {
     blocksSeen = 0;
     arduinoCounter = 0;
     stopDistance = stop;
-    confidenceThreshold = 500;
+    confidenceThreshold = 50; // for distance sensors
     delayCount = 1;
   }
 
@@ -80,12 +81,14 @@ public class MagicVision {
     rConfVal = 0;
     blocksSeen = 0;
     arduinoCounter = 0;
-    stopDistance = 200;
-    confidenceThreshold = 500;
+    stopDistance = 20;
+    confidenceThreshold = 50; // for distance sensors
     delayCount = 1;
 
   }
-  public SerialPort startArduino() {
+
+  public SerialPort startArduino(int baud) {
+    bRate = baud;
     try {
       SerialPort arduino = new SerialPort(bRate, SerialPort.Port.kUSB);
       System.out.println("Connected to kUSB");
@@ -116,6 +119,8 @@ public class MagicVision {
       }
     }
   }
+
+// *** is this used? ***
   /**
    * Primary parser: Other methods are for legacy reasons and for edge cases
    */
@@ -175,6 +180,7 @@ public class MagicVision {
       return false;
     }
   }
+
   public String[] getArray(SerialPort a) {
   String targetPosition = a.readString();
     int startOfDataStream = targetPosition.indexOf("B");
@@ -190,23 +196,21 @@ public class MagicVision {
     }
     return null;
   }
+
+
   /**
    * Legacy parsers, kept in case we want to update one value without messing with the others
    * NVM, killing it with fire because that is the magic of GIT
    */
   public int[] parseVal(SerialPort a, int val, int dist1, int conf1, int dist2, int conf2) {
-    //  System.out.println("GOT TO PARSEVAL");
+    //System.out.println("GOT TO PARSEVAL");
     String targetPosition = a.readString();
-   // for (int i = 0; i < 100000; i++) {}
-    if (targetPosition.length() < 12) {
-    } else {
-  //  System.out.println(targetPosition);
+    //System.out.println(targetPosition);
     int startOfDataStream = targetPosition.indexOf("B");
     int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
     // The indexOf method returns -1 if it can't find the char in the string
     if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
       targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-   //   System.out.println(targetPosition);
       if (targetPosition.startsWith("Block")) {
         String[] positionNums = targetPosition.split(":");
         // positionNums[0] would be "Block
@@ -226,76 +230,79 @@ public class MagicVision {
         System.out.println("Bad String from Arduino: Doesn't start with Block");
       }
     } else {
-      System.out.println(startOfDataStream +" "+ endOfDataStream);
+      //System.out.println(startOfDataStream +" "+ endOfDataStream);
       System.out.println("Bad String from Arduino: no carriage return character or too short");
     }
-  }
-  int [] ans = new int [] {-1,-1,-1,-1,-1};
+  int [] ans = new int [] {-1,-1,-1,-1,-1}; // Parser failed
   return ans;
   }
+
+
   public void trackWithVision (SerialPort a, SpeedControllerGroup l, SpeedControllerGroup r, int val, int distLeft, int confLeft, int distRight, int confRight, int minDist, int minConf, double speed) {
-    if(confLeft > minConf && confRight > minConf) {
-      if (distLeft > minDist && distLeft > minDist) {
-      if (val < leftMax && val > 0) {
-        left = true;
-        middle = false;
-        right = false;
-        backwards = false;
-      } else if (val > leftMax && val < rightMax) {
-        left = false;
-        middle = true;
-        right = false;
-        backwards = false;
-      } else if (val > rightMax && val < 316) {
-        left = false;
-        middle = false;
-        right = true;
-        backwards = false;
-      } else {
-        left = false;
-        middle = false;
-        right = false;
-        backwards = false;
-      }
-    } else {
-      if (val < leftMax && val > 0) {
-        left = false;
-        middle = false;
-        right = true;
-        backwards = false;
-      } else if (val > leftMax && val < rightMax) {
-        left = false;
-        middle = false;
-        right = false;
-        backwards = true;
-      } else if (val > rightMax && val < 316) {
-        left = false;
-        middle = false;
-        right = true;
-        backwards = false;
-      } else {
-        left = false;
-        middle = false;
-        right = false;
-        backwards = false;
-      }
-    }
-  }
-  if (left) {
-    l.set(0);
-    r.set(speed);
-  } else if (middle) {
-    l.set(-speed);
-    r.set(speed);
-  } else if (right) {
-    l.set(-speed);
-    r.set(0);
-  } else if (backwards) {
-    l.set(speed);
-    r.set(-speed);
-  } else {
-    l.set(0);
-    r.set(0);
-  }
-}
+    //if(confLeft > minConf && confRight > minConf) {
+      if (distLeft > minDist && distRight > minDist) { // *** changed one distLeft to distRight
+        if (val < leftMax && val > 0) {// heading left of target
+          left = true;
+          middle = false;
+          right = false;
+          backwards = false;
+        } else if (val >= leftMax && val <= rightMax) {// heading to target -- leftMax and rightMax represent the boundries of the desired target window
+            left = false;
+            middle = true;
+            right = false;
+            backwards = false;
+          } else if (val > rightMax && val < 316) { //heading right of target
+              left = false;
+              middle = false;
+              right = true;
+              backwards = false;
+            } else {// should not get here
+              left = false;
+              middle = false;
+              right = false;
+              backwards = false;
+            }
+      } else {// we are close to target
+          if (val < leftMax && val > 0) {// Left of target
+            left = false;
+            middle = false;
+            right = true;
+            backwards = false;// should this be true?
+          } else if (val > leftMax && val < rightMax) {// heading to target
+            left = false;
+            middle = false;
+            right = false;
+            backwards = false; // changed from true. We are at target and can stop
+            } else if (val > rightMax && val < 316) {//right of target
+                left = false;
+                middle = false;
+                right = true;
+                backwards = false;// should this be true?
+              } else {// should not get here
+                left = false;
+                middle = false;
+                right = false;
+                backwards = false;
+                }
+        }
+      //}
+      // for left motors negative speed is forward?  is this different between 2018 and 2019 robots?
+      if (left) {
+        l.set(0);
+        r.set(speed);
+      } else if (middle) {
+          l.set(-speed);
+          r.set(speed);
+        } else if (right) {
+            l.set(-speed);
+            r.set(0);
+          } else if (backwards) {
+              l.set(speed);
+              r.set(-speed);
+            } else {
+                l.set(0);
+                r.set(0);
+            }
+ }
+ 
 }
