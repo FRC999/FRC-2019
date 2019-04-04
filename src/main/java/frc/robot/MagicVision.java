@@ -34,6 +34,7 @@ public class MagicVision {
   final int widthOfPixyInPixels = 316;
   final int heightOfPixyInPixels = 208;
   final double xRadiansPerPixel = pixyXFieldOfViewRadians/ widthOfPixyInPixels;
+  final double distanceBetweenDistanceSensorsCm = 80-2.5;
   
   public MagicVision() {
   }
@@ -119,6 +120,8 @@ public class MagicVision {
   }// end track()
 
  private int pathStages= 1;
+ private double distanceToHatch;
+ private double angleToHatch;
 /** Objective: get the robot parallel to the hatch.
  * uses vision to locate the rightmost avaliable vision target, orient using it and two distance sensors, drive backwards, 
  * then follow a pathto get to the hatch straight.
@@ -128,15 +131,33 @@ public class MagicVision {
     switch (pathStages) {
       case 1:
               if (parseVal(arduino, 1) == -1) // if it does not see a vision target
-              { }// rotate
+              { Robot.chassisDrive(0,0.2);}// rotate arbitrarily
               else if () {// if robot center is pointed at the center of the hatch
-                
-
-              } // else from if  (parseVal(arduino, 1) == -1)
+              
+                if (parseVal(arduino, 7) > 800 && parseVal(arduino, 9 > 800)) {
+                distanceToHatch = (parseVal(arduino, 6) +parseVal(arduino, 8))/2;
+                angleToHatch = Math.arcTan(    (distanceBetweenDistanceSensorsCm * 10)/ 
+                               (Math.abs(parseVal(arduino, 6) - parseVal(arduino, 8))) );
+                Robot.zeroDriveEncoders();
+                pathStages = 2;
+                }// if confvals are greater than 800
+                else 
+              {System.out.println("get closer, within distance sensor range");}
+              } // else if robot center is pointed at from the hatch
       break;
       case 2:
+      // d = distanceToHatch + Math.abs( new encoder distance);
+      // if d > predeterminedArbitraryDistance
+      //{Robot.chassisDrive.arcadeDrive(0,0); pathStages = 3;}
+      // else {Robot.chassisDrive.arcadeDrive(-0.3, 0);}
       break;
       case 3:
+      /* d = distanceToHatch + Math.abs( new encoder distance);
+      if ((Angle2 + AngleToHatch + MinimumTurnableAngle) >= 2* Math.PI)
+       Angle2 = 180 - angleToHatch - minAccAngle;
+       
+       A = d * Math.sin(angleToHatch) / Math.sin(angle2);
+       B = */
       break;
       case 4:
       break;

@@ -76,12 +76,12 @@ public class Robot extends TimedRobot {
   WPI_VictorSPX driveMiddleRight = new WPI_VictorSPX(2);
   WPI_VictorSPX driveBackRight = new WPI_VictorSPX(3);
 */
-  WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
-  WPI_TalonSRX driveMiddleLeft = new WPI_TalonSRX(5);
-  WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(6);
-  WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
-  WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
-  WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
+   static WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
+ static WPI_TalonSRX driveMiddleLeft = new WPI_TalonSRX(5);
+  static WPI_TalonSRX driveBackLeft = new WPI_TalonSRX(6);
+ static WPI_TalonSRX driveFrontRight = new WPI_TalonSRX(1);
+  static WPI_TalonSRX driveMiddleRight = new WPI_TalonSRX(2);
+ static  WPI_TalonSRX driveBackRight = new WPI_TalonSRX(3);
 
   int elevatorSetPoint = 5000;
   int elevatorMin = 100;
@@ -89,9 +89,9 @@ public class Robot extends TimedRobot {
 
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
 
-  SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
-  SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
-  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
+  static SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFrontLeft, driveMiddleLeft, driveBackLeft);
+  static SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFrontRight, driveMiddleRight, driveBackRight);
+  static DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
 
   DoubleSolenoid MOAC = new DoubleSolenoid(0, 7);
   DoubleSolenoid lowClimber = new DoubleSolenoid(1, 6);
@@ -287,4 +287,10 @@ if (visionButton) {
         lowClimber.set((U.TwoButtonCheckerPneumatics(smallClimberUp, smallClimberDown)));
     } // no vision
       } // teleopPeriodic
+
+      public static void zeroDriveEncoders() {
+        driveFrontLeft.setSelectedSensorPosition(0);
+         driveFrontRight.setSelectedSensorPosition(0);}
+      public static WPI_TalonSRX getDriveFrontRight() {return driveFrontRight;}
+
     } // Robot
