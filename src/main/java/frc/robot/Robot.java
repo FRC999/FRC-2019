@@ -45,6 +45,7 @@ public class Robot extends TimedRobot {
   boolean syringePull;
   boolean syringePush;
   boolean visionButton;
+  boolean autoHatchCenter;
 
   int xVal;
   int yVal;
@@ -163,6 +164,7 @@ public class Robot extends TimedRobot {
     turn = turnStick.getRawAxis(0);
     elevatorUp = driveStick.getRawButton(8);
     elevatorDown = driveStick.getRawButton(7);
+    autoHatchCenter = turnStick.getRawButton(3);
   }
   @Override
   public void autonomousInit() {
@@ -270,7 +272,9 @@ if (visionButton) {
     if (visionButton) {
       int x = V.parseVal(arduino, 2);
       V.track(leftSide, rightSide, x);
-      } else { 
+      } else if (autoHatchCenter)
+      {V.hatchPathExecutor(arduino, driveFrontLeft, driveFrontRight, chassisDrive);}
+      else { 
         chassisDrive.arcadeDrive(forward, turn);
       int elevatorPos = elevatorDriver.getSelectedSensorPosition();
       System.out.println(elevatorPos);
@@ -286,6 +290,9 @@ if (visionButton) {
         MOAC.set(U.TwoButtonCheckerPneumatics(MOACUp, MOACDown));
         lowClimber.set((U.TwoButtonCheckerPneumatics(smallClimberUp, smallClimberDown)));
     } // no vision
+
+    if (autoHatchCenter)
+    {V.hatchPathExecutor(arduino, driveFrontLeft, driveFrontRight, chassisDrive);}
       } // teleopPeriodic
 
       
