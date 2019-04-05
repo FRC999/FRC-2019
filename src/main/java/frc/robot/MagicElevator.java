@@ -21,7 +21,7 @@ public class MagicElevator extends MagicPIDMotor{
    * @param the The intake to be updated when targets change
    */
   public MagicElevator(int port) {
-    super( 2.54*2*Math.PI,   1,   .2, .0, .2, .2,   0.1,       0,     port,      eOffsetHeight, -4096, 4096); // numbers are made up
+    super( 2.54*2*Math.PI,   1,  .001, 0, 0,  0,   0.1,       0,     port,      eOffsetHeight, -4096, 4096); // numbers are made up
     //      circum.       gearRat  P   D   I   F  peakOutput  slot#   talon#       start pt.     min    max
   }
 

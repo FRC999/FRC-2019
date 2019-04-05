@@ -1,10 +1,5 @@
 package frc.robot;
 public enum ButtonEnum {
-    intakeIn(0, 1),
-    intakeOut(0, 2),
-    Three(0, 3, false), 
-    Cog(0,4,true), 
-    testBool(0,5,false),
 
     hatchIntake(1,3),
     hatchOuttake(1,5),
@@ -26,7 +21,11 @@ public enum ButtonEnum {
     elevatorMidBall(2,9, EncoderPresets.midBall), 
     elevatorHighBall(2,7, EncoderPresets.highBall),
     elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), 
-    elevatorRetract(2,3, EncoderPresets.retract);
+    elevatorRetract(2,3, EncoderPresets.retract),
+
+    moveElevator (0,1),
+    tunePidValUp(0,3),
+    tunePidValDown(0,5);
   
   final private int buttonNum;
   final private int joystickNum;
