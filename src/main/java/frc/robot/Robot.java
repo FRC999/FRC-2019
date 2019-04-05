@@ -85,7 +85,7 @@ public class Robot extends TimedRobot {
   int rDist;
   int rConf;
   double speed = .25;
-  int minDist = 60; // in mm
+  int minDist = 1000; // in mm
   int minConf = 50;
 
   // Joysticks

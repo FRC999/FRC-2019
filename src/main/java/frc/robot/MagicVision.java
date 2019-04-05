@@ -24,8 +24,8 @@ public class MagicVision {
   private int endOfDataStream;
   private int blocksSeen;
   //private SerialPort arduinoPort; // Never Used
-  final int leftMax = 154;
-  final int rightMax = 162;
+  final int leftMax = 130;
+  final int rightMax = 170;
   boolean left;
   boolean right;
   boolean middle;
@@ -272,7 +272,7 @@ public class MagicVision {
             left = false;
             middle = false;
             right = false;
-            backwards = false; // changed from true. We are at target and can stop
+            backwards = true; // changed from true. We are at target and can stop
             } else if (val > rightMax && val < 316) {//right of target
                 left = false;
                 middle = false;
@@ -282,21 +282,21 @@ public class MagicVision {
                 left = false;
                 middle = false;
                 right = false;
-                backwards = false;
+                backwards = true;
                 }
         }
       //}
       // for left motors negative speed is forward?  is this different between 2018 and 2019 robots?
       if (!backwards) {
         if (left) {
-          l.set(speed);
+          l.set(-speed);
           r.set(0);
         } else if (middle) {
             l.set(-speed);
             r.set(speed);
           } else if (right) {
               l.set(0);
-              r.set(-speed);
+              r.set(speed);
             } else {
                 l.set(0);
                 r.set(0);
@@ -304,17 +304,17 @@ public class MagicVision {
       } else {
         if (left) {
           l.set(0);
-          r.set(-speed);
+          r.set(speed);
         } else if (middle) {
-            l.set(0);
-            r.set(0);
-          } else if (right) {
             l.set(speed);
-            r.set(0);
+            r.set(-speed);
+          } else if (right) { 
+              l.set(speed);
+              r.set(0);
             } else {
                 l.set(0);
                 r.set(0);
             }
-      }
-}
+        } 
+    }
 }
