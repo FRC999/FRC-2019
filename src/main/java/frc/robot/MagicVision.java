@@ -3,6 +3,12 @@ package frc.robot;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
+import javax.lang.model.util.ElementScanner6;
+
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.kauailabs.navx.frc.AHRS;
 
 public class MagicVision {
   String [] positionNums;
@@ -35,7 +41,7 @@ public class MagicVision {
   final int heightOfPixyInPixels = 208;
   final double xRadiansPerPixel = pixyXFieldOfViewRadians/ widthOfPixyInPixels;
   final double distanceBetweenDistanceSensorsCm = 80-2.5;
-  final double wheelDiametermm = 76.2; // 3 in * 25.4 mm/in
+  final double wheelRadiusmm = 76.2; // 3 in * 25.4 mm/in
   
   public MagicVision() {
   }
@@ -123,6 +129,18 @@ public class MagicVision {
  private int pathStages= 1;
  private double distanceToHatch;
  private double angleToHatch;
+ private double angleToHatchDegrees;
+ private double predeterminedArbitraryDist = 3000;// in mm
+ double angle2 = Math.PI/4;
+ double minAccAngle = Math.PI/12;
+ double initialNavXAngle;
+ double initialVisionAngle;
+ double angle1;
+ double A;
+ double B;
+ double d;
+ AHRS navX = new AHRS(SerialPort.Port.kMXP);
+ 
 /** Objective: get the robot parallel to the hatch.
  * uses vision to locate the rightmost avaliable vision target, orient using it and two distance sensors, drive backwards, 
  * then follow a pathto get to the hatch straight.
@@ -133,16 +151,16 @@ public class MagicVision {
       case 1:
               if (parseVal(arduino, 1) == -1) // if it does not see a vision target
               { drive.arcadeDrive(0,0.2);}// rotate arbitrarily
-        /* else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 - 10))
+        else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 - 10))
         drive.arcadeDrive(0,0.2);
-        else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 + 10)
+        else if (parseVal(arduino, 2) < (widthOfPixyInPixels/2 + 10))
         drive.arcadeDrive(0, - 0.2);  // might want to swap minus signs with the other one
-        */
+        
               else {// if robot center is pointed at the center of the hatch
               
-                if (parseVal(arduino, 7) > 800 && parseVal(arduino, 9 > 800)) {
+                if (parseVal(arduino, 7) > 800 && (parseVal(arduino, 9) > 800)) {
                 distanceToHatch = (parseVal(arduino, 6) +parseVal(arduino, 8))/2;
-                angleToHatch = Math.arcTan(    (distanceBetweenDistanceSensorsCm * 10)/ 
+                angleToHatch = Math.atan(    (distanceBetweenDistanceSensorsCm * 10)/ 
                                (Math.abs(parseVal(arduino, 6) - parseVal(arduino, 8))) );
                 encoderTalon1.setSelectedSensorPosition(0);
                 encoderTalon2.setSelectedSensorPosition(0);
@@ -154,26 +172,104 @@ public class MagicVision {
               } // else if robot center is pointed at from the hatch
       break;
       case 2:
-      // d = distanceToHatch + 
-        //(2 * Math.PI * wheelRadiusmm * Math.abs(encoderTalon1.getSelectedSensorPosition() + encoderTalon2.getSelectedSensorPosition())/2);
-      // if d > predeterminedArbitraryDistance
-      //{drive.arcadeDrive(0,0); pathStages = 3;}
-      // else {drive.arcadeDrive(-0.3, 0);}
+       d = distanceToHatch + 
+        (2 * Math.PI * wheelRadiusmm * Math.abs(encoderTalon1.getSelectedSensorPosition() + encoderTalon2.getSelectedSensorPosition())/2);
+       if (d > predeterminedArbitraryDist)
+         {drive.arcadeDrive(0,0); pathStages = 3;
+           initialNavXAngle = (double) navX.getPitch();
+          initialVisionAngle = parseVal(arduino, 2)*xRadiansPerPixel;
+          }
+       else {drive.arcadeDrive(-0.3, 0);}
       break;
       case 3:
-      /* d = distanceToHatch + 
+       d = distanceToHatch + 
        (2 * Math.PI * wheelRadiusmm * Math.abs(encoderTalon1.getSelectedSensorPosition() + encoderTalon2.getSelectedSensorPosition())/2);
-      if ((Angle2 + AngleToHatch + MinimumTurnableAngle) >= 2* Math.PI)
-       Angle2 = 2 * Math.PI - angleToHatch - minAccAngle;
-       
+      if ((Math.abs(angle2) + Math.abs(angleToHatch) + Math.abs(minAccAngle)) >= Math.PI)
+      { angle2 =  Math.PI - Math.abs(angleToHatch) - Math.abs(minAccAngle);}
+      angle1 = (Math.PI - Math.abs(angleToHatch) - Math.abs(angle2));
+
        A = d * Math.sin(angleToHatch) / Math.sin(angle2);
-       B = d * Math.sin(2 * Math.PI - angleToHatch - angle2) / Math.sin() ;*/
+       B = d * Math.sin( angle1) / Math.sin(angle2) ;
+
+       double differenceInNavXAngles = 2 * Math.PI * (navX.getPitch() - initialNavXAngle)/360;
+       double differenceInVisionAngles = parseVal(arduino, 2)- initialVisionAngle ;
+       //turn angle1 degrees towards the hatch, away from the vision target, using NavX and/or vision to tell when to stop
+              //comment in and out these if statements to switch between them.
+              if (angle1 > 0) {
+              //if (differenceInNavXAngles < (1.05*angle1) && differenceInNavXAngles > (0.95*angle1))
+              if (differenceInVisionAngles < (1.05*angle1) && differenceInVisionAngles > (0.95*angle1))
+              {
+                drive.arcadeDrive(0,0);
+                pathStages = 4;
+                encoderTalon1.setSelectedSensorPosition(0);
+                encoderTalon2.setSelectedSensorPosition(0);
+              } //if has turned angle1
+              else
+              {drive.arcadeDrive(0, 0.2);}
+            } // if (angle1>0)
+            else {
+            //   if (differenceInNavXAngles > (1.05*angle1) && differenceInNavXAngles < (0.95*angle1))
+             if ((differenceInVisionAngles > (1.05*angle1)) && (differenceInVisionAngles < (0.95*angle1)))
+             {
+               drive.arcadeDrive(0,0);
+               pathStages = 4;
+               encoderTalon1.setSelectedSensorPosition(0);
+                encoderTalon2.setSelectedSensorPosition(0);
+             } //if has turned angle1
+             else
+             {drive.arcadeDrive(0, -0.2);}
+           } // if (angle1<0)
       break;
       case 4:
+      if ((encoderTalon1.getSelectedSensorPosition()+encoderTalon2.getSelectedSensorPosition())/2 < 0.95 * A)
+      drive.arcadeDrive(0.2, 0);
+      else 
+      {drive.arcadeDrive(0,0);
+      pathStages = 5;
+      initialNavXAngle = (double) navX.getPitch();
+      initialVisionAngle = parseVal(arduino, 2)*xRadiansPerPixel;}
+
       break;
       case 5:
+      // turn Math.PI - angle2
+       differenceInNavXAngles = Math.PI * (navX.getPitch() - initialNavXAngle)/180;
+       differenceInVisionAngles = parseVal(arduino, 2)- initialVisionAngle ;
+
+      if (parseVal(arduino, 2) > 0) {
+        if (differenceInNavXAngles < (1.05*(Math.PI - angle2)) && differenceInNavXAngles > (0.95*(Math.PI - angle2)))
+        //if (differenceInVisionAngles < (1.05*(Math.PI - angle2)) && differenceInVisionAngles > (0.95*(Math.PI - angle2)))
+        {
+          drive.arcadeDrive(0,0);
+          pathStages = 6;
+          encoderTalon1.setSelectedSensorPosition(0);
+          encoderTalon2.setSelectedSensorPosition(0);
+        } //if has turned pi - angle2
+        else
+        {drive.arcadeDrive(0, 0.2);}
+      } // if ()
+      else if (parseVal(arduino, 2) < 0) {
+      //   if (differenceInNavXAngles > (1.05*(Math.PI - angle2)) && differenceInNavXAngles < (0.95*(Math.PI - angle2)))
+       if ((differenceInVisionAngles > (1.05*(Math.PI - angle2))) && (differenceInVisionAngles < (0.95*(Math.PI - angle2))))
+       {
+         drive.arcadeDrive(0,0);
+         pathStages = 6;
+         encoderTalon1.setSelectedSensorPosition(0);
+         encoderTalon2.setSelectedSensorPosition(0);
+       } //if has turned angle1
+       else
+       {drive.arcadeDrive(0, -0.2);}
+     } // if (angle1<0)
       break;
+      case 6:
+      if ((encoderTalon1.getSelectedSensorPosition() + encoderTalon2.getSelectedSensorPosition())/2 < 0.5 * B)
+      {drive.arcadeDrive(0.2, 0);
+      break;}
+      else 
+      drive.arcadeDrive(0,0);
+
       default:
+      pathStages = 1;
+      System.out.println("hatch straighten method done");
       break; }
   }
 }// end class
