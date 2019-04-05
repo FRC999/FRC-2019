@@ -133,7 +133,7 @@ public class Robot extends TimedRobot {
   int elevatorSetPoint = 5000;
   int elevatorMin = 100;
   int elevatorMax = 15000;
-  double elevator_kP = .15; // Start at .001, guessing it will be around .1 - .15
+  double elevator_kP = .001; // Start at .001, guessing it will be around .1 - .15
   double elevator_kI = 0;
   double elevator_kD = 0;
   double elevator_kF = 0;
@@ -336,4 +336,31 @@ public class Robot extends TimedRobot {
         
     } // no vision
   } // teleopPeriodic
+
+  public void testInit(){
+    ButtonListMaker but = new ButtonListMaker();
+    but.buildStrings();
+
+    System.out.println("Buttons:");
+    System.out.println(but.joystick0String);
+    System.out.println(but.joystick1String);
+    System.out.println(but.joystick1String);
+
+    elevatorDriver.setNeutralMode(NeutralMode.Coast);
+  }
+  public void testPeriodic(){
+    if (JOYSTICKINPUT.isButtonOn(ButtonEnum.tunePidValUp)){
+      elevator_kP += .001;
+      elevatorDriver.config_kP(0,elevator_kP);
+      System.out.println(elevator_kP);
+    }
+    if (JOYSTICKINPUT.isButtonOn(ButtonEnum.tunePidValDown)){
+      elevator_kP += .001;
+      elevatorDriver.config_kP(0,elevator_kP);
+      System.out.println(elevator_kP);
+    }
+    if (JOYSTICKINPUT.isButtonOn(ButtonEnum.moveElevator)){
+      elevatorDriver.set(ControlMode.MotionMagic, 4096*10 );
+    }
+  }
 } // Robot

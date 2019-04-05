@@ -104,8 +104,8 @@ public class MagicPIDMotor {
     talon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, kPIDLoopIdx, kTimeoutMs);
 
     /* Set relevant frame periods to be at least as fast as periodic rate */
-		talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 10, kTimeoutMs);
-		talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 10, kTimeoutMs);
+		talon.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 30, kTimeoutMs);
+		talon.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 30, kTimeoutMs);
 
 		/* Set the peak and nominal outputs */
 		talon.configNominalOutputForward(0, kTimeoutMs);
@@ -131,41 +131,33 @@ public class MagicPIDMotor {
   /**
    * Zero managed sensor
    */
-  public void zeroSensor(){
-    talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);
-  }
+  public void zeroSensor(){talon.setSelectedSensorPosition(0, kPIDLoopIdx, kTimeoutMs);}
 
   /**
    * Re-set sensor to another value
    */
-  public void setSensor (int set){
-    talon.setSelectedSensorPosition(set, kPIDLoopIdx, kTimeoutMs);
-  }
+  public void setSensor (int set){talon.setSelectedSensorPosition(set, kPIDLoopIdx, kTimeoutMs);}
 
   /**
    * Converts centimeters to the native Talon units for elevator PID use
    * @param input Centimeter height of the elevator (off the ground? not? more testing!)
    * @return the desired motor value
    */
-  public int convertToNativeUnits(double input){
-    return (int) (stepsPerRotation * (input/circumference) * gearRatio);
-  }
+  public int convertToNativeUnits(double input){return (int) (stepsPerRotation * (input/circumference) * gearRatio);}
 
     /**
    * Converts native units to centimeters, for logging and puting back in MagicOutput.
    * @param input native talon units for conversion
    * @return centimer height of elevator (off the ground?), iff I got my math right
    */
-  public double convertFromNativeUnits(int input){
-    return (double) ((input*circumference) / stepsPerRotation / gearRatio); //Yes, I checked my math
-  }
+  public double convertFromNativeUnits(int input){return (double) ((input*circumference) / stepsPerRotation / gearRatio);} //Yes, I checked my math}
 
   /**
    * sets the talon's neutral mode to brake, and starts braking
    */
   public void freeze(){
     talon.setNeutralMode(NeutralMode.Brake);
-    talon.set(0);
+    talon.neutralOutput();
   }
 
   /**
@@ -173,7 +165,7 @@ public class MagicPIDMotor {
    */
   public void slide(){
     talon.setNeutralMode(NeutralMode.Coast);
-    talon.set(0);
+    talon.neutralOutput();
   }
 
   /** 
@@ -194,9 +186,7 @@ public class MagicPIDMotor {
     if(curTargetNU != getCurrentPos()){
       talon.set(ControlMode.MotionMagic, curTargetNU);
     }
-    else {
-      freeze();
-    }
+    else {freeze();}
   }
 
   /**
@@ -237,10 +227,7 @@ public class MagicPIDMotor {
   /**
    *  Validates existing target, updating it if necessary
    */
-  public void validateTarget(){
-    validateTarget(curTargetNU);
-
-  }
+  public void validateTarget(){validateTarget(curTargetNU);}
 
   /**
    * Sets target to be the starting position, and starts motion
@@ -254,9 +241,7 @@ public class MagicPIDMotor {
    * Gets the current MotionMagic target
    * @return current target in native units
    */
-  public int getTarget (){
-    return curTargetNU;
-  }
+  public int getTarget (){return curTargetNU;}
 
   /**
    * Increases the target by the imputed amount
@@ -305,6 +290,7 @@ public class MagicPIDMotor {
     PRINTER.addToPrint(Integer.toString(curTargetNU));
     PRINTER.addToPrint(" Current Position: ");
     PRINTER.addToPrint(Integer.toString(currentPos));
+    PRINTER.printMagicLine();
   }
 
 }
