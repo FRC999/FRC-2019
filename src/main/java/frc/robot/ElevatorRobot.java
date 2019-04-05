@@ -47,28 +47,28 @@ public class ElevatorRobot extends TimedRobot {
   WPI_TalonSRX driveMR = new WPI_TalonSRX(5); // middle right tank drive motor
   WPI_TalonSRX driveRR = new WPI_TalonSRX(6); // rear right tank drive motor
   WPI_TalonSRX elevator = new WPI_TalonSRX(8);// elevator
-  //WPI_TalonSRX rotator = new WPI_TalonSRX(11); 
+  //WPI_TalonSRX rotator = new WPI_TalonSRX(11);
   //WPI_TalonSRX intakeL = new WPI_TalonSRX(10);
   //WPI_TalonSRX intakeR = new WPI_TalonSRX(12);
   Joystick leftStick = new Joystick(0);
   Joystick rightStick = new Joystick(1);
-  Joystick copilotStick = new Joystick(2); 
+  Joystick copilotStick = new Joystick(2);
   boolean elevatorUp;
   boolean elevatorDown;
   //boolean runRotator;
   //boolean runRotatorMax;
   //boolean runElevator;
-  //boolean runBoth;  
+  //boolean runBoth;
   //boolean intake;
   //boolean outtake;
   boolean rotateManual;
   double intakeSpeed = .5;
-  
+
   //double elevatorSpeed = -0.25;
   //double rotatorSpeed = .25;
   SpeedControllerGroup leftSide = new SpeedControllerGroup(driveFL, driveML, driveRL);
   SpeedControllerGroup rightSide = new SpeedControllerGroup(driveFR, driveMR, driveRR);
-  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide); 
+  DifferentialDrive chassisDrive = new DifferentialDrive(leftSide, rightSide);
   boolean zeroRotator;
   boolean zeroElevator;
   int elevatorMin = 100;
@@ -84,21 +84,21 @@ public class ElevatorRobot extends TimedRobot {
     //rotator.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
   }
 
-  @Override 
+  @Override
   public void autonomousInit() {
-  
+
   }
   @Override
   public void autonomousPeriodic() {
     forward = (leftStick.getRawAxis(1))*-1 ;
-    turn = rightStick.getRawAxis(0);    
+    turn = rightStick.getRawAxis(0);
     chassisDrive.arcadeDrive(forward, turn);
   }
 
   @Override
   public void teleopInit() {
     intakeSolenoid.set(DoubleSolenoid.Value.kReverse); // want it to stay closed
-    elevator.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);  
+    elevator.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
       elevator.setNeutralMode(NeutralMode.Coast);
       double elevator_kP = .15; // previously, .75; we needed some dampening, and we didn't want to take more time tuning the other  values
       double elevator_kI = 0;
@@ -110,9 +110,9 @@ public class ElevatorRobot extends TimedRobot {
       elevator.config_kF(0, elevator_kF);
       elevator.setInverted(true);
       elevator.setSensorPhase(true);
-      //rotator.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);  
+      //rotator.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Absolute);
       elevator.setNeutralMode(NeutralMode.Coast);
-      /*double rotator_kP = 8; 
+      /*double rotator_kP = 8;
       double rotator_kI = 0;
       double rotator_kD = 0;
       double rotator_kF = 0;
@@ -128,10 +128,10 @@ public class ElevatorRobot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     forward = (leftStick.getRawAxis(1))*-1 ;
-    turn = rightStick.getRawAxis(0);    
+    turn = rightStick.getRawAxis(0);
     chassisDrive.arcadeDrive(forward, turn);
     compress.setClosedLoopControl(true);
-    intakeSolenoid.set(DoubleSolenoid.Value.kReverse); 
+    intakeSolenoid.set(DoubleSolenoid.Value.kReverse);
     //runRotator = leftStick.getRawButton(1);
     rotateManual = leftStick.getRawButton(4);
     elevatorUp = leftStick.getRawButton(5);
@@ -142,7 +142,7 @@ public class ElevatorRobot extends TimedRobot {
     //intake = rightStick.getRawButton(1);
     //outtake = rightStick.getRawButton(2);
     elevatorDown = leftStick.getRawButton(3);
-    
+
     //int rotatorPos = rotator.getSelectedSensorPosition();
     int elevatorPos = elevator.getSelectedSensorPosition();
     //System.out.println("Rotator: " + rotatorPos);
@@ -153,7 +153,7 @@ public class ElevatorRobot extends TimedRobot {
     } else if (runElevator && !runRotator) {
       rotator.set(0);
       elevator.set(ControlMode.MotionMagic, elevatorSetPoint);
-    } else if (runBoth){ 
+    } else if (runBoth){
       rotator.set(ControlMode.MotionMagic, rotatorSetPoint);
       elevator.set(ControlMode.MotionMagic, elevatorSetPoint);
     } else {
@@ -199,7 +199,7 @@ public class ElevatorRobot extends TimedRobot {
   }
   @Override
   public void testPeriodic() {
- 
+
   }
  /* @Override
   public void testPeriodic() { //elevator position values: 0 to 15000
@@ -210,11 +210,11 @@ public class ElevatorRobot extends TimedRobot {
     int elevatorPos = elevator.getSelectedSensorPosition();
     if (elevatorPos >= elevatorMin && elevatorPos <= elevatorMax) {
 
-    
+
     if(elevatorUp && !elevatorDown) {
       elevator.set(elevatorSpeed);
     } else if(elevatorDown && !elevatorUp) {
-      elevator.set(-elevatorSpeed);   
+      elevator.set(-elevatorSpeed);
     } else {
       elevator.set(0);
     }
