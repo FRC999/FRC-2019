@@ -8,21 +8,15 @@
 //CHECK SOLENOID ID's BEFORE USE!!!
 package frc.robot;
 
-import java.util.Arrays;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice; // *** JW added ***
 import com.ctre.phoenix.motorcontrol.NeutralMode; // *** JW added ***
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Watchdog; // *** Check This ***
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -38,68 +32,13 @@ public class Robot extends TimedRobot {
    * This function is run when the robot is first started up and should be used
    * for any initialization code.
    */
-  boolean LEDOn;
-  boolean intakePush;
-  boolean intakePull;
-  boolean frontClimberUp;
-  boolean frontClimberDown;
-  boolean frontClimb;
-  boolean rearClimb;
-  boolean visionButton;
-  boolean cargoIn;
-  boolean cargoOut;
-  boolean hatchIn;
-  boolean hatchOut;
-
-  int [] test;
-  int delayCounter = 0;
-  int timingDelay = 5;
-  int xVal;
-  int yVal;
-  int hVal;
-  int wVal;
-  int distVal;
-  int confVal;
-  int blocksSeen;
-  int pixyMountX;
-  int pixyMountY;
-  int pixyMountAngle;
-  int arduinoCounter;
-  int bRate = 115200;
- // int bRate = 9600;
-  SerialPort arduino;
-  String targetPosition;
-  int startOfDataStream;
-  int endOfDataStream;// looking for the first carriage return
-  boolean elevatorUp;
-  boolean elevatorDown;
-  boolean elevatorLowHatch;
-  boolean elevatorMiddleHatch;
-  boolean elevatorHighHatch;
-  boolean frontClimberToggle;
-  boolean backClimberToggle;
-
-  int x;
-  int lDist;
-  int lConf;
-  int rDist;
-  int rConf;
   double speed = .25;
-  int minDist = 60; // in mm
-  int minConf = 50;
-
-  // Joysticks
-  Joystick driveStick = new Joystick(0);
-  Joystick turnStick = new Joystick(1);
-  Joystick copilotStick = new Joystick(2);
 
   // Our own special magic
   MagicJoystickInput JOYSTICKINPUT = MagicJoystickInput.getInstance();
   MagicRobotCameras CAMERAS = new MagicRobotCameras();
-  MagicVision VISION = new MagicVision(bRate); 
   ExtraUtilities UTILITY = new ExtraUtilities();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
-
 
   // Motor controllers for 2019 robot
   WPI_TalonSRX driveFrontLeft = new WPI_TalonSRX(4);
@@ -120,18 +59,11 @@ public class Robot extends TimedRobot {
   // Elevator
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
   double elevatorSpeed = .25;
-  int elevatorSetPoint = 5000;
-  int elevatorMin = 100;
-  int elevatorMax = 15000;
-  double elevator_kP = .001; // Start at .001, guessing it will be around .1 - .15
-  double elevator_kI = 0;
-  double elevator_kD = 0;
-  double elevator_kF = 0;
 
   // Cargo
   WPI_VictorSPX cargo = new WPI_VictorSPX(13);
   double cargoSpeed = .25;
-  
+
   //Hatch
   WPI_VictorSPX hatch = new WPI_VictorSPX(14);
   double hatchSpeed = .25;
@@ -149,11 +81,9 @@ public class Robot extends TimedRobot {
     rearClimber.set(Value.kOff);
     frontClimber.set(Value.kOff);
     hatchCylinders.set(Value.kOff);
-    arduino = VISION.startArduino(bRate);
     elevatorDriver.setNeutralMode(NeutralMode.Brake);
     elevatorDriver.neutralOutput();
   } //robotInit()
-
 
   @Override
   public void robotPeriodic() {
@@ -163,7 +93,7 @@ public class Robot extends TimedRobot {
 
     forward = JOYSTICKINPUT.getDrive();
     turn = JOYSTICKINPUT.getTurn();
-    
+
   }
 
 
@@ -173,18 +103,18 @@ public class Robot extends TimedRobot {
     rearClimber.set(Value.kReverse);
     frontClimber.set(Value.kReverse);
     hatchCylinders.set(Value.kReverse);
-    
+
   }
 
 
   @Override
   public void autonomousPeriodic() {
-    elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
+    elevatorDriver.set(UTILITY.TwoButtonChecker(JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorUp), JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorDown))*elevatorSpeed);
     chassisDrive.arcadeDrive(forward, turn);
-    hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, hatchCylinders)*hatchSpeed);
-    cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
-    frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
-    rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+    hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake), JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake), hatchCylinders)*hatchSpeed);
+    cargo.set(UTILITY.TwoButtonChecker(JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoIntake), JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoOuttake)));
+    frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(JOYSTICKINPUT.isButtonOn(ButtonEnum.climbFront)));
+    rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(JOYSTICKINPUT.isButtonOn(ButtonEnum.climbBack)));
   } // teleopPeriodic
 
 
@@ -199,41 +129,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic(){
-    chassisDrive.feed(); // *** Check This ***
     chassisDrive.arcadeDrive(forward, turn);
-    elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-    hatch.set(UTILITY.TwoButtonChecker(hatchIn, hatchOut)*hatchSpeed);
-    cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
-    frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
-    rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+    elevatorDriver.set(UTILITY.TwoButtonChecker(JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorUp), JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorDown))*elevatorSpeed);
+    hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake), JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake), hatchCylinders)*hatchSpeed);
+    cargo.set(UTILITY.TwoButtonChecker(JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoIntake), JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoOuttake)));
+    frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(JOYSTICKINPUT.isButtonOn(ButtonEnum.climbFront)));
+    rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(JOYSTICKINPUT.isButtonOn(ButtonEnum.climbBack)));
   } // teleopPeriodic
 
   public void testInit(){
-    ButtonListMaker but = new ButtonListMaker();
-    but.buildStrings();
-
-    System.out.println("Buttons:");
-    System.out.println(but.joystick0String);
-    System.out.println(but.joystick1String);
-    System.out.println(but.joystick1String);
-
-    elevatorDriver.setNeutralMode(NeutralMode.Coast);
   }
-  public void testPeriodic(){
-    if (JOYSTICKINPUT.isButtonOn(ButtonEnum.tunePidValUp)){
-      elevator_kP += .001;
-      elevatorDriver.config_kP(0,elevator_kP);
-      System.out.println(elevator_kP);
-    }
-    if (JOYSTICKINPUT.isButtonOn(ButtonEnum.tunePidValDown)){
-      elevator_kP += .001;
-      elevatorDriver.config_kP(0,elevator_kP);
-      System.out.println(elevator_kP);
-    }
-    if (JOYSTICKINPUT.isButtonOn(ButtonEnum.moveElevator)){
-      elevatorDriver.set(ControlMode.MotionMagic, 4096*10 );
-    }
-  }
+  public void testPeriodic(){}
   public void disabledInit(){
     elevatorDriver.setNeutralMode(NeutralMode.Brake);
     elevatorDriver.neutralOutput();
