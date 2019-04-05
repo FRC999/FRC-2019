@@ -264,7 +264,7 @@ public class MagicVision {
             }
       } else {// we are close to target
           if (val < leftMax && val > 0) {// Left of target
-            left = false;
+            left = true;
             middle = false;
             right = true;
             backwards = false;// should this be true?
@@ -277,7 +277,7 @@ public class MagicVision {
                 left = false;
                 middle = false;
                 right = true;
-                backwards = false;// should this be true?
+                backwards = true;// should this be true?
               } else {// should not get here
                 left = false;
                 middle = false;
@@ -287,22 +287,35 @@ public class MagicVision {
         }
       //}
       // for left motors negative speed is forward?  is this different between 2018 and 2019 robots?
-      if (left) {
-        l.set(0);
-        r.set(speed);
-      } else if (middle) {
-          l.set(-speed);
-          r.set(speed);
-        } else if (right) {
+      if (!backwards) {
+        if (left) {
+          l.set(speed);
+          r.set(0);
+        } else if (middle) {
             l.set(-speed);
-            r.set(0);
-          } else if (backwards) {
-              l.set(speed);
+            r.set(speed);
+          } else if (right) {
+              l.set(0);
               r.set(-speed);
             } else {
                 l.set(0);
                 r.set(0);
             }
- }
+      } else {
+        if (left) {
+          l.set(0);
+          r.set(-speed);
+        } else if (middle) {
+            l.set(0);
+            r.set(0);
+          } else if (right) {
+            l.set(speed);
+            r.set(0);
+            } else {
+                l.set(0);
+                r.set(0);
+            }
+      }
+}
  
 }

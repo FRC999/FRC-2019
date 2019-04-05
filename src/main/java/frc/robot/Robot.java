@@ -148,8 +148,8 @@ public class Robot extends TimedRobot {
 
   //Pneumatics
   Compressor airCompressor = new Compressor(0);
-  DoubleSolenoid frontClimber = new DoubleSolenoid(0, 7);
-  DoubleSolenoid rearClimber = new DoubleSolenoid(1, 6);
+  DoubleSolenoid rearClimber = new DoubleSolenoid(0, 7);
+  DoubleSolenoid frontClimber = new DoubleSolenoid(1, 6);
   DoubleSolenoid hatchCylinders = new DoubleSolenoid(2, 5);
 
 
@@ -183,6 +183,10 @@ public class Robot extends TimedRobot {
     
     elevatorUp = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorUp);
     elevatorDown = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorDown);
+    hatchIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
+    hatchOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
+    cargoIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoIntake);
+    cargoOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoOuttake);
     // *** elevator presets? ***
   }
 
@@ -251,7 +255,7 @@ public class Robot extends TimedRobot {
       */ 
         elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
         hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, hatchCylinders)*hatchSpeed);
-        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
+        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
         frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
         rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
         
@@ -325,8 +329,8 @@ public class Robot extends TimedRobot {
           }
       */
         elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-        hatch.set(UTILITY.twoButtonCheckerWithConstantSolenoid(hatchIn, hatchOut, hatchCylinders)*hatchSpeed);
-        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
+        hatch.set(UTILITY.TwoButtonChecker(hatchIn, hatchOut)*hatchSpeed);
+        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
         frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
         rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
         
