@@ -2,13 +2,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj.Joystick;
 
 /**
- * MagicInput is a class designed to handle all input from the drivers station.
- * It is primarily focused on the joysticks.  It provides this information to other
- * classes and methods, free of charge.  MagicInput, unlike other off-the-shelf input
- * brands, is designed for configuration, first and foremost.  Where is button is, and its
+ * MagicInput is a class designed to handle the joysticks of the drivers station.
+ * It is primarily focused on the joysticks. MagicInput, unlike other off-the-shelf input
+ * brands, is designed for configuration, first and foremost.  Where a button is, and its
  * toggling behavior, is specified in ButtonEnum.  Do not use MagicInput
  * if you like writing long lines of code any time you wish to speak with the manager.
- *
+ * 
+ * However, due to coding limitations, it seems we have to write long lines of code anyways.  
+ * We are working on this.  
+ * 
  * Use getJoystick() to fetch joysticks if you want to throw together a button without
  * putting it in ButtonEnum.  Otherwise, keep buttons there.
  */
@@ -22,7 +24,7 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick turnStick;
   Joystick copilotStick;
 
-  final static double deadZoneRadius = .025; //WARNING: Very high! Only for testing purposes!
+  final static double deadZoneRadius = .025; 
 
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case

@@ -31,7 +31,7 @@ public class MagicVision {
   boolean middle;
   boolean backwards;
   public void removeFreakingAnnoyingVSCodeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
-
+  
   public MagicVision(int baud, int stop) {
     counting = 0;
     bRate = baud;
@@ -49,7 +49,7 @@ public class MagicVision {
     confidenceThreshold = 50; // for distance sensors
     delayCount = 1;
   }
-
+  
   public MagicVision(int baud, int stop, int delay, int conf) {
     counting = 0;
     bRate = baud;
@@ -67,7 +67,7 @@ public class MagicVision {
     confidenceThreshold = conf;
     delayCount = delay;
   }
-
+  
   public MagicVision(int baud) {
     counting = 0;
     bRate = baud;
@@ -84,9 +84,9 @@ public class MagicVision {
     stopDistance = 20;
     confidenceThreshold = 50; // for distance sensors
     delayCount = 1;
-
+    
   }
-
+  
   public SerialPort startArduino(int baud) {
     bRate = baud;
     try {
@@ -119,11 +119,11 @@ public class MagicVision {
       }
     }
   }
-
-// *** is this used? ***
+  
+  // *** is this used? ***
   /**
-   * Primary parser: Other methods are for legacy reasons and for edge cases
-   */
+  * Primary parser: Other methods are for legacy reasons and for edge cases
+  */
   public boolean parseJunk(SerialPort arduino) {
     //System.out.println("PARSEJUNK");
     String targetPosition = arduino.readString();
@@ -132,7 +132,7 @@ public class MagicVision {
     // The indexOf method returns -1 if it can't find the char in the string
     if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
       targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-    //  System.out.println(targetPosition);
+      //  System.out.println(targetPosition);
       if (targetPosition.startsWith("Block")) {
         String[] positionNums = targetPosition.split(":");
         // positionNums[0] would be "Block
@@ -168,7 +168,7 @@ public class MagicVision {
   public int getRightConf() {return rConfVal;}
   public int getBlocksSeen() {return blocksSeen;}
   public int getArduinoCounter() {return arduinoCounter;}
-
+  
   //Better getters
   public boolean isOnLeft(){return (xVal > 0 && xVal < leftMax);}
   public boolean isInMiddle(){return (xVal >= leftMax && xVal <= rightMax);}
@@ -180,15 +180,15 @@ public class MagicVision {
       return false;
     }
   }
-
+  
   public String[] getArray(SerialPort a) {
-  String targetPosition = a.readString();
+    String targetPosition = a.readString();
     int startOfDataStream = targetPosition.indexOf("B");
     int endOfDataStream = targetPosition.indexOf("\r");// looking for the first carriage return
     // The indexOf method returns -1 if it can't find the char in the string
     if (startOfDataStream != -1 && endOfDataStream != -1 && (endOfDataStream - startOfDataStream) > 12) {
       targetPosition = (targetPosition.substring(startOfDataStream, endOfDataStream));
-    //  System.out.println(targetPosition);
+      //  System.out.println(targetPosition);
       if (targetPosition.startsWith("Block")) {
         String[] positionNums = targetPosition.split(":");
         return positionNums;
@@ -196,12 +196,12 @@ public class MagicVision {
     }
     return null;
   }
-
-
+  
+  
   /**
-   * Legacy parsers, kept in case we want to update one value without messing with the others
-   * NVM, killing it with fire because that is the magic of GIT
-   */
+  * Legacy parsers, kept in case we want to update one value without messing with the others
+  * NVM, killing it with fire because that is the magic of GIT
+  */
   public int[] parseVal(SerialPort a, int val, int dist1, int conf1, int dist2, int conf2) {
     //System.out.println("GOT TO PARSEVAL");
     String targetPosition = a.readString();
@@ -233,11 +233,11 @@ public class MagicVision {
       //System.out.println(startOfDataStream +" "+ endOfDataStream);
       System.out.println("Bad String from Arduino: no carriage return character or too short");
     }
-  int [] ans = new int [] {-1,-1,-1,-1,-1}; // Parser failed
-  return ans;
+    int [] ans = new int [] {-1,-1,-1,-1,-1}; // Parser failed
+    return ans;
   }
-
-
+  
+  
   public void trackWithVision (SerialPort a, SpeedControllerGroup l, SpeedControllerGroup r, int val, int distLeft, int confLeft, int distRight, int confRight, int minDist, int minConf, double speed) {
     //if(confLeft > minConf && confRight > minConf) {
       if (distLeft > minDist && distRight > minDist) { // *** changed one distLeft to distRight
@@ -247,44 +247,44 @@ public class MagicVision {
           right = false;
           backwards = false;
         } else if (val >= leftMax && val <= rightMax) {// heading to target -- leftMax and rightMax represent the boundries of the desired target window
-            left = false;
-            middle = true;
-            right = false;
-            backwards = false;
-          } else if (val > rightMax && val < 316) { //heading right of target
-              left = false;
-              middle = false;
-              right = true;
-              backwards = false;
-            } else {// should not get here
-              left = false;
-              middle = false;
-              right = false;
-              backwards = false;
-            }
-      } else {// we are close to target
-          if (val < leftMax && val > 0) {// Left of target
-            left = true;
-            middle = false;
-            right = true;
-            backwards = false;// should this be true?
-          } else if (val > leftMax && val < rightMax) {// heading to target
-            left = false;
-            middle = false;
-            right = false;
-            backwards = false; // changed from true. We are at target and can stop
-            } else if (val > rightMax && val < 316) {//right of target
-                left = false;
-                middle = false;
-                right = true;
-                backwards = false;// should this be true?
-              } else {// should not get here
-                left = false;
-                middle = false;
-                right = false;
-                backwards = false;
-                }
+          left = false;
+          middle = true;
+          right = false;
+          backwards = false;
+        } else if (val > rightMax && val < 316) { //heading right of target
+          left = false;
+          middle = false;
+          right = true;
+          backwards = false;
+        } else {// should not get here
+          left = false;
+          middle = false;
+          right = false;
+          backwards = false;
         }
+      } else {// we are close to target
+        if (val < leftMax && val > 0) {// Left of target
+          left = true;
+          middle = false;
+          right = true;
+          backwards = false;// should this be true?
+        } else if (val > leftMax && val < rightMax) {// heading to target
+          left = false;
+          middle = false;
+          right = false;
+          backwards = false; // changed from true. We are at target and can stop
+        } else if (val > rightMax && val < 316) {//right of target
+          left = false;
+          middle = false;
+          right = true;
+          backwards = false;// should this be true?
+        } else {// should not get here
+          left = false;
+          middle = false;
+          right = false;
+          backwards = false;
+        }
+      }
       //}
       // for left motors negative speed is forward?  is this different between 2018 and 2019 robots?
       if (!backwards) {
@@ -292,29 +292,29 @@ public class MagicVision {
           l.set(-speed);
           r.set(0);
         } else if (middle) {
-            l.set(-speed);
-            r.set(speed);
-          } else if (right) {
-              l.set(0);
-              r.set(speed);
-            } else {
-                l.set(0);
-                r.set(0);
-            }
+          l.set(-speed);
+          r.set(speed);
+        } else if (right) {
+          l.set(0);
+          r.set(speed);
+        } else {
+          l.set(0);
+          r.set(0);
+        }
       } else {
         if (left) {
           l.set(0);
           r.set(speed);
         } else if (middle) {
-            l.set(speed);
-            r.set(-speed);
-          } else if (right) { 
-              l.set(speed);
-              r.set(0);
-            } else {
-                l.set(0);
-                r.set(0);
-            }
-        } 
+          l.set(speed);
+          r.set(-speed);
+        } else if (right) { 
+          l.set(speed);
+          r.set(0);
+        } else {
+          l.set(0);
+          r.set(0);
+        }
+      } 
     }
-}
+  }
