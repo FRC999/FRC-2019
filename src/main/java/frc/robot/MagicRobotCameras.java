@@ -21,15 +21,16 @@ public class MagicRobotCameras{
 
   MagicRobotCameras(){
     INPUT= MagicJoystickInput.getInstance();
-    backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
+  /*  backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
     backCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     backCam.setResolution(640, 480);
 
     frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
     frontCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
     frontCam.setResolution(640, 480);
+    */
     
-    camServer = CameraServer.getInstance().getServer();
+    //camServer = CameraServer.getInstance().getServer();
   }
 
 /**
@@ -37,6 +38,16 @@ public class MagicRobotCameras{
  * If not, do nothing
  * Uses input from INPUT provided at construction
  */
+public void startCameras() {
+    backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
+    backCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    backCam.setResolution(640, 480);
+
+    frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
+    frontCam.setConnectionStrategy(ConnectionStrategy.kKeepOpen);
+    frontCam.setResolution(640, 480);
+    camServer = CameraServer.getInstance().getServer();
+}
   public void checkCamSwap(){
     if (INPUT.isButtonOn(ButtonEnum.cameraChange) && !lastCamChoice){
       System.out.println("Swapping Cams");

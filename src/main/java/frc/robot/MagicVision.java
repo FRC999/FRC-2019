@@ -272,17 +272,17 @@ public class MagicVision {
             left = false;
             middle = false;
             right = false;
-            backwards = true; // changed from true. We are at target and can stop
+            backwards = false; // changed from true. We are at target and can stop
             } else if (val > rightMax && val < 316) {//right of target
                 left = false;
                 middle = false;
                 right = true;
-                backwards = true;// should this be true?
+                backwards = false;// should this be true?
               } else {// should not get here
                 left = false;
                 middle = false;
                 right = false;
-                backwards = true;
+                backwards = false;
                 }
         }
       //}

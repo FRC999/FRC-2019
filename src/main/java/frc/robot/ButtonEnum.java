@@ -1,19 +1,19 @@
 package frc.robot;
 public enum ButtonEnum {
 
-    hatchIntake(1,3),
-    hatchOuttake(1,5),
-    cameraChange(0, 6, false),
+    hatchIntake(0,3),
+    hatchOuttake(0,5),
+    cameraChange(1, 3, false),
+    hatchCyl(0,1, false),
+    cargoIntake(0,6),
+    cargoOuttake(0,4),
+    vision(1,1),
 
-    cargoIntake(1,4),
-    cargoOuttake(1,6),
-    endgame(2,7), vision(0,2),
+    climbFront(1, 7, false),
+    climbBack(1, 8, false), 
 
-    climbFront(1, 8, false),
-    climbBack(1, 7, false), 
-
-    elevatorUp(2,1), 
-    elevatorDown(2,2),
+    elevatorUp(2,2), 
+    elevatorDown(2,1),
     elevatorLowHatch(2,12, EncoderPresets.lowHatch), 
     elevatorMidHatch(2,10, EncoderPresets.midHatch), 
     elevatorHighHatch(2,8, EncoderPresets.highHatch),
@@ -21,11 +21,11 @@ public enum ButtonEnum {
     elevatorMidBall(2,9, EncoderPresets.midBall), 
     elevatorHighBall(2,7, EncoderPresets.highBall),
     elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), 
-    elevatorRetract(2,3, EncoderPresets.retract),
+    elevatorRetract(2,3, EncoderPresets.retract);
 
-    moveElevator (0,1),
-    tunePidValUp(0,3),
-    tunePidValDown(0,5);
+   // moveElevator (0,1),
+   // tunePidValUp(0,3),
+   // tunePidValDown(0,5);
   
   final private int buttonNum;
   final private int joystickNum;
