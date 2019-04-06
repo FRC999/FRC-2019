@@ -89,9 +89,9 @@ public class Robot extends TimedRobot {
   double middleHatch = 18540;
   //double highHatch = (4096 * ((((196-7.6)-49)+10) / (5.08 * Math.PI))); //196 CM is height
   double lowCargo = 12625;
-  double midCargo = 31047; 
+  double midCargo = 30000; 
   //double highCargo = (4096 * ((((211-7.6)-49)+10) / (5.08 * Math.PI))); //211 CM is height
-  double cargoShip = (4096 * ((((110-7.6)-49)+10) / (5.08 * Math.PI))); //211 CM is height
+  double cargoShip = 21075;
   boolean frontClimberToggle;
   boolean backClimberToggle;
   boolean hatchExtendRetract;
@@ -149,7 +149,7 @@ public class Robot extends TimedRobot {
   int elevatorSetPoint = 5000;
   int elevatorMin = 100;
   int elevatorMax = 15000;
-  double elevator_kP = .15; // Start at .001, guessing it will be around .1 - .15
+  double elevator_kP = .17; // Start at .001, guessing it will be around .1 - .15
   double elevator_kI = 0;
   double elevator_kD = 0;
   double elevator_kF = 0;
@@ -194,7 +194,7 @@ public class Robot extends TimedRobot {
     //elevatorPos = elevatorDriver.getSelectedSensorPosition();
     forward = JOYSTICKINPUT.getDrive();
     turn = JOYSTICKINPUT.getTurn();
-        
+    chassisDrive.feed();
     intakePull = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
     intakePush = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
 
@@ -211,7 +211,8 @@ public class Robot extends TimedRobot {
     elevatorHighHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighHatch);
     elevatorLowCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowBall);
     elevatorMiddleCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidBall);
-    elevatorHighCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighBall);
+   // elevatorHighCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighBall);
+    elevatorCargoShip = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorCargoShipBall);
     elevatorFloor = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorRetract);
     hatchIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
     hatchOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
@@ -285,7 +286,7 @@ if (visionButton) {
       }
   */
     //elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-   System.out.println(elevatorPos);
+  // System.out.println(elevatorPos);
     if (elevatorPos <= 32000) {
     if (elevatorUp && !elevatorDown) {
       elevatorDriver.set(elevatorSpeed);
@@ -294,7 +295,7 @@ if (visionButton) {
     } else if (elevatorLowHatch) {
       elevatorDriver.set(ControlMode.MotionMagic, lowHatch);
     } else if (elevatorMiddleHatch) {
-      System.out.println("Got to MIDDLE HATCH");
+    //  System.out.println("Got to MIDDLE HATCH");
       elevatorDriver.set(ControlMode.MotionMagic, middleHatch);
     } else if (elevatorLowCargo) {
       elevatorDriver.set(ControlMode.MotionMagic, lowCargo);
@@ -390,7 +391,7 @@ if (visionButton) {
           }
       */
         //elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-       System.out.println(elevatorPos);
+      // System.out.println(elevatorPos);
         if (elevatorPos < 32000) {
         if (elevatorUp && !elevatorDown) {
           elevatorDriver.set(elevatorSpeed);
@@ -399,7 +400,7 @@ if (visionButton) {
         } else if (elevatorLowHatch) {
           elevatorDriver.set(ControlMode.MotionMagic, lowHatch);
         } else if (elevatorMiddleHatch) {
-          System.out.println("Got to MIDDLE HATCH");
+        // System.out.println("Got to MIDDLE HATCH");
           elevatorDriver.set(ControlMode.MotionMagic, middleHatch);
         } else if (elevatorLowCargo) {
           elevatorDriver.set(ControlMode.MotionMagic, lowCargo);
@@ -438,11 +439,11 @@ if (visionButton) {
     ButtonListMaker but = new ButtonListMaker();
     but.buildStrings();
 
-    System.out.println("Buttons:");
+   /* System.out.println("Buttons:");
     System.out.println(but.joystick0String);
     System.out.println(but.joystick1String);
     System.out.println(but.joystick1String);
-
+*/
     elevatorDriver.setNeutralMode(NeutralMode.Coast);
   }
   public void testPeriodic(){
@@ -454,7 +455,7 @@ if (visionButton) {
     if (JOYSTICKINPUT.isButtonOn(ButtonEnum.tunePidValDown)){
       elevator_kP += .001;
       elevatorDriver.config_kP(0,elevator_kP);
-      System.out.println(elevator_kP);
+      System.out.S(elevator_kP);
     }
     if (JOYSTICKINPUT.isButtonOn(ButtonEnum.moveElevator)){
       elevatorDriver.set(ControlMode.MotionMagic, 4096*10 );

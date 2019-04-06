@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj.Joystick;
   Joystick turnStick;
   Joystick copilotStick;
 
-  final static double deadZoneRadius = .075; //WARNING: Very high! Only for testing purposes!
+  final static double deadZoneRadius = .025; //WARNING: Very high! Only for testing purposes!
 
   /**
    * Note: Code checks if joystick is null: however, this (should) never be the case

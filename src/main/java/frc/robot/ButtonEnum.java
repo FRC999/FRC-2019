@@ -18,9 +18,9 @@ public enum ButtonEnum {
     elevatorMidHatch(2,10, EncoderPresets.midHatch), 
     elevatorHighHatch(2,8, EncoderPresets.highHatch),
     elevatorLowBall(2,11, EncoderPresets.lowBall), 
-    elevatorMidBall(2,9, EncoderPresets.midBall), 
-    elevatorHighBall(2,7, EncoderPresets.highBall),
-    elevatorCargoShipBall(2,5, EncoderPresets.cargoShipBall), 
+    elevatorMidBall(2,4, EncoderPresets.midBall), 
+    //elevatorHighBall(2,7, EncoderPresets.highBall),
+    elevatorCargoShipBall(2,7, EncoderPresets.cargoShipBall), 
     elevatorRetract(2,3, EncoderPresets.retract);
 
    // moveElevator (0,1),
