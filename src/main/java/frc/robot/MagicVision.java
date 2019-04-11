@@ -14,8 +14,8 @@ public class MagicVision {
   private int hVal;
   private int lDistVal;
   private int lConfVal;
-  private int rDistVal;
-  private int rConfVal;
+//  private int rDistVal;
+//  private int rConfVal;
   private int stopDistance;
   private int confidenceThreshold;
   private int delayCount;
@@ -41,8 +41,8 @@ public class MagicVision {
     hVal = 0;
     lDistVal = 0;
     lConfVal = 0;
-    rDistVal = 0;
-    rConfVal = 0;
+//    rDistVal = 0;
+//    rConfVal = 0;
     blocksSeen = 0;
     arduinoCounter = 0;
     stopDistance = stop;
@@ -59,8 +59,8 @@ public class MagicVision {
     hVal = 0;
     lDistVal = 0;
     lConfVal = 0;
-    rDistVal = 0;
-    rConfVal = 0;
+ //   rDistVal = 0;
+ //   rConfVal = 0;
     blocksSeen = 0;
     arduinoCounter = 0;
     stopDistance = stop;
@@ -77,8 +77,8 @@ public class MagicVision {
     hVal = 0;
     lDistVal = 0;
     lConfVal = 0;
-    rDistVal = 0;
-    rConfVal = 0;
+ //   rDistVal = 0;
+ //   rConfVal = 0;
     blocksSeen = 0;
     arduinoCounter = 0;
     stopDistance = 20;
@@ -143,8 +143,8 @@ public class MagicVision {
         hVal = Integer.parseInt(positionNums[5]);
         lDistVal = Integer.parseInt(positionNums[6]);
         lConfVal = Integer.parseInt(positionNums[7]);
-        rDistVal = Integer.parseInt(positionNums[8]);
-        rConfVal = Integer.parseInt(positionNums[9]);
+     //   rDistVal = Integer.parseInt(positionNums[8]);
+     //   rConfVal = Integer.parseInt(positionNums[9]);
         blocksSeen = Integer.parseInt(positionNums[1]);
         arduinoCounter = Integer.parseInt(positionNums[10]);
       } else {
@@ -164,8 +164,8 @@ public class MagicVision {
   public int getH() {return hVal;}
   public int getLeftDist() {return lDistVal;}
   public int getLeftConf() {return lConfVal;}
-  public int getRightDist() {return rDistVal;}
-  public int getRightConf() {return rConfVal;}
+  //public int getRightDist() {return rDistVal;}
+  //public int getRightConf() {return rConfVal;}
   public int getBlocksSeen() {return blocksSeen;}
   public int getArduinoCounter() {return arduinoCounter;}
 
@@ -174,7 +174,7 @@ public class MagicVision {
   public boolean isInMiddle(){return (xVal >= leftMax && xVal <= rightMax);}
   public boolean isOnRight(){return(xVal > rightMax && xVal < 316);}
   public boolean isConf() {
-    if (lConfVal >= 500 && rConfVal >= 500) {
+    if (lConfVal >= 500 /* && rConfVal >= 500*/) {
       return true;
     } else {
       return false;
@@ -202,7 +202,7 @@ public class MagicVision {
    * Legacy parsers, kept in case we want to update one value without messing with the others
    * NVM, killing it with fire because that is the magic of GIT
    */
-  public int[] parseVal(SerialPort a, int val, int dist1, int conf1, int dist2, int conf2) {
+  public int[] parseVal(SerialPort a, int val, int dist1, int conf1/*, int dist2, int conf2*/) {
     //System.out.println("GOT TO PARSEVAL");
     String targetPosition = a.readString();
     //System.out.println(targetPosition);
@@ -220,11 +220,11 @@ public class MagicVision {
         hVal = Integer.parseInt(positionNums[5]);
         lDistVal = Integer.parseInt(positionNums[6]);
         lConfVal = Integer.parseInt(positionNums[7]);
-        rDistVal = Integer.parseInt(positionNums[8]);
-        rConfVal = Integer.parseInt(positionNums[9]);
+//        rDistVal = Integer.parseInt(positionNums[8]);
+//        rConfVal = Integer.parseInt(positionNums[9]);
         blocksSeen = Integer.parseInt(positionNums[1]);
         arduinoCounter = Integer.parseInt(positionNums[10]);
-        int [] ans = new int [] {Integer.parseInt(positionNums[val]),Integer.parseInt(positionNums[dist1]),Integer.parseInt(positionNums[conf1]), Integer.parseInt(positionNums[dist2]),Integer.parseInt(positionNums[conf2])};
+      int [] ans = new int [] {Integer.parseInt(positionNums[val]),Integer.parseInt(positionNums[dist1]),Integer.parseInt(positionNums[conf1])/*, Integer.parseInt(positionNums[dist2]),Integer.parseInt(positionNums[conf2])*/};
         return ans;
       } else {
         System.out.println("Bad String from Arduino: Doesn't start with Block");
@@ -238,9 +238,9 @@ public class MagicVision {
   }
 
 
-  public void trackWithVision (SerialPort a, SpeedControllerGroup l, SpeedControllerGroup r, int val, int distLeft, int confLeft, int distRight, int confRight, int minDist, int minConf, double speed) {
+  public void trackWithVision (SerialPort a, SpeedControllerGroup l, SpeedControllerGroup r, int val, int distLeft, int confLeft,/* int distRight, int confRight, */int minDist, int minConf, double speed) {
     //if(confLeft > minConf && confRight > minConf) {
-      if (distLeft > minDist && distRight > minDist) { // *** changed one distLeft to distRight
+      if (distLeft > minDist /*&& distRight > minDist*/) { // *** changed one distLeft to distRight
         if (val < leftMax && val > 0) {// heading left of target
           left = true;
           middle = false;
@@ -289,14 +289,14 @@ public class MagicVision {
       // for left motors negative speed is forward?  is this different between 2018 and 2019 robots?
       if (!backwards) {
         if (left) {
-          l.set(-speed);
+          l.set(speed);
           r.set(0);
         } else if (middle) {
             l.set(-speed);
             r.set(speed);
           } else if (right) {
               l.set(0);
-              r.set(speed);
+              r.set(-speed);
             } else {
                 l.set(0);
                 r.set(0);

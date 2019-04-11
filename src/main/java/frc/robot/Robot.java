@@ -8,24 +8,24 @@
 //CHECK SOLENOID ID's BEFORE USE!!!
 package frc.robot;
 
-import java.util.Arrays;
+//import java.util.Arrays;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
-import com.sun.jdi.IntegerValue;
+//import com.sun.jdi.IntegerValue;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice; // *** JW added ***
 import com.ctre.phoenix.motorcontrol.NeutralMode; // *** JW added ***
 
-import edu.wpi.cscore.UsbCamera;
-import edu.wpi.first.cameraserver.CameraServer;
+//import edu.wpi.cscore.UsbCamera;
+//import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Watchdog; // *** Check This ***
+//import edu.wpi.first.wpilibj.Watchdog; // *** Check This ***
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
@@ -57,6 +57,7 @@ public class Robot extends TimedRobot {
   int [] test;
   int delayCounter = 0;
   int timingDelay = 5;
+  int buttonReadGroup = 0;
   int xVal;
   int yVal;
   int hVal;
@@ -84,17 +85,21 @@ public class Robot extends TimedRobot {
   boolean elevatorHighCargo;
   boolean elevatorCargoShip;
   boolean elevatorFloor;
-  //ENCODER HEIGHTS, 2.54 is the  
+  //There are 257.5 encoder ticks per cm 
+  int elevatorMax = 32000;
+
   double lowHatch = 0;
   double middleHatch = 18540;
   //double highHatch = (4096 * ((((196-7.6)-49)+10) / (5.08 * Math.PI))); //196 CM is height
   double lowCargo = 12625;
-  double midCargo = 30000; 
+  double midCargo = 30750; 
   //double highCargo = (4096 * ((((211-7.6)-49)+10) / (5.08 * Math.PI))); //211 CM is height
   double cargoShip = 21075;
   boolean frontClimberToggle;
   boolean backClimberToggle;
   boolean hatchExtendRetract;
+
+  boolean slowButton;
 
   int x;
   int lDist;
@@ -102,7 +107,7 @@ public class Robot extends TimedRobot {
   int rDist;
   int rConf;
   double speed = -.25;
-  int minDist = 1000; // in mm
+  int minDist = 500; // in mm
   int minConf = 50;
 
   // Joysticks
@@ -112,7 +117,7 @@ public class Robot extends TimedRobot {
 
   // Our own special magic
   MagicJoystickInput JOYSTICKINPUT = MagicJoystickInput.getInstance();
-  MagicVision VISION = new MagicVision(bRate); 
+ // MagicVision VISION = new MagicVision(bRate); 
   ExtraUtilities UTILITY = new ExtraUtilities();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
   MagicRobotCameras CAMERAS = new MagicRobotCameras();
@@ -146,9 +151,6 @@ public class Robot extends TimedRobot {
   // Elevator
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
   double elevatorSpeed = .25;
-  int elevatorSetPoint = 5000;
-  int elevatorMin = 100;
-  int elevatorMax = 15000;
   double elevator_kP = .17; // Start at .001, guessing it will be around .1 - .15
   double elevator_kI = 0;
   double elevator_kD = 0;
@@ -156,7 +158,7 @@ public class Robot extends TimedRobot {
   int elevatorPos;
   // Cargo
   WPI_VictorSPX cargo = new WPI_VictorSPX(13);
-  double cargoSpeed = 1;
+  double cargoSpeed = .75;
   
   //Hatch
   WPI_VictorSPX hatch = new WPI_VictorSPX(14);
@@ -176,7 +178,7 @@ public class Robot extends TimedRobot {
     rearClimber.set(Value.kOff);
     frontClimber.set(Value.kOff);
     hatchCylinders.set(Value.kOff);
-    arduino = VISION.startArduino(bRate);
+   // arduino = VISION.startArduino(bRate);
     CAMERAS.startCameras();
     //UsbCamera backCam = CameraServer.getInstance().startAutomaticCapture(0);
     //UsbCamera frontCam = CameraServer.getInstance().startAutomaticCapture(1);
@@ -186,39 +188,52 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    
-    elevatorPos = elevatorDriver.getSelectedSensorPosition();
-    JOYSTICKINPUT.updates();
-    //PRINTER.printMagicLine();
-    CAMERAS.checkCamSwap();
-    //elevatorPos = elevatorDriver.getSelectedSensorPosition();
-    forward = JOYSTICKINPUT.getDrive();
-    turn = JOYSTICKINPUT.getTurn();
     chassisDrive.feed();
-    intakePull = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
-    intakePush = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
+    switch (buttonReadGroup) { // Breaks the reading of joystick buttons into groups to 
+      case 0:  {
+        intakePull = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
+        intakePush = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);    
+        frontClimb = JOYSTICKINPUT.isButtonOn(ButtonEnum.climbFront);
+        rearClimb = JOYSTICKINPUT.isButtonOn(ButtonEnum.climbBack);
+        visionButton = JOYSTICKINPUT.isButtonOn(ButtonEnum.vision);
+        cargoIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoIntake);
+        cargoOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoOuttake);    
+      }
+        break;
 
-    frontClimb = JOYSTICKINPUT.isButtonOn(ButtonEnum.climbFront);
-    rearClimb = JOYSTICKINPUT.isButtonOn(ButtonEnum.climbBack);
-    //frontClimb = turnStick.getRawButton(8);
-    //rearClimb = turnStick.getRawButton(7);
-    visionButton = JOYSTICKINPUT.isButtonOn(ButtonEnum.vision);
-    hatchExtendRetract = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchCyl);
-    elevatorUp = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorUp);
-    elevatorDown = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorDown);
-    elevatorLowHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowHatch);
-    elevatorMiddleHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidHatch);
-    elevatorHighHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighHatch);
-    elevatorLowCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowBall);
-    elevatorMiddleCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidBall);
-   // elevatorHighCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighBall);
-    elevatorCargoShip = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorCargoShipBall);
-    elevatorFloor = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorRetract);
-    hatchIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
-    hatchOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
-    cargoIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoIntake);
-    cargoOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoOuttake);
-    // *** elevator presets? ***
+      case 1:  {
+        elevatorUp = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorUp);
+        elevatorDown = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorDown);
+        elevatorLowCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowBall);
+        elevatorMiddleCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidBall);
+        elevatorCargoShip = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorCargoShipBall);
+        elevatorFloor = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorRetract);
+        slowButton = JOYSTICKINPUT.isButtonOn(ButtonEnum.slowDrive);
+      }
+      break;
+    case 2:  {
+        hatchExtendRetract = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchCyl);
+        hatchIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
+        hatchOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
+        elevatorLowHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowHatch);
+        elevatorMiddleHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidHatch);
+        elevatorHighHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighHatch);
+      }
+      break;
+    }
+    buttonReadGroup++;
+    if (buttonReadGroup > 2) {buttonReadGroup = 0;}
+  
+    JOYSTICKINPUT.updates();
+    CAMERAS.checkCamSwap();
+    if (!slowButton) {
+      forward = JOYSTICKINPUT.getDrive();
+      turn = JOYSTICKINPUT.getTurn();
+    } else {
+      forward = (JOYSTICKINPUT.getDrive())/2;
+      turn = (JOYSTICKINPUT.getTurn())/2;
+    }
+    chassisDrive.feed();
   }
 
 
@@ -247,7 +262,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-//   chassisDrive.feed(); // *** Check This ***
+   chassisDrive.feed(); // *** Check This ***
 if (visionButton) {
   if (delayCounter == 0) {
 
@@ -266,49 +281,43 @@ if (visionButton) {
     
     If parseVal fails it returns -1 for all parameters
     */
-    test = VISION.parseVal(arduino, 2, 6, 7, 8, 9);
+  //  test = VISION.parseVal(arduino, 2, 6, 7/*, 8, 9*/);
   }  
   if (delayCounter == 1) {
-    VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], test[3], test[4], minDist, minConf, speed);
+  //  VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], /*test[3], test[4],*/ minDist, minConf, speed);
     //System.out.println(Arrays.toString(test));
   }
   delayCounter++;
   if (delayCounter > timingDelay) {delayCounter = 0;}
-} else { 
+
+} else { //vission button not pressed
+  
     chassisDrive.arcadeDrive(forward, turn);
-  /*
-  if (elevatorUp) {
-    elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
-  } else if (elevatorDown) {
-      elevatorDriver.set(ControlMode.MotionMagic, 300);
-    } else {
-        elevatorDriver.set(0);
+    // System.out.println(elevatorPos);
+    elevatorPos = elevatorDriver.getSelectedSensorPosition();
+
+    if (elevatorPos <= elevatorMax) {
+      if (elevatorUp && !elevatorDown) {
+        elevatorDriver.set(elevatorSpeed);
+      } else if (elevatorDown && !elevatorUp) {
+          elevatorDriver.set(-elevatorSpeed);
+      } else if (elevatorLowHatch) {
+          elevatorDriver.set(ControlMode.MotionMagic, lowHatch);
+      } else if (elevatorMiddleHatch) {
+          //  System.out.println("Got to MIDDLE HATCH");
+          elevatorDriver.set(ControlMode.MotionMagic, middleHatch);
+      } else if (elevatorLowCargo) {
+          elevatorDriver.set(ControlMode.MotionMagic, lowCargo);
+      } else if (elevatorMiddleCargo) {
+          elevatorDriver.set(ControlMode.MotionMagic, midCargo);
+      } else if (elevatorCargoShip) {
+          elevatorDriver.set(ControlMode.MotionMagic, cargoShip);
+      } else if (elevatorFloor) {
+          elevatorDriver.set(ControlMode.MotionMagic, 0);
+      } else {
+          elevatorDriver.set(0);
       }
-  */
-    //elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-  // System.out.println(elevatorPos);
-    if (elevatorPos <= 32000) {
-    if (elevatorUp && !elevatorDown) {
-      elevatorDriver.set(elevatorSpeed);
-    } else if (elevatorDown && !elevatorUp) {
-      elevatorDriver.set(-elevatorSpeed);
-    } else if (elevatorLowHatch) {
-      elevatorDriver.set(ControlMode.MotionMagic, lowHatch);
-    } else if (elevatorMiddleHatch) {
-    //  System.out.println("Got to MIDDLE HATCH");
-      elevatorDriver.set(ControlMode.MotionMagic, middleHatch);
-    } else if (elevatorLowCargo) {
-      elevatorDriver.set(ControlMode.MotionMagic, lowCargo);
-    } else if (elevatorMiddleCargo) {
-      elevatorDriver.set(ControlMode.MotionMagic, midCargo);
-    } else if (elevatorCargoShip) {
-      elevatorDriver.set(ControlMode.MotionMagic, cargoShip);
-    } else if (elevatorFloor) {
-      elevatorDriver.set(ControlMode.MotionMagic, 0);
-    } else {
-      elevatorDriver.set(0);
     }
-  }
     if (hatchIn && !hatchOut) {
       hatch.set(-.5);
     } else if (hatchOut) {
@@ -316,6 +325,7 @@ if (visionButton) {
     } else {
       hatch.set(0);
     }
+    
     cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
     frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
     rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
@@ -352,88 +362,81 @@ if (visionButton) {
 
   @Override
   public void teleopPeriodic(){
- //   chassisDrive.feed(); // *** Check This ***
-    if (visionButton) {
-      if (delayCounter == 0) {
+     chassisDrive.feed(); // *** Check This ***
+ //   if (visionButton) {
+  //  if (delayCounter == 0) {
 
-        /*        
-        Parameters for parseVal 
-        blocksSeen = parameter 1
-        xVal = parameter 2
-        yVal = parameter 3
-        wVal = parameter 4
-        hVal = parameter 5
-        lDistVal = parameter 6
-        lConfVal = parameter 7
-        rDistVal = parameter 8
-        rConfVal = parameter 9
-        arduinoCounter = parameter 10
-        
-        If parseVal fails it returns -1 for all parameters
-        */
-        test = VISION.parseVal(arduino, 2, 6, 7, 8, 9);
-      }  
-      if (delayCounter == 1) {
-        VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], test[3], test[4], minDist, minConf, speed);
-        //System.out.println(Arrays.toString(test));
-      }
-      delayCounter++;
-      if (delayCounter > timingDelay) {delayCounter = 0;}
-    } else { 
-        chassisDrive.arcadeDrive(forward, turn);
-      /*
-      if (elevatorUp) {
-        elevatorDriver.set(ControlMode.MotionMagic, elevatorSetPoint);
-      } else if (elevatorDown) {
-          elevatorDriver.set(ControlMode.MotionMagic, 300);
-        } else {
-            elevatorDriver.set(0);
-          }
-      */
-        //elevatorDriver.set(UTILITY.TwoButtonChecker(elevatorUp, elevatorDown)*elevatorSpeed);
-      // System.out.println(elevatorPos);
-        if (elevatorPos < 32000) {
-        if (elevatorUp && !elevatorDown) {
-          elevatorDriver.set(elevatorSpeed);
-        } else if (elevatorDown && !elevatorUp) {
+    /*        
+    Parameters for parseVal 
+    blocksSeen = parameter 1
+    xVal = parameter 2
+    yVal = parameter 3
+    wVal = parameter 4
+    hVal = parameter 5
+    lDistVal = parameter 6
+    lConfVal = parameter 7
+    rDistVal = parameter 8
+    rConfVal = parameter 9
+    arduinoCounter = parameter 10
+    
+    If parseVal fails it returns -1 for all parameters
+    */
+//    test = VISION.parseVal(arduino, 2, 6, 7/*, 8, 9*/);
+//  }  
+//  if (delayCounter == 1) {
+//    VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2]/*, test[3], test[4]*/, minDist, minConf, speed);
+    //System.out.println(Arrays.toString(test));
+//  }
+  delayCounter++;
+  if (delayCounter > timingDelay) {delayCounter = 0;}
+
+//} else { //vission button not pressed
+    chassisDrive.feed();
+    chassisDrive.arcadeDrive(forward, turn);
+    // System.out.println(elevatorPos);
+    elevatorPos = elevatorDriver.getSelectedSensorPosition();
+
+    if (elevatorPos <= elevatorMax) {
+      if (elevatorUp && !elevatorDown) {
+        elevatorDriver.set(elevatorSpeed);
+      } else if (elevatorDown && !elevatorUp) {
           elevatorDriver.set(-elevatorSpeed);
-        } else if (elevatorLowHatch) {
+      } else if (elevatorLowHatch) {
           elevatorDriver.set(ControlMode.MotionMagic, lowHatch);
-        } else if (elevatorMiddleHatch) {
-        // System.out.println("Got to MIDDLE HATCH");
+      } else if (elevatorMiddleHatch) {
+          //  System.out.println("Got to MIDDLE HATCH");
           elevatorDriver.set(ControlMode.MotionMagic, middleHatch);
-        } else if (elevatorLowCargo) {
+      } else if (elevatorLowCargo) {
           elevatorDriver.set(ControlMode.MotionMagic, lowCargo);
-        } else if (elevatorMiddleCargo) {
+      } else if (elevatorMiddleCargo) {
           elevatorDriver.set(ControlMode.MotionMagic, midCargo);
-        } else if (elevatorCargoShip) {
+      } else if (elevatorCargoShip) {
           elevatorDriver.set(ControlMode.MotionMagic, cargoShip);
-        } else if (elevatorFloor) {
+      } else if (elevatorFloor) {
           elevatorDriver.set(ControlMode.MotionMagic, 0);
-        } else {
-          elevatorDriver.set(0);
-        }
       } else {
-        elevatorDriver.set(0);
-      } 
-        if (hatchIn && !hatchOut) {
-          hatch.set(-.5);
-        } else if (hatchOut) {
-          hatch.set(.5);
-        } else {
-          hatch.set(0);
-        }
-        cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut)*cargoSpeed);
-        frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
-        rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
-        if (hatchExtendRetract) {
-          hatchCylinders.set(Value.kForward);
-        } else {
-          hatchCylinders.set(Value.kReverse);
-        }
-      } 
-    } // no vision
- // } // teleopPeriodic
+          elevatorDriver.set(0);
+      }
+    }
+    if (hatchIn && !hatchOut) {
+      hatch.set(-.5);
+    } else if (hatchOut) {
+      hatch.set(.5);
+    } else {
+      hatch.set(0);
+    }
+    
+    cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
+    frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
+    rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
+    if (hatchExtendRetract) {
+      hatchCylinders.set(Value.kForward);
+    } else {
+      hatchCylinders.set(Value.kReverse);
+    }
+  }// no vision 
+//} // teleopPeriodic
+ 
 
   public void testInit(){
     ButtonListMaker but = new ButtonListMaker();

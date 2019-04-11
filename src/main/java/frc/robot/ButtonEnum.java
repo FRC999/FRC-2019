@@ -5,15 +5,17 @@ public enum ButtonEnum {
     hatchOuttake(0,5),
     cameraChange(1, 3, false),
     hatchCyl(0,1, false),
-    cargoIntake(0,6),
-    cargoOuttake(0,4),
+    cargoIntake(0,4),
+    cargoOuttake(2,1),
     vision(1,1),
 
     climbFront(1, 7, false),
     climbBack(1, 8, false), 
 
+    slowDrive(1,6),
+
     elevatorUp(2,2), 
-    elevatorDown(2,1),
+    elevatorDown(2,3),
     elevatorLowHatch(2,12, EncoderPresets.lowHatch), 
     elevatorMidHatch(2,10, EncoderPresets.midHatch), 
     elevatorHighHatch(2,8, EncoderPresets.highHatch),
@@ -21,7 +23,7 @@ public enum ButtonEnum {
     elevatorMidBall(2,4, EncoderPresets.midBall), 
     //elevatorHighBall(2,7, EncoderPresets.highBall),
     elevatorCargoShipBall(2,7, EncoderPresets.cargoShipBall), 
-    elevatorRetract(2,3, EncoderPresets.retract);
+    elevatorRetract(2,6, EncoderPresets.retract);
 
    // moveElevator (0,1),
    // tunePidValUp(0,3),
