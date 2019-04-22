@@ -334,6 +334,7 @@ if (visionButton) {
     } else {
       hatchCylinders.set(Value.kReverse);
     }
+  }
   } 
   
   @Override
