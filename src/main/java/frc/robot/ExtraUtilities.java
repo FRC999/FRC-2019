@@ -60,6 +60,10 @@ public class ExtraUtilities {
         ExtraUtilities.<Double>Checker(false,true, 0.5);
     }
     */
+     /** Setting pneumatics takes a lot of time. DO NOT DO IT unless the value has changed, otherwise you'll take up valuable time for no reason
+      * if either button is pressed, sets the value of the solenoid to forward. else, sets the solenoid off.
+     * @return 1 if (b1 && !b2), -1 if (!b1 && b2), 0 otherwise
+     */
     public int twoButtonCheckerWithConstantSolenoid(boolean b1,boolean b2, DoubleSolenoid s1) {
         if (b1 && !b2) {
             s1.set(Value.kForward);
@@ -72,6 +76,10 @@ public class ExtraUtilities {
             return 0;
         }
    }
+    /** Setting pneumatics takes a lot of time. DO NOT DO IT unless the value has changed,
+     *  otherwise you'll take up valuable time for no reason.
+     * if b1 and not b2, sets the solenoid forward. If b2 and not b1, sets solenoid backward. else, sets the solenoid off.
+     * @return 1 if (b1 && !b2), -1 if (!b1 && b2), 0 otherwise */
    public int twoButtonCheckerWithVariableSolenoid(boolean b1, boolean b2, DoubleSolenoid s1) {
         if (b1 && !b2) {
           s1.set(Value.kForward);
@@ -84,6 +92,8 @@ public class ExtraUtilities {
           return 0;
         }
    }
+
+  
    public Value SingleButtonCheckerPneumatics(boolean b1) {
     if (b1) {
         return Value.kForward;

@@ -422,6 +422,7 @@ if (visionButton) {
     }
     
     cargo.set(UTILITY.TwoButtonChecker(cargoIn, cargoOut));
+    //*** CHECK FOR STATE CHANGES IN BUTTON BEFORE SETTING VALUES ***
     frontClimber.set(UTILITY.SingleButtonCheckerPneumatics(frontClimb));
     rearClimber.set(UTILITY.SingleButtonCheckerPneumatics(rearClimb));
     if (hatchExtendRetract) {

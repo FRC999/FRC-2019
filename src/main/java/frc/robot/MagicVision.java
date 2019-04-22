@@ -30,7 +30,7 @@ public class MagicVision {
   boolean right;
   boolean middle;
   boolean backwards;
-  public void removeFreakingAnnoyingVSCodeWarnings(){if(stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
+  public void removeFreakingAnnoyingVSCodeWarnings(){if(counting+stopDistance + confidenceThreshold +delayCount +startOfDataStream+endOfDataStream==0){}}
   
   public MagicVision(int baud, int stop) {
     counting = 0;
