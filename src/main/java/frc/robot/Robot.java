@@ -182,7 +182,13 @@ public class Robot extends TimedRobot {
     CAMERAS.startCameras();
     //UsbCamera backCam = CameraServer.getInstance().startAutomaticCapture(0);
     //UsbCamera frontCam = CameraServer.getInstance().startAutomaticCapture(1);
-    elevatorDriver.setSelectedSensorPosition(0);
+    elevatorDriver.setSelectedSensorPosition(0);    
+    /**
+     * @see Yo Dawg, I heard you like watchdogs, so I made a watchdawg that watches the watchdogs, 
+     * so you can watch dog while you watchdog.
+     */
+    Watchdog WatchDawg = new Watchdog(10,()->{});
+    WatchDawg.enable();
   } //robotInit()
   
   
