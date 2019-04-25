@@ -148,6 +148,8 @@ public class Robot extends TimedRobot {
   double forward;
   double turn;
   
+Watchdog WatchDawg;
+
   // Elevator
   WPI_TalonSRX elevatorDriver = new WPI_TalonSRX(9);
   double elevatorSpeed = .25;
@@ -187,7 +189,7 @@ public class Robot extends TimedRobot {
      * @see Yo Dawg, I heard you like watchdogs, so I made a watchdawg that watches the watchdogs, 
      * so you can watch dog while you watchdog.
      */
-    Watchdog WatchDawg = new Watchdog(10,()->{});
+    WatchDawg = new Watchdog(10,()->{});
     WatchDawg.enable();
   } //robotInit()
   
@@ -195,6 +197,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     chassisDrive.feed();
+
+    WatchDawg.addEpoch("Starting loop");
     switch (buttonReadGroup) { // Breaks the reading of joystick buttons into groups to 
       case 0:  {
         intakePull = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
@@ -229,9 +233,12 @@ public class Robot extends TimedRobot {
     }
     buttonReadGroup++;
     if (buttonReadGroup > 2) {buttonReadGroup = 0;}
+    WatchDawg.addEpoch("Read buttons");
   
     JOYSTICKINPUT.updates();
     CAMERAS.checkCamSwap();
+    WatchDawg.addEpoch("Ran Magic Updates");
+
     if (!slowButton) {
       forward = JOYSTICKINPUT.getDrive();
       turn = JOYSTICKINPUT.getTurn();
@@ -239,7 +246,9 @@ public class Robot extends TimedRobot {
       forward = (JOYSTICKINPUT.getDrive())/2;
       turn = (JOYSTICKINPUT.getTurn())/2;
     }
+    
     chassisDrive.feed();
+    WatchDawg.addEpoch("Finished Robot Periodic");
   }
   
   
@@ -295,12 +304,14 @@ if (visionButton) {
   }
   delayCounter++;
   if (delayCounter > timingDelay) {delayCounter = 0;}
-
+  WatchDawg.addEpoch("Finished Vision");
 } else { //vission button not pressed
   
     chassisDrive.arcadeDrive(forward, turn);
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
+
+    WatchDawg.addEpoch("Drive Code");
 
     if (elevatorPos <= elevatorMax) {
       if (elevatorUp && !elevatorDown) {
@@ -324,6 +335,8 @@ if (visionButton) {
           elevatorDriver.set(0);
       }
     }
+    WatchDawg.addEpoch("Finished Elevator Code");
+
     if (hatchIn && !hatchOut) {
       hatch.set(-.5);
     } else if (hatchOut) {
@@ -340,6 +353,8 @@ if (visionButton) {
     } else {
       hatchCylinders.set(Value.kReverse);
     }
+    WatchDawg.addEpoch("Finished Intake Code");
+
   }
   } 
   
@@ -396,6 +411,7 @@ if (visionButton) {
     chassisDrive.arcadeDrive(forward, turn);
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
+    WatchDawg.addEpoch("Finished Drive Code");
 
     if (elevatorPos <= elevatorMax) {
       if (elevatorUp && !elevatorDown) {
@@ -419,6 +435,8 @@ if (visionButton) {
           elevatorDriver.set(0);
       }
     }
+    WatchDawg.addEpoch("Finished Elevator Code");
+
     if (hatchIn && !hatchOut) {
       hatch.set(-.5);
     } else if (hatchOut) {
@@ -436,12 +454,13 @@ if (visionButton) {
     } else {
       hatchCylinders.set(Value.kReverse);
     }
+    WatchDawg.addEpoch("Finished Intake Code");
+
   }// no vision 
 //} // teleopPeriodic
  
 
   public void testInit(){
-    ButtonListMaker but = new ButtonListMaker();
     elevatorDriver.setNeutralMode(NeutralMode.Coast);
   }
   public void testPeriodic(){
