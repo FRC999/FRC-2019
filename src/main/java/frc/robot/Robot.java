@@ -455,7 +455,7 @@ if (visionButton) {
       hatchCylinders.set(Value.kReverse);
     }
     WatchDawg.addEpoch("Finished Intake Code");
-
+    WatchDawg.printEpochs();
   }// no vision 
 //} // teleopPeriodic
  
