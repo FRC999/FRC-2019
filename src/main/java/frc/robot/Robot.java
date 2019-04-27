@@ -198,7 +198,7 @@ Watchdog WatchDawg;
   public void robotPeriodic() {
     chassisDrive.feed();
 
-    WatchDawg.addEpoch("Starting loop");
+    WatchDawg.addEpoch("1- Starting loop");
     switch (buttonReadGroup) { // Breaks the reading of joystick buttons into groups to 
       case 0:  {
         intakePull = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
@@ -233,11 +233,11 @@ Watchdog WatchDawg;
     }
     buttonReadGroup++;
     if (buttonReadGroup > 2) {buttonReadGroup = 0;}
-    WatchDawg.addEpoch("Read buttons");
+    WatchDawg.addEpoch("2- Finished button read");
   
     JOYSTICKINPUT.updates();
     CAMERAS.checkCamSwap();
-    WatchDawg.addEpoch("Ran Magic Updates");
+    WatchDawg.addEpoch("3- Ran Magic Updates");
 
     if (!slowButton) {
       forward = JOYSTICKINPUT.getDrive();
@@ -248,7 +248,7 @@ Watchdog WatchDawg;
     }
     
     chassisDrive.feed();
-    WatchDawg.addEpoch("Finished Robot Periodic");
+    WatchDawg.addEpoch("4- Finished Robot Periodic");
   }
   
   
@@ -277,6 +277,8 @@ Watchdog WatchDawg;
   
   @Override
   public void autonomousPeriodic() {
+    WatchDawg.addEpoch("5- Entered Autonomous Periodic");
+
    chassisDrive.feed(); // *** Check This ***
 if (visionButton) {
   if (delayCounter == 0) {
@@ -304,14 +306,14 @@ if (visionButton) {
   }
   delayCounter++;
   if (delayCounter > timingDelay) {delayCounter = 0;}
-  WatchDawg.addEpoch("Finished Vision");
+  WatchDawg.addEpoch("6- Finished Vision");
 } else { //vission button not pressed
   
     chassisDrive.arcadeDrive(forward, turn);
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
 
-    WatchDawg.addEpoch("Drive Code");
+    WatchDawg.addEpoch("6- Ran Drive Code");
 
     if (elevatorPos <= elevatorMax) {
       if (elevatorUp && !elevatorDown) {
@@ -335,7 +337,7 @@ if (visionButton) {
           elevatorDriver.set(0);
       }
     }
-    WatchDawg.addEpoch("Finished Elevator Code");
+    WatchDawg.addEpoch("7- Finished Elevator Code");
 
     if (hatchIn && !hatchOut) {
       hatch.set(-.5);
@@ -353,7 +355,7 @@ if (visionButton) {
     } else {
       hatchCylinders.set(Value.kReverse);
     }
-    WatchDawg.addEpoch("Finished Intake Code");
+    WatchDawg.addEpoch("8- Finished Intake Code");
 
   }
   } 
@@ -378,6 +380,7 @@ if (visionButton) {
   
   @Override
   public void teleopPeriodic(){
+    WatchDawg.addEpoch("5- Entered Teleop Periodic");
      chassisDrive.feed(); // *** Check This ***
  //   if (visionButton) {
   //  if (delayCounter == 0) {
@@ -407,11 +410,12 @@ if (visionButton) {
   if (delayCounter > timingDelay) {delayCounter = 0;}
 
 //} else { //vission button not pressed
+  WatchDawg.addEpoch("6- Ran (remains of) vision");
     chassisDrive.feed();
     chassisDrive.arcadeDrive(forward, turn);
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
-    WatchDawg.addEpoch("Finished Drive Code");
+    WatchDawg.addEpoch("7- Finished Drive Code");
 
     if (elevatorPos <= elevatorMax) {
       if (elevatorUp && !elevatorDown) {
@@ -435,7 +439,7 @@ if (visionButton) {
           elevatorDriver.set(0);
       }
     }
-    WatchDawg.addEpoch("Finished Elevator Code");
+    WatchDawg.addEpoch("8- Finished Elevator Code");
 
     if (hatchIn && !hatchOut) {
       hatch.set(-.5);
@@ -454,8 +458,9 @@ if (visionButton) {
     } else {
       hatchCylinders.set(Value.kReverse);
     }
-    WatchDawg.addEpoch("Finished Intake Code");
+    WatchDawg.addEpoch("9- Finished Intake Code");
     WatchDawg.printEpochs();
+    WatchDawg.addEpoch("0- Printed Epochs");
   }// no vision 
 //} // teleopPeriodic
  
