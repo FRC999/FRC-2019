@@ -17,19 +17,23 @@ public class MagicRobotCameras{
   MjpegServer camServer;
   static final int CAMPORT1 = 0;
   static final int CAMPORT2 = 1;
+  CameraServer CAMERASERVER;
 
   MagicRobotCameras(){
-    INPUT= MagicJoystickInput.getInstance();
+    INPUT= MagicJoystickInput.getInstance();    
+    CAMERASERVER = CameraServer.getInstance();
+
     startCameras();
   }
 
 
 public void startCameras() {
-    backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
-    frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
+    backCam = CAMERASERVER.startAutomaticCapture("BackCam", CAMPORT1);
+    frontCam = CAMERASERVER.startAutomaticCapture("FrontCam", CAMPORT2);
 
-    camServer = CameraServer.getInstance().addSwitchedCamera("The One True Source");
+    camServer = CAMERASERVER.addSwitchedCamera("The One True Source");
     setCameraSettings();
+    checkCamSwap();
 }
 public void setCameraSettings(){
   backCam.setResolution(640, 480);
