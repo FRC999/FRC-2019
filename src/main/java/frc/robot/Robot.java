@@ -259,6 +259,7 @@ Watchdog WatchDawg;
     frontClimber.set(Value.kReverse);
     hatchCylinders.set(Value.kForward);
     
+    CAMERAS.setCameraSettings();
     chassisDrive.setSafetyEnabled(false);// *** Check this ***
     
     
@@ -362,6 +363,8 @@ if (visionButton) {
   
   @Override
   public void teleopInit() {
+    CAMERAS.setCameraSettings();
+
     airCompressor.setClosedLoopControl(true);
     chassisDrive.setSafetyEnabled(false);// *** Check this ***
     
@@ -459,7 +462,8 @@ if (visionButton) {
       hatchCylinders.set(Value.kReverse);
     }
     WatchDawg.addEpoch("9- Finished Intake Code");
-    WatchDawg.printEpochs();
+    //WatchDawg.printEpochs();
+    WatchDawg.reset();
     WatchDawg.addEpoch("0- Printed Epochs");
   }// no vision 
 //} // teleopPeriodic
