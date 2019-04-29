@@ -1,8 +1,8 @@
 package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.cscore.MjpegServer;
 import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSink;
 /**
  * This class is designed to be the counterpart of MagicInput, to handle things like cameras and swapping.
  * It is currently only handling CameraSwap, however, in future it may handle all
@@ -14,7 +14,7 @@ public class MagicRobotCameras{
   UsbCamera frontCam;
   MagicJoystickInput INPUT;
   boolean lastCamChoice;
-  MjpegServer camServer;
+  VideoSink camServer;
   static final int CAMPORT1 = 0;
   static final int CAMPORT2 = 1;
   CameraServer CAMERASERVER;
@@ -30,16 +30,14 @@ public class MagicRobotCameras{
 public void startCameras() {
     backCam = CAMERASERVER.startAutomaticCapture("BackCam", CAMPORT1);
     frontCam = CAMERASERVER.startAutomaticCapture("FrontCam", CAMPORT2);
-
-    camServer = CAMERASERVER.addSwitchedCamera("The One True Source");
+    camServer = CAMERASERVER.getServer();
     setCameraSettings();
     checkCamSwap();
 }
 public void setCameraSettings(){
   backCam.setResolution(640, 480);
   frontCam.setResolution(640, 480);
-  camServer.setCompression(-1);
-
+  
 }
 /**
  * Check if cameras should be swapped: if so, swap cameras.
