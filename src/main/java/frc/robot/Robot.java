@@ -9,6 +9,8 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
+
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -45,11 +47,11 @@ public class Robot extends TimedRobot {
    * Switch to talon-victor-victor, talon-victor-victor for 2019 bot
    */
   WPI_TalonSRX driveFL = new WPI_TalonSRX(1); //Forward left tank drive motor
-  WPI_TalonSRX driveML = new WPI_TalonSRX(2); //middle left tank drive motor
-  WPI_TalonSRX driveRL = new WPI_TalonSRX(3); //rear left tank drive motor
+  WPI_VictorSPX driveML = new WPI_VictorSPX(2); //middle left tank drive motor
+  WPI_VictorSPX driveRL = new WPI_VictorSPX(3); //rear left tank drive motor
   WPI_TalonSRX driveFR = new WPI_TalonSRX(4); //Front Right left tank driv
-  WPI_TalonSRX driveMR = new WPI_TalonSRX(5); // middle right tank drive motor
-  WPI_TalonSRX driveRR = new WPI_TalonSRX(6); // rear right tank drive motor
+  WPI_VictorSPX driveMR = new WPI_VictorSPX(5); // middle right tank drive motor
+  WPI_VictorSPX driveRR = new WPI_VictorSPX(6); // rear right tank drive motor
 
   // WPI_TalonSRX testLeft = new WPI_TalonSRX(10);
   // WPI_TalonSRX testRight = new WPI_TalonSRX(11);
@@ -95,6 +97,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     cycles++;
+    OUTPUT.checkCamSwap();
    // System.out.println(driveFL.getSelectedSensorVelocity(0));
   }
   /**
