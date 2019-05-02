@@ -181,7 +181,6 @@ Watchdog WatchDawg;
     frontClimber.set(Value.kOff);
     hatchCylinders.set(Value.kOff);
    // arduino = VISION.startArduino(bRate);
-    CAMERAS.startCameras();
     //UsbCamera backCam = CameraServer.getInstance().startAutomaticCapture(0);
     //UsbCamera frontCam = CameraServer.getInstance().startAutomaticCapture(1);
     elevatorDriver.setSelectedSensorPosition(0);    
