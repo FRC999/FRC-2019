@@ -183,7 +183,13 @@ Watchdog WatchDawg;
    // arduino = VISION.startArduino(bRate);
     //UsbCamera backCam = CameraServer.getInstance().startAutomaticCapture(0);
     //UsbCamera frontCam = CameraServer.getInstance().startAutomaticCapture(1);
-    elevatorDriver.setSelectedSensorPosition(0);    
+    elevatorDriver.setSelectedSensorPosition(0);
+    driveFrontLeft.setNeutralMode(NeutralMode.Coast);
+    driveMiddleLeft.setNeutralMode(NeutralMode.Coast);
+    driveBackLeft.setNeutralMode(NeutralMode.Coast);
+    driveFrontRight.setNeutralMode(NeutralMode.Coast);
+    driveMiddleRight.setNeutralMode(NeutralMode.Coast);
+    driveBackRight.setNeutralMode(NeutralMode.Coast);    
     /**
      * @see Yo Dawg, I heard you like watchdogs, so I made a watchdawg that watches the watchdogs, 
      * so you can watch dog while you watchdog.
@@ -272,6 +278,7 @@ Watchdog WatchDawg;
     //elevatorDriver.setSensorPhase(true);
     //elevatorDriver.setNeutralMode(NeutralMode.Coast);
     elevatorDriver.setNeutralMode(NeutralMode.Brake);
+    
   }
   
   
