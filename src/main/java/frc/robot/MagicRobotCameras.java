@@ -30,12 +30,26 @@ public class MagicRobotCameras{
     camServer = CameraServer.getInstance().getServer();
     setCameraSettings();
 
+<<<<<<< HEAD
   }
 
   public void setCameraSettings(){
     frontCam.setResolution(640, 480);
     backCam.setResolution(640, 480);
   }
+=======
+public void startCameras() {
+    backCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT1);
+    frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
+
+    camServer = CameraServer.getInstance().addSwitchedCamera("The One True Source");
+    setCameraSettings();
+}
+public void setCameraSettings(){
+  backCam.setResolution(640, 480);
+  frontCam.setResolution(640, 480);
+  camServer.setCompression(-1);
+>>>>>>> parent of 8a67878... Fixed issues with new code (maybe)?
 
 /**
  * Check if cameras should be swapped: if so, swap cameras.
