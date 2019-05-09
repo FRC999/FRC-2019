@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
   
   // Our own special magic
   MagicJoystickInput JOYSTICKINPUT = MagicJoystickInput.getInstance();
- // MagicVision VISION = new MagicVision(bRate); 
+  MagicVision VISION = new MagicVision(bRate); 
   ExtraUtilities UTILITY = new ExtraUtilities();
   MagicDriverPrints PRINTER = MagicDriverPrints.getInstance();
   MagicRobotCameras CAMERAS = new MagicRobotCameras();
@@ -180,7 +180,7 @@ Watchdog WatchDawg;
     rearClimber.set(Value.kOff);
     frontClimber.set(Value.kOff);
     hatchCylinders.set(Value.kOff);
-   // arduino = VISION.startArduino(bRate);
+   arduino = VISION.startArduino(bRate);
     //UsbCamera backCam = CameraServer.getInstance().startAutomaticCapture(0);
     //UsbCamera frontCam = CameraServer.getInstance().startAutomaticCapture(1);
     elevatorDriver.setSelectedSensorPosition(0);
@@ -305,12 +305,12 @@ if (visionButton) {
     
     If parseVal fails it returns -1 for all parameters
     */
-  //  test = VISION.parseVal(arduino, 2, 6, 7/*, 8, 9*/);
+    test = VISION.parseVal(arduino, 2, 6, 7/*, 8, 9*/);
   }  
-  if (delayCounter == 1) {
-  //  VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], /*test[3], test[4],*/ minDist, minConf, speed);
+  //if (delayCounter == 1) {
+    VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2], /*test[3], test[4],*/ minDist, minConf, speed);
     //System.out.println(Arrays.toString(test));
-  }
+//  }
   delayCounter++;
   if (delayCounter > timingDelay) {delayCounter = 0;}
   WatchDawg.addEpoch("6- Finished Vision");
@@ -391,8 +391,8 @@ if (visionButton) {
   public void teleopPeriodic(){
     WatchDawg.addEpoch("5- Entered Teleop Periodic");
      chassisDrive.feed(); // *** Check This ***
- //   if (visionButton) {
-  //  if (delayCounter == 0) {
+    if (visionButton) {
+   if (delayCounter == 0) {
 
     /*        
     Parameters for parseVal 
@@ -409,16 +409,16 @@ if (visionButton) {
     
     If parseVal fails it returns -1 for all parameters
     */
-//    test = VISION.parseVal(arduino, 2, 6, 7/*, 8, 9*/);
-//  }  
-//  if (delayCounter == 1) {
-//    VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2]/*, test[3], test[4]*/, minDist, minConf, speed);
+  test = VISION.parseVal(arduino, 2, 6, 7/*, 8, 9*/);
+  }  
+  if (delayCounter == 1) {
+ VISION.trackWithVision(arduino, leftSide, rightSide, test[0], test[1], test[2]/*, test[3], test[4]*/, minDist, minConf, speed);
     //System.out.println(Arrays.toString(test));
-//  }
-  delayCounter++;
-  if (delayCounter > timingDelay) {delayCounter = 0;}
+  }
+ delayCounter++;
+if (delayCounter > timingDelay) {delayCounter = 0;}
 
-//} else { //vission button not pressed
+} else { //vission button not pressed
   WatchDawg.addEpoch("6- Ran (remains of) vision");
     chassisDrive.feed();
     chassisDrive.arcadeDrive(forward, turn);
@@ -471,6 +471,7 @@ if (visionButton) {
     //WatchDawg.printEpochs();
     WatchDawg.reset();
     WatchDawg.addEpoch("0- Printed Epochs");
+  }
   }// no vision 
 //} // teleopPeriodic
  
