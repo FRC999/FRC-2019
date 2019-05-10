@@ -98,7 +98,7 @@ public class Robot extends TimedRobot {
   boolean frontClimberToggle;
   boolean backClimberToggle;
   boolean hatchExtendRetract;
-  boolean lastHatchExtendRetract;
+  //boolean lastHatchExtendRetract;
   boolean slowButton;
 
   int x;
@@ -234,7 +234,7 @@ Watchdog WatchDawg;
         elevatorMiddleHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidHatch);
         elevatorHighHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighHatch);
         resetPorts = JOYSTICKINPUT.isButtonOn(ButtonEnum.resetPorts);
-        lastHatchExtendRetract = hatchExtendRetract;
+      //  lastHatchExtendRetract = hatchExtendRetract;
       }
       break;
     }
@@ -345,8 +345,8 @@ if (visionButton) {
           elevatorDriver.set(ControlMode.MotionMagic, cargoShip);
       } else if (elevatorFloor) {
           elevatorDriver.set(ControlMode.MotionMagic, 0);
-        } else if (!lastHatchExtendRetract && hatchExtendRetract) {
-          elevatorDriver.set(ControlMode.MotionMagic, elevatorDriver.getSelectedSensorPosition(0) + 1310);
+        //} else if (!lastHatchExtendRetract && hatchExtendRetract) {
+      //    elevatorDriver.set(ControlMode.MotionMagic, elevatorDriver.getSelectedSensorPosition(0) + 1310);
       } else {
           elevatorDriver.set(0);
       }
