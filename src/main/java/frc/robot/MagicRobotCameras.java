@@ -33,6 +33,7 @@ public class MagicRobotCameras {
     frontCam = CameraServer.getInstance().startAutomaticCapture(CAMPORT2);
     camServer = CameraServer.getInstance().addSwitchedCamera("The One True Source");
     setCameraSettings();
+    camServer.setSource(frontCam);
   }
 
   /**

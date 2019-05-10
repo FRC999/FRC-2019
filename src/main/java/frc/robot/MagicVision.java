@@ -24,8 +24,8 @@ public class MagicVision {
   private int endOfDataStream;
   private int blocksSeen;
   //private SerialPort arduinoPort; // Never Used
-  final int leftMax = 130;
-  final int rightMax = 170;
+  final int leftMax = (130-5);
+  final int rightMax = (170-5);
   boolean left;
   boolean right;
   boolean middle;
@@ -303,14 +303,14 @@ public class MagicVision {
             }
       } else {
         if (left) {
-          l.set(0);
-          r.set(speed);
+          l.set(speed);
+          r.set(0);
         } else if (middle) {
           l.set(speed);
           r.set(-speed);
         } else if (right) { 
-          l.set(speed);
-          r.set(0);
+          l.set(0);
+          r.set(speed);
         } else {
           l.set(0);
           r.set(0);

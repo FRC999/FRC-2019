@@ -21,7 +21,7 @@ public enum ButtonEnum {
     elevatorHighHatch(2,8, EncoderPresets.highHatch),
     elevatorLowBall(2,11, EncoderPresets.lowBall), 
     elevatorMidBall(2,4, EncoderPresets.midBall), 
-    //elevatorHighBall(2,7, EncoderPresets.highBall),
+    resetPorts(2,9),
     elevatorCargoShipBall(2,7, EncoderPresets.cargoShipBall), 
     elevatorRetract(2,6, EncoderPresets.retract);
 
