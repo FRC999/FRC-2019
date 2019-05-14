@@ -322,7 +322,7 @@ if (visionButton) {
   WatchDawg.addEpoch("6- Finished Vision");
 } else { //vission button not pressed
   
-    chassisDrive.arcadeDrive(forward, turn);
+    chassisDrive.arcadeDrive(forward, turn, false);
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
 
@@ -468,7 +468,7 @@ if (delayCounter > timingDelay) {delayCounter = 0;}
 } else { //vission button not pressed
   WatchDawg.addEpoch("6- Ran (remains of) vision");
     chassisDrive.feed();
-    chassisDrive.arcadeDrive(forward, turn);
+    chassisDrive.arcadeDrive(forward, turn,false);
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
     WatchDawg.addEpoch("7- Finished Drive Code");

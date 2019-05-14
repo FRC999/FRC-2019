@@ -74,7 +74,8 @@ import edu.wpi.first.wpilibj.Joystick;
 
   double getDrive(){
     if (driveStick != null){
-      return -joystickDeadzoneTest(driveStick.getRawAxis(1));
+      double tmp = joystickDeadzoneTest(driveStick.getRawAxis(1));
+      return Math.copySign(Math.pow(tmp, 2), tmp);
     }
     return 0;
   }
@@ -85,7 +86,7 @@ import edu.wpi.first.wpilibj.Joystick;
   double getTurn(){
     if (turnStick != null){
       double tmp = joystickDeadzoneTest(turnStick.getRawAxis(0));
-      return Math.copySign(tmp*tmp*tmp, tmp);
+      return Math.copySign(Math.pow(tmp, 5), tmp);
     }
     return 0;
   }
