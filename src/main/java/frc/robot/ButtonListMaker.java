@@ -32,7 +32,7 @@ public class ButtonListMaker {
     joystick1List = new StringBuilder[13];
     joystick2List = new StringBuilder[13];
 
-    for (ButtonEnum bob : ButtonEnum.values()) {
+    for (Buttons bob : Buttons.values()) {
       int curJoy = bob.getJoystickNum();
       int curBut = bob.getButtonNum();
 

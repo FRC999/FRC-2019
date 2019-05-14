@@ -32,7 +32,7 @@ public class MagicElevator extends MagicPIDMotor{
    *
    */
   public void updateElevatorTarget () {
-    for (ButtonEnum bob : ButtonEnum.values()){ //Propperly magical iterator OF DOOM
+    for (Buttons bob : Buttons.values()){ //Propperly magical iterator OF DOOM
       if (null != bob.getElevatorPreset()) {//We dont want to call a null variable's methods
         if (INPUT.isButtonPressed(bob)){
           setTarget(bob.getElevatorPreset().getHeightNU());
@@ -42,10 +42,10 @@ public class MagicElevator extends MagicPIDMotor{
       }
     }
     increaseTarget((int) INPUT.getElevatorAdjuster() * 1);
-    if (INPUT.isButtonOn(ButtonEnum.elevatorUp)){
+    if (INPUT.isButtonOn(Buttons.elevatorUp)){
       increaseTarget(1);
     }
-    if (INPUT.isButtonOn(ButtonEnum.elevatorDown)){
+    if (INPUT.isButtonOn(Buttons.elevatorDown)){
       increaseTarget(-1);
     }
 

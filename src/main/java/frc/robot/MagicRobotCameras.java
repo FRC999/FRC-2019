@@ -61,13 +61,13 @@ public class MagicRobotCameras {
    * Uses input from INPUT.
    */
   public void checkCamSwap() {
-    if (INPUT.isButtonOn(ButtonEnum.cameraChange) && !lastCamChoice) {
+    if (INPUT.isButtonOn(Buttons.cameraChange) && !lastCamChoice) {
       //System.out.println("Swapping Cams");
       camServer.setSource(frontCam);
-    } else if (!INPUT.isButtonOn(ButtonEnum.cameraChange) && lastCamChoice) {
+    } else if (!INPUT.isButtonOn(Buttons.cameraChange) && lastCamChoice) {
       //System.out.println("Swapping Cams");
       camServer.setSource(backCam);
     }
-    lastCamChoice = INPUT.isButtonOn(ButtonEnum.cameraChange);
+    lastCamChoice = INPUT.isButtonOn(Buttons.cameraChange);
   }
 }

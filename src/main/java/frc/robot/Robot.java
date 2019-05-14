@@ -206,34 +206,35 @@ Watchdog WatchDawg;
     WatchDawg.addEpoch("1- Starting loop");
     switch (buttonReadGroup) { // Breaks the reading of joystick buttons into groups to 
       case 0:  {
-        intakePull = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
-        intakePush = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);    
-        frontClimb = JOYSTICKINPUT.isButtonOn(ButtonEnum.climbFront);
-        rearClimb = JOYSTICKINPUT.isButtonOn(ButtonEnum.climbBack);
-        visionButton = JOYSTICKINPUT.isButtonOn(ButtonEnum.vision);
-        cargoIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoIntake);
-        cargoOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.cargoOuttake);    
+        intakePull = Buttons.hatchIntake.isOn();
+        intakePush = Buttons.hatchOuttake.isOn();    
+        frontClimb = Buttons.climbFront.isOn();
+        rearClimb = Buttons.climbBack.isOn();
+        visionButton = Buttons.vision.isOn();
+        cargoIn = Buttons.cargoIntake.isOn();
+        cargoOut = Buttons.cargoOuttake.isOn();    
       }
         break;
 
       case 1:  {
-        elevatorUp = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorUp);
-        elevatorDown = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorDown);
-        elevatorLowCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowBall);
-        elevatorMiddleCargo = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidBall);
-        elevatorCargoShip = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorCargoShipBall);
-        elevatorFloor = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorRetract);
-        slowButton = JOYSTICKINPUT.isButtonOn(ButtonEnum.slowDrive);
+        elevatorUp = Buttons.elevatorUp.isOn();
+        elevatorDown = Buttons.elevatorDown.isOn();
+        elevatorLowCargo = Buttons.elevatorLowBall.isOn();
+        elevatorMiddleCargo = Buttons.elevatorMidBall.isOn();
+        elevatorCargoShip = Buttons.elevatorCargoShipBall.isOn();
+        elevatorFloor = Buttons.elevatorRetract.isOn();
+        slowButton = Buttons.slowDrive.isOn();
       }
       break;
     case 2:  {
-        hatchExtendRetract = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchCyl);
-        hatchIn = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchIntake);
-        hatchOut = JOYSTICKINPUT.isButtonOn(ButtonEnum.hatchOuttake);
-        elevatorLowHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorLowHatch);
-        elevatorMiddleHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorMidHatch);
-        elevatorHighHatch = JOYSTICKINPUT.isButtonOn(ButtonEnum.elevatorHighHatch);
-        resetPorts = JOYSTICKINPUT.isButtonOn(ButtonEnum.resetPorts);
+        hatchExtendRetract = Buttons.hatchCyl.isOn();
+        hatchIn = Buttons.hatchIntake.isOn();
+        hatchOut = Buttons.hatchOuttake.isOn();
+        elevatorLowHatch = Buttons.elevatorLowHatch.isOn();
+        elevatorMiddleHatch = Buttons.elevatorMidHatch.isOn();
+        elevatorHighHatch = Buttons.elevatorHighHatch.isOn();
+        resetPorts = Buttons.resetPorts.isOn();
+        resetPorts = Buttons.resetPorts.isOn();
       //  lastHatchExtendRetract = hatchExtendRetract;
       }
       break;

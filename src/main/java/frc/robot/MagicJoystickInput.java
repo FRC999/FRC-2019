@@ -41,7 +41,7 @@ import edu.wpi.first.wpilibj.Joystick;
    * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
    * @return true if on: false if not
    */
-  boolean isButtonOn(ButtonEnum type) {
+  boolean isButtonOn(Buttons type) {
     if(null != getJoystick(type) && null != type.getToggledButton()){
       return type.getToggledButton().toggleState;
     }
@@ -54,7 +54,7 @@ import edu.wpi.first.wpilibj.Joystick;
    * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
    * @return true if on: false if not
    */
-  boolean isButtonPressed(ButtonEnum type) {
+  boolean isButtonPressed(Buttons type) {
     if(getJoystick(type) != null)
       return getJoystick(type).getRawButton(type.getButtonNum());
     return false;
@@ -84,7 +84,8 @@ import edu.wpi.first.wpilibj.Joystick;
    */
   double getTurn(){
     if (turnStick != null){
-      return joystickDeadzoneTest(turnStick.getRawAxis(0));
+      double tmp = joystickDeadzoneTest(turnStick.getRawAxis(0));
+      return Math.copySign(tmp*tmp*tmp, tmp);
     }
     return 0;
   }
@@ -108,7 +109,7 @@ import edu.wpi.first.wpilibj.Joystick;
    * it should go to the last one on the ButtonEnum list.  Should.
    */
   void updates(){
-    for (ButtonEnum bob : ButtonEnum.values()){ //Properly magical iterator OF DOOM
+    for (Buttons bob : Buttons.values()){ //Properly magical iterator OF DOOM
       if (null != bob.getToggledButton()) {//We dont want to call a null variable's methods
         bob.getToggledButton().update(isButtonPressed(bob));
       }
@@ -138,7 +139,7 @@ import edu.wpi.first.wpilibj.Joystick;
    * @param type is a ButtonEnum button.  Format it like ButtonEnum.selectedButton
    * @return Joystick that holds chosen button
    */
-  Joystick getJoystick(ButtonEnum type){
+  Joystick getJoystick(Buttons type){
     return getJoystick(type.getJoystickNum());
   }
 }

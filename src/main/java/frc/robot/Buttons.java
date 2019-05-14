@@ -1,5 +1,5 @@
 package frc.robot;
-public enum ButtonEnum {
+public enum Buttons {
 
     hatchIntake(0,3),
     hatchOuttake(0,5),
@@ -33,13 +33,14 @@ public enum ButtonEnum {
   final private int joystickNum;
   final private TogglingBoolean toggledButton;
   final private EncoderPresets ePresets;
+  static private MagicJoystickInput INPUT = MagicJoystickInput.getInstance();
 
   /**
    * If there is no boolean nor third double, it is a boring old button
    * @param numberOfJoystick the port number of the buttons joystick
    * @param numberOfButton the button number on the joystick of the button
    */
-  private ButtonEnum(int numberOfJoystick, int numberOfButton) {
+  private Buttons(int numberOfJoystick, int numberOfButton) {
     buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
     toggledButton = null; //Code should avoid playing with TogglingButton properties on non-toggling buttons
@@ -52,7 +53,7 @@ public enum ButtonEnum {
    * @param numberOfButton the button number on the joystick of the button
    * @param toggledButtonState the initial state of the TogglingButton
    */
-  private ButtonEnum(int numberOfJoystick, int numberOfButton, boolean toggledButtonState){
+  private Buttons(int numberOfJoystick, int numberOfButton, boolean toggledButtonState){
     buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
     toggledButton = new TogglingBoolean(toggledButtonState);
@@ -65,7 +66,7 @@ public enum ButtonEnum {
    * @param numberOfButton the button number on the joystick of the button
    * @param heightOfElevator the height (in centimeters) that the elevator should go to
    */
-  private ButtonEnum(int numberOfJoystick, int numberOfButton, EncoderPresets target) {
+  private Buttons(int numberOfJoystick, int numberOfButton, EncoderPresets target) {
     buttonNum = numberOfButton;
     joystickNum = numberOfJoystick;
     toggledButton = null; //Code should avoid playing with TogglingButton properties on non-toggling buttons
@@ -76,4 +77,5 @@ public enum ButtonEnum {
   public int getJoystickNum() {return joystickNum;}
   public TogglingBoolean getToggledButton(){return toggledButton;}
   public EncoderPresets getElevatorPreset() {return ePresets;}
+  public boolean isOn(){return INPUT.isButtonOn(this);}
 }
