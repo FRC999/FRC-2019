@@ -69,24 +69,27 @@ import edu.wpi.first.wpilibj.Joystick;
 
   /**
    * Gets how far forward or back the drive stick is.  Hopefully.
+   * Includes the scaling
    * @return a double between -1 and 1, with one being all the way forward
    */
 
   double getDrive(){
     if (driveStick != null){
       double tmp = joystickDeadzoneTest(driveStick.getRawAxis(1));
-      return (Math.copySign(Math.pow(tmp, 2), tmp)*driveConstant);
+      return (Math.copySign(Math.pow(tmp, 2), tmp)*driveConstant)  * (Buttons.slowDrive.isOn() ? .5 : 1);
+      //Scale accordcording to curve, keeping sign   mannual throttle  if slow, half input
     }
     return 0;
   }
   /**
    * Gets how far left or right the turn stick is.  "Left is positive"--Jack Wertz 2019
+   * Includes a bundle of scaling.
    * @return a double between -1 and 1, with 1 being all the way left
    */
   double getTurn(){
     if (turnStick != null){
       double tmp = joystickDeadzoneTest(turnStick.getRawAxis(0));
-      return Math.copySign(Math.pow(tmp, 5), tmp);
+      return Math.copySign(Math.pow(tmp, 5), tmp) * (Buttons.slowDrive.isOn() ? .5 : 1);
     }
     return 0;
   }
@@ -97,7 +100,7 @@ import edu.wpi.first.wpilibj.Joystick;
    */
   double getElevatorAdjuster(){
     if (copilotStick != null){
-      return joystickDeadzoneTest(copilotStick.getRawAxis(0));
+      return joystickDeadzoneTest(copilotStick.getRawAxis(0)) * (Buttons.slowDrive.isOn() ? .5 : 1);
     }
     return 0;
   }
