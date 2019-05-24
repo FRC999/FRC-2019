@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.Joystick;
   private static MagicJoystickInput mInstance = new MagicJoystickInput();
 
   public static MagicJoystickInput getInstance() {return mInstance;}
-
+  private double driveConstant = .75;
   Joystick driveStick;
   Joystick turnStick;
   Joystick copilotStick;
@@ -75,7 +75,7 @@ import edu.wpi.first.wpilibj.Joystick;
   double getDrive(){
     if (driveStick != null){
       double tmp = joystickDeadzoneTest(driveStick.getRawAxis(1));
-      return Math.copySign(Math.pow(tmp, 2), tmp);
+      return (Math.copySign(Math.pow(tmp, 2), tmp)*driveConstant);
     }
     return 0;
   }
