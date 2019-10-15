@@ -164,7 +164,7 @@ Watchdog WatchDawg;
   
   //Hatch
   WPI_VictorSPX hatch = new WPI_VictorSPX(14);
-  double hatchSpeed = .5;
+  double hatchSpeed = .15;
   
   //Pneumatics
   Compressor airCompressor = new Compressor(0);
@@ -317,7 +317,7 @@ if (visionButton) {
   WatchDawg.addEpoch("6- Finished Vision");
 } else { //vission button not pressed
   
-    chassisDrive.arcadeDrive(forward, turn, false); //false because scaling is done in MagicInput
+    chassisDrive.arcadeDrive(-forward, turn, false); //false because scaling is done in MagicInput
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
 
@@ -463,7 +463,7 @@ if (delayCounter > timingDelay) {delayCounter = 0;}
 } else { //vission button not pressed
   WatchDawg.addEpoch("6- Ran (remains of) vision");
     chassisDrive.feed();
-    chassisDrive.arcadeDrive(forward, turn,false); //The false disables WPI's internal scaling, because we handle that in MagicInput
+    chassisDrive.`eDrive(-forward, turn,false); //The false disables WPI's internal scaling, because we handle that in MagicInput
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
     WatchDawg.addEpoch("7- Finished Drive Code");
@@ -510,8 +510,8 @@ if (delayCounter > timingDelay) {delayCounter = 0;}
       hatchCylinders.set(Value.kReverse);
     }
     WatchDawg.addEpoch("9- Finished Intake Code");
-    //WatchDawg.printEpochs();
-    WatchDawg.reset();
+    WatchDawg.printEpochs();
+    //WatchDawg.reset();
     WatchDawg.addEpoch("0- Printed Epochs");
   }
   }// no vision 
