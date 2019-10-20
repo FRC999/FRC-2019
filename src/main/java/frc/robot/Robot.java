@@ -463,7 +463,7 @@ if (delayCounter > timingDelay) {delayCounter = 0;}
 } else { //vission button not pressed
   WatchDawg.addEpoch("6- Ran (remains of) vision");
     chassisDrive.feed();
-    chassisDrive.`eDrive(-forward, turn,false); //The false disables WPI's internal scaling, because we handle that in MagicInput
+    chassisDrive.arcadeDrive(-forward, turn,false); //The false disables WPI's internal scaling, because we handle that in MagicInput
     // System.out.println(elevatorPos);
     elevatorPos = elevatorDriver.getSelectedSensorPosition();
     WatchDawg.addEpoch("7- Finished Drive Code");

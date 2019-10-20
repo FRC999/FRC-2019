@@ -24,8 +24,12 @@ public class MagicVision {
   private int endOfDataStream;
   private int blocksSeen;
   //private SerialPort arduinoPort; // Never Used
-  final int leftMax = (130-5);
-  final int rightMax = (170-5);
+  
+  final int windowShift = 12;
+
+   int leftMax = ((130-5) + windowShift);
+   int rightMax =((170-5) + windowShift);
+
   boolean left;
   boolean right;
   boolean middle;
@@ -239,6 +243,7 @@ public class MagicVision {
 
 
   public void trackWithVision (SerialPort a, SpeedControllerGroup l, SpeedControllerGroup r, int val, int distLeft, int confLeft,/* int distRight, int confRight, */int minDist, int minConf, double speed) {
+
     //if(confLeft > minConf && confRight > minConf) {
       if (distLeft > minDist /*&& distRight > minDist*/) { // *** changed one distLeft to distRight
         if (val < leftMax && val > 0) {// heading left of target
